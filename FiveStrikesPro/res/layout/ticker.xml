@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:keepScreenOn="true"
+    android:background="@drawable/hintergrund" >
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:paddingTop="5dp" > 
+        
+        <TableRow
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:paddingTop="5dp" >
+        	
+			<Button 
+		    	android:id="@+id/btnTeamHeim" 
+		    	android:background="@drawable/buttonmannschaft"
+				android:layout_width="0dp" 
+				android:layout_height="48dp"
+				android:layout_weight="1"
+				android:textColor="@android:color/white"
+				android:textSize="20dip"
+				android:textStyle="bold"
+				android:state_enabled="true" 
+				android:layout_marginRight="3dp" />
+		
+			<!-- Hinweis: Breite des mittleren Buttons an die Tabellenbreite anpassen -->
+			<Button 
+		    	android:id="@+id/btnUhr"
+		    	android:background="@drawable/buttonuhrrot"
+				android:layout_width="0dp" 
+				android:layout_height="48dp"
+				android:layout_weight="1"
+				android:textColor="@android:color/white"
+				android:textSize="20dip"
+				android:textStyle="bold"
+				android:state_enabled="true" 
+				android:layout_marginLeft="3dp"
+				android:layout_marginRight="3dp"
+				android:onClick="uhrClick" />
+		        	    
+        	<Button 
+		    	android:id="@+id/btnTeamAusw"
+		    	android:background="@drawable/buttonmannschaft"
+				android:layout_width="0dp" 
+				android:layout_height="48dp"
+				android:layout_weight="1"
+				android:textColor="@android:color/white"
+				android:textSize="20dip"
+				android:textStyle="bold"
+				android:state_enabled="true" 
+				android:layout_marginLeft="3dp" />
+        
+        </TableRow>
+        
+    </TableLayout>
+    
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+    > 
+        
+        <TableRow
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content" >
+        	
+        	<Button 
+        		android:id="@+id/btnSpielerHeim"
+        		android:background="@drawable/buttonabwehr"
+        		android:layout_width="fill_parent"
+        		android:layout_height="wrap_content"
+        		android:textColor="@android:color/white"
+        		android:textSize="36dip"
+				android:textStyle="bold"
+        		android:layout_marginRight="3dp"
+    		/>
+        	
+        	<Button 
+        		android:id="@+id/btnSpielerAusw"
+        		android:background="@drawable/buttonabwehr"
+        		android:layout_width="fill_parent"
+        		android:layout_height="wrap_content"
+        		android:textColor="@android:color/white"
+        		android:textSize="36dip"
+        		android:textStyle="bold"
+        		android:layout_marginLeft="3dp"
+    		/>
+        
+        </TableRow>
+        
+    </TableLayout>
+	
+    <ListView 
+        android:id="@android:id/list" 
+        android:layout_width="fill_parent"
+		android:layout_height="fill_parent" 
+		android:divider="#00000000" 
+		android:listSelector="@android:color/transparent" 
+		android:cacheColorHint="@android:color/transparent"/>
+
+</LinearLayout>
