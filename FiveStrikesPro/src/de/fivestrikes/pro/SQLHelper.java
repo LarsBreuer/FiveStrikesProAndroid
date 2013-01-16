@@ -70,12 +70,28 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM team WHERE _ID=?", args));
   }
   
+  public void deleteAllTeam() {
+
+	getWritableDatabase().delete("team", null, null);
+		
+  }
+  
   public void insertTeam(String teamName, String teamKuerzel) {
 	  ContentValues cv=new ContentValues();
       
 	  cv.put("teamName", teamName);
 	  cv.put("teamKuerzel", teamKuerzel);
 	  cv.put("spielerAnzahl", 0);
+
+	  getWritableDatabase().insert("team", "teamName", cv);
+  }
+  
+  public void insertTeamImport(String teamName, String teamKuerzel, Integer spielerAnzahl) {
+	  ContentValues cv=new ContentValues();
+      
+	  cv.put("teamName", teamName);
+	  cv.put("teamKuerzel", teamKuerzel);
+	  cv.put("spielerAnzahl", spielerAnzahl);
 
 	  getWritableDatabase().insert("team", "teamName", cv);
   }
@@ -134,6 +150,12 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM spieler WHERE _ID=(SELECT MAX(_ID) FROM spieler)", null));
   }
   
+  public void deleteAllSpieler() {
+
+	getWritableDatabase().delete("spieler", null, null);
+		
+  }
+  
   public void insertSpieler(String spielerName, String spielerNummer, String teamID, String spielerPosition) {
 	  ContentValues cv=new ContentValues();
 	  ContentValues cvs=new ContentValues();
@@ -150,6 +172,17 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cvs.put("spielerAnzahl", Integer.parseInt(spielerNummer));
 	  String[] args={teamID};
 	  getWritableDatabase().update("team", cvs, "_ID=?", args);
+  }
+  
+  public void insertSpielerImport(Integer teamID, String spielerName, String spielerNummer, String spielerPosition, Integer spielerID) {
+	  ContentValues cv=new ContentValues();
+
+	  cv.put("TeamID", teamID);
+	  cv.put("spielerName", spielerName);
+	  cv.put("spielerNummer", spielerNummer);
+	  cv.put("spielerID", spielerID);
+	  cv.put("spielerPosition", spielerPosition);
+	  getWritableDatabase().insert("spieler", "spielerName", cv);
   }
   
   public void updateSpieler(String id, String spielerName, String spielerNummer, String spielerPosition) {
@@ -214,6 +247,12 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM spiel WHERE _ID=(SELECT MAX(_ID) FROM spiel)", null));
   }
   
+  public void deleteAllSpiel() {
+
+	getWritableDatabase().delete("spiel", null, null);
+		
+  }
+  
   public int countSpielTeamId(String id) {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor mCount= db.rawQuery("SELECT count(*) FROM spiel WHERE teamHeim = ? OR teamAuswaerts = ?", new String[] { id, id });
@@ -236,6 +275,36 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("teamAuswaerts", teamAuswaerts);
 	  cv.put("aktuelleHalbzeit", 0);
 	  cv.put("ballbesitz", 2);
+	  
+	  getWritableDatabase().insert("spiel", "spielDatum", cv);
+  }
+  
+  public void insertSpielImport(int teamHeim, int teamAuswaerts, int aktuelleHalbzeit, int ballbesitz, 
+		  int halbzeitlaenge, String spielDatum, int toreHeim, int toreAuswaerts) {
+	  ContentValues cv=new ContentValues();
+	  
+	  cv.put("spielDatum", spielDatum);
+	  cv.put("halbzeitLaenge", halbzeitlaenge);
+	  cv.put("teamHeim", teamHeim);
+	  cv.put("teamAuswaerts", teamAuswaerts);
+	  cv.put("aktuelleHalbzeit", aktuelleHalbzeit);
+	  cv.put("ballbesitz", ballbesitz);
+	  cv.put("toreHeim", toreHeim);
+	  cv.put("toreAuswaerts", toreAuswaerts);
+	  
+	  getWritableDatabase().insert("spiel", "spielDatum", cv);
+  }
+  
+  public void insertSpielImportOhneTore(int teamHeim, int teamAuswaerts, int aktuelleHalbzeit, int ballbesitz, 
+		  int halbzeitlaenge, String spielDatum) {
+	  ContentValues cv=new ContentValues();
+	  
+	  cv.put("spielDatum", spielDatum);
+	  cv.put("halbzeitLaenge", halbzeitlaenge);
+	  cv.put("teamHeim", teamHeim);
+	  cv.put("teamAuswaerts", teamAuswaerts);
+	  cv.put("aktuelleHalbzeit", aktuelleHalbzeit);
+	  cv.put("ballbesitz", ballbesitz);
 	  
 	  getWritableDatabase().insert("spiel", "spielDatum", cv);
   }
@@ -483,6 +552,12 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM ticker WHERE _ID=?", args));
   }
   
+  public void deleteAllTicker() {
+
+	getWritableDatabase().delete("ticker", null, null);
+		
+  }
+  
   public int countTickerAktion(String id, String aktionInteger, String aktionTeamHeim, String spielzeit) {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor mCount= db.rawQuery("SELECT count(*) FROM ticker WHERE spielID = ? AND aktionInteger= ? AND aktionTeamHeim= ? AND zeitInteger<= ?", new String[] { id, aktionInteger, aktionTeamHeim, spielzeit});
@@ -706,7 +781,7 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(count);
   }
   
-  /** countStatSpielerId und countTickerSpielerId zusammenlegen */
+  /* ToDo countStatSpielerId und countTickerSpielerId zusammenlegen */
   public int countStatSpielerId(String id, String spielId) {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor mCount= db.rawQuery("SELECT count(*) FROM ticker WHERE spielerID = ? AND spielID = ?", new String[] { id, spielId });
@@ -737,6 +812,43 @@ class SQLHelper extends SQLiteOpenHelper {
  
   public void insertTicker(int aktionInt, String aktionString, int aktionTeamHeim, String spielerString, 
 		  Integer spielerId, Integer spielId, Integer zeit) {
+	  ContentValues cv=new ContentValues();
+	  
+	  String zeitString=updateTimer(zeit);
+	  cv.put("aktionInteger", aktionInt);
+	  cv.put("aktionString", aktionString);
+	  cv.put("aktionTeamHeim", aktionTeamHeim);
+	  cv.put("spielerAktion", spielerString);
+	  cv.put("spielerID", spielerId);	  
+	  cv.put("zeitInteger", zeit);
+	  cv.put("zeitString", zeitString);
+	  cv.put("spielId", spielId);
+	  
+	  getWritableDatabase().insert("ticker", "aktionString", cv);
+  }
+  
+  public void insertTickerImport(int aktionInt, String aktionString, int aktionTeamHeim, String spielerString, 
+		  Integer spielerId, int tickerHeimTore, int tickerAuswaertsTore, String tickerErgebnisString, Integer zeit, Integer spielId) {
+	  ContentValues cv=new ContentValues();
+	  
+	  String zeitString=updateTimer(zeit);
+	  cv.put("aktionInteger", aktionInt);
+	  cv.put("aktionString", aktionString);
+	  cv.put("aktionTeamHeim", aktionTeamHeim);
+	  cv.put("spielerAktion", spielerString);
+	  cv.put("spielerID", spielerId);	  
+	  cv.put("zeitInteger", zeit);
+	  cv.put("zeitString", zeitString);
+	  cv.put("spielId", spielId);
+	  cv.put("tickerHeimTore", tickerHeimTore);
+	  cv.put("tickerAuswaertsTore", tickerAuswaertsTore);
+	  cv.put("tickerErgebnisString", tickerErgebnisString);
+	  
+	  getWritableDatabase().insert("ticker", "aktionString", cv);
+  }
+  
+  public void insertTickerImportOhneTore(int aktionInt, String aktionString, int aktionTeamHeim, String spielerString, 
+		  Integer spielerId, Integer zeit, Integer spielId) {
 	  ContentValues cv=new ContentValues();
 	  
 	  String zeitString=updateTimer(zeit);
@@ -1032,21 +1144,7 @@ class SQLHelper extends SQLiteOpenHelper {
 		String strSpielHeim=null;
 		String strSpielBezeichnung=null;
 		String strSpielAusw=null;
-		
-		deleteStatSpiel();
-		
-		Cursor c=getSpielById(spielId);
-		c.moveToFirst();
-		
-		int halbzeitlaenge=Integer.parseInt(getSpielHalbzeitlaenge(c))*60;
-		
-		/* Relative Statistiken ermitteln */
-		
-		String[] args={spielId};
-		SQLiteDatabase db=getWritableDatabase();
-		Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
-    	cTicker.moveToFirst();
-    	int ballbesitzHeim=0;
+		int ballbesitzHeim=0;
     	int ballbesitzAusw=0;
     	int zeitBallbesitzHeim=0;
     	int zeitBallbesitzAusw=0;
@@ -1070,6 +1168,21 @@ class SQLHelper extends SQLiteOpenHelper {
     	int zeitUeberzahlHeim=0;
     	int zeitUeberzahlAusw=0;
     	int zeitUeberzahlWechsel=0;
+    	
+		deleteStatSpiel();
+		
+		Cursor c=getSpielById(spielId);
+		c.moveToFirst();
+		
+		int halbzeitlaenge=Integer.parseInt(getSpielHalbzeitlaenge(c))*60;
+		
+		/* Relative Statistiken ermitteln */
+		
+		String[] args={spielId};
+		SQLiteDatabase db=getWritableDatabase();
+		Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
+    	cTicker.moveToFirst();
+
     	Resources res = context.getResources();
     	for (cTicker.moveToFirst(); !cTicker.isAfterLast(); cTicker.moveToNext()) {
     		intTickerAktion=Integer.parseInt(getTickerAktionInt(cTicker));

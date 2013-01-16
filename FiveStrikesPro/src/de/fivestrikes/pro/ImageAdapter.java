@@ -56,7 +56,7 @@ public class ImageAdapter extends BaseAdapter {
         			textView.setText(R.string.uebersichtSchnellesSpiel);
         			break;
         		case 5:
-        			textView.setText(R.string.uebersichtWebseite);
+        			textView.setText(R.string.uebersichtDownload);
         			break;
         	}
         	ImageView imageView = (ImageView) gridView.findViewById(R.id.grid_item_image);
@@ -72,6 +72,6 @@ public class ImageAdapter extends BaseAdapter {
     private Integer[] mThumbIds = {
             R.drawable.mannschaft, R.drawable.spiel,
             R.drawable.statistik, R.drawable.info,
-            R.drawable.schnellesspiel, R.drawable.web,
+            R.drawable.schnellesspiel, R.drawable.download,
     };
 }

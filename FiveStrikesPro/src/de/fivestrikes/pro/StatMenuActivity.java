@@ -1,6 +1,5 @@
 package de.fivestrikes.pro;
 
-//import de.fivestrikes.lite.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +8,11 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import java.io.File;
+import java.io.FileWriter;
+import android.os.Environment;
+import android.database.sqlite.SQLiteDatabase;
+import au.com.bytecode.opencsv.CSVWriter;
 import android.util.Log;
 
 
@@ -19,6 +23,10 @@ public class StatMenuActivity extends Activity {
 	String spielId=null;
 	String strIdTeamHeim=null;
 	String strIdTeamAusw=null;
+	String strHeim=null;
+	String strAusw=null;
+	String strHeimKurz=null;
+	String strAuswKurz=null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -45,10 +53,14 @@ public class StatMenuActivity extends Activity {
 		Cursor c=helper.getSpielById(spielId);
 		c.moveToFirst();
 	    btnSpielstatistik.setText(helper.getTeamHeimKurzBySpielID(c)+"-"+helper.getTeamAuswKurzBySpielID(c));
-	    btnToreHeim.setText(helper.getTeamHeimNameBySpielID(c));
-	    btnToreAusw.setText(helper.getTeamAuswNameBySpielID(c));
-	    btnSpielerHeim.setText(helper.getTeamHeimNameBySpielID(c));
-	    btnSpielerAusw.setText(helper.getTeamAuswNameBySpielID(c));
+	    strHeim=helper.getTeamHeimNameBySpielID(c);
+	    strAusw=helper.getTeamAuswNameBySpielID(c);
+	    strHeimKurz=helper.getTeamHeimKurzBySpielID(c);
+	    strAuswKurz=helper.getTeamAuswKurzBySpielID(c);
+	    btnToreHeim.setText(strHeim);
+	    btnToreAusw.setText(strAusw);
+	    btnSpielerHeim.setText(strHeim);
+	    btnSpielerAusw.setText(strAusw);
 	    strIdTeamHeim=helper.getSpielHeim(c);
 	    strIdTeamAusw=helper.getSpielAusw(c);
 		c.close();
@@ -112,6 +124,85 @@ public class StatMenuActivity extends Activity {
 				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 				newIntent.putExtra(ID_TEAMTORE_EXTRA, strIdTeamAusw);
 				startActivity(newIntent);
+            }
+        });
+        
+        /* Button CSV Export */
+        btnExport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            	File exportDir = new File(Environment.getExternalStorageDirectory(), "");        
+                if (!exportDir.exists()) 
+                {
+                    exportDir.mkdirs();
+                }
+                File file = new File(exportDir, "csvname.csv");
+                try 
+                {
+                    file.createNewFile();  
+                    CSVWriter csvWrite = new CSVWriter(new FileWriter(file), ';', CSVWriter.NO_QUOTE_CHARACTER, "\r\n");
+                    SQLiteDatabase db = helper.getReadableDatabase();
+                    String[] args={spielId};
+                    
+                    Cursor curSpiel = db.rawQuery("SELECT * FROM spiel WHERE _ID=?", args);
+                    curSpiel.moveToFirst();
+                    String[] arrStr = {curSpiel.getString(6),strHeim,strAusw,curSpiel.getString(7),curSpiel.getString(8),strHeimKurz,strAuswKurz,curSpiel.getString(5)};
+                    csvWrite.writeNext(arrStr);
+                    
+                    String strEnde= "Ende Spiel";
+                    String[] arrStrEnde = {strEnde};
+                    csvWrite.writeNext(arrStrEnde);
+                    
+                    Cursor curSpieler = db.rawQuery("SELECT * FROM spieler WHERE teamID=?", new String[] { curSpiel.getString(1) });
+                    while(curSpieler.moveToNext())
+                    {
+                     	String[] heimArrStr = {curSpieler.getString(3),curSpieler.getString(2), curSpieler.getString(4)};
+                         csvWrite.writeNext(heimArrStr);
+                     }
+                    arrStrEnde[0] = "Ende Heimmannschaft";
+                    csvWrite.writeNext(arrStrEnde);
+                    curSpieler = db.rawQuery("SELECT * FROM spieler WHERE teamID=?", new String[] { curSpiel.getString(2) });
+                    while(curSpieler.moveToNext())
+                    {
+                     	String[] auswArrStr = {curSpieler.getString(3),curSpieler.getString(2), curSpieler.getString(4)};
+                         csvWrite.writeNext(auswArrStr);
+                     }
+                    arrStrEnde[0] = "Ende Auswärtsmannschaft";
+                    csvWrite.writeNext(arrStrEnde);
+                    curSpieler.close();
+                    curSpiel.close();
+                             			
+                    Cursor curTicker = db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
+       				int toreHeim=0;
+       				int toreAusw=0;
+       				String strErgebnis=null;
+                    while(curTicker.moveToNext())
+                    {
+       					if(Integer.parseInt(helper.getTickerAktionInt(curTicker))==2){
+       						if(Integer.parseInt(helper.getTickerAktionTeamHeim(curTicker))==1){
+       							toreHeim=toreHeim+1;
+       						}
+       						if(Integer.parseInt(helper.getTickerAktionTeamHeim(curTicker))==0){
+       							toreAusw=toreAusw+1;
+       						}
+       					}
+   						strErgebnis=String.valueOf(toreHeim)+":"+String.valueOf(toreAusw);
+   						helper.updateTickerErgebnis(helper.getTickerId(curTicker), toreHeim, toreAusw, strErgebnis);
+                    	String[] tickArrStr = {curTicker.getString(11),curTicker.getString(6), curTicker.getString(7), 
+                    			curTicker.getString(3), curTicker.getString(2), curTicker.getString(4), 
+                    			curTicker.getString(10), curTicker.getString(14)};
+                        csvWrite.writeNext(tickArrStr);
+                    }
+                    arrStrEnde[0] = "Ende Ticker";
+                    csvWrite.writeNext(arrStrEnde);
+                    csvWrite.close();
+                    curTicker.close();
+                }
+                catch(Exception sqlEx)
+                {
+                	System.out.println("Fehler");
+                	Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+                }
             }
         });
 	}

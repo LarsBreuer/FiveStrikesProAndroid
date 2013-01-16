@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.GridView;
@@ -13,6 +14,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.view.View;
 import android.view.Window;
 import android.net.Uri;
+import android.database.sqlite.SQLiteDatabase;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.BufferedReader;
 
 public class FiveStrikesProActivity extends Activity {
     /** Called when the activity is first created. */
@@ -87,14 +100,71 @@ public class FiveStrikesProActivity extends Activity {
         			case 5:
         				AlertDialog.Builder builderWebside = new AlertDialog.Builder(FiveStrikesProActivity.this);
         				builderWebside
-        				.setTitle(R.string.webMsgboxTitel)
-        				.setMessage(R.string.webMsgboxText)
+        				.setTitle(R.string.importMsgboxTitel)
+        				.setMessage(R.string.importMsgboxText)
         				.setIcon(android.R.drawable.ic_dialog_alert)
         				.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
         					public void onClick(DialogInterface dialog, int which) {			      	
-        				        
-        						Uri uri = Uri.parse( "http://www.fivestrikes.de/" );
-        						startActivity( new Intent( Intent.ACTION_VIEW, uri ) );
+
+        						File dbfile = new File("/sdcard/database_name.db" ); 
+        						SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
+        						System.out.println("Its open? "  + db.isOpen());
+        						helper=new SQLHelper(FiveStrikesProActivity.this);
+        						if(db.isOpen()==true){
+        							helper.deleteAllTeam();
+        							Cursor cTeam= db.rawQuery("SELECT * FROM team", null);
+        							while(cTeam.moveToNext())
+        		                    {
+        								helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
+        		                    }
+        							cTeam.close();
+        							
+        							helper.deleteAllSpieler();
+        							Cursor cSpieler= db.rawQuery("SELECT * FROM spieler", null);
+        							while(cSpieler.moveToNext())
+        		                    {
+        								helper.insertSpielerImport(Integer.parseInt(cSpieler.getString(1)), cSpieler.getString(2), 
+        										cSpieler.getString(3), cSpieler.getString(4), Integer.parseInt(cSpieler.getString(5)));
+        		                    }
+        							cSpieler.close();
+        							
+        							helper.deleteAllSpiel();
+        							Cursor cSpiel= db.rawQuery("SELECT * FROM spiel", null);
+        							while(cSpiel.moveToNext())
+        		                    {
+        								if(cSpiel.getString(7)!=null && cSpiel.getString(8)!=null){
+        									helper.insertSpielImport(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+        										Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+        										Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6), Integer.parseInt(cSpiel.getString(7)), 
+        										Integer.parseInt(cSpiel.getString(8)));
+        								} else {
+        									helper.insertSpielImportOhneTore(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+            										Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+            										Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
+        								}
+        		                    }
+        							cSpiel.close();
+        							
+        							helper.deleteAllTicker();
+        							Cursor cTicker= db.rawQuery("SELECT * FROM ticker", null);
+        							while(cTicker.moveToNext())
+        		                    {
+        								if(cTicker.getString(6)!=null && cTicker.getString(7)!=null && cTicker.getString(8)!=null){
+        									helper.insertTickerImport(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
+        											Integer.parseInt(cTicker.getString(3)), 
+        											cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(6)), 
+        											Integer.parseInt(cTicker.getString(7)), cTicker.getString(8), Integer.parseInt(cTicker.getString(11)), 
+        											Integer.parseInt(cTicker.getString(13)));
+        								} else {
+        									helper.insertTickerImportOhneTore(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
+        											Integer.parseInt(cTicker.getString(3)), 
+        											cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(11)), 
+        											Integer.parseInt(cTicker.getString(13)));
+        								}
+        								
+        		                    }
+        							cTicker.close();
+        						}
         						
         					}
         				})

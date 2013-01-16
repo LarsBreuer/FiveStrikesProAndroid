@@ -16,12 +16,17 @@
     <string name="uebersichtInfo">Info</string>
     <string name="uebersichtSchnellesSpiel">Schnelles Spiel</string>
     <string name="uebersichtWebseite">Webseite</string>
+    <string name="uebersichtDownload">Download</string>
     <string name="infoMsgboxTitel">Handbuch öffnen</string>
 	<string name="infoMsgboxText">Dies öffnet das Handuch zu dieser App im PDF-Format. Internetzugang ist erforderlich.
 	    						  Vorgang fortsetzen?</string>
 	<string name="webMsgboxTitel">Five Strikes öffnen</string>
 	<string name="webMsgboxText">Dies öffnet die Webseite Five Strikes mit mehr Informationen, Neuigkeiten und Information zur 
 	    						 Handball-App Five Strikes. Vorgang fortsetzen?</string>
+	<string name="importMsgboxTitel">Import</string>
+	<string name="importMsgboxText">Durch den Import werden Daten aus der Lite-Version in die Pro-Version importiert. Vorheriger 
+	    							Export aus der Pro-Version erforderlich. ACHTUNG!!! Durch den Import werden alle Daten 
+	    							der Pro-Version gelöscht!!!!! Sollen die Daten wirklich importiert werden.</string>
 	    						  
     <!-- Übersicht ends -->   
 
