@@ -823,6 +823,10 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("zeitInteger", zeit);
 	  cv.put("zeitString", zeitString);
 	  cv.put("spielId", spielId);
+	  cv.put("spielId", spielId);
+	  cv.put("wurfecke", "");
+	  cv.put("wurfposition", "");
+	  
 	  
 	  getWritableDatabase().insert("ticker", "aktionString", cv);
   }

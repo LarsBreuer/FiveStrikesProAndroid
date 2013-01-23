@@ -1,6 +1,8 @@
 package de.fivestrikes.pro;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -136,7 +138,7 @@ public class StatMenuActivity extends Activity {
                 {
                     exportDir.mkdirs();
                 }
-                File file = new File(exportDir, "csvname.csv");
+                File file = new File(exportDir, "Spieldaten.csv");
                 try 
                 {
                     file.createNewFile();  
@@ -178,7 +180,9 @@ public class StatMenuActivity extends Activity {
        				String strErgebnis=null;
                     while(curTicker.moveToNext())
                     {
-       					if(Integer.parseInt(helper.getTickerAktionInt(curTicker))==2){
+       					if(Integer.parseInt(helper.getTickerAktionInt(curTicker))==2 || 
+       							Integer.parseInt(helper.getTickerAktionInt(curTicker))==14 || 
+       							Integer.parseInt(helper.getTickerAktionInt(curTicker))==20){
        						if(Integer.parseInt(helper.getTickerAktionTeamHeim(curTicker))==1){
        							toreHeim=toreHeim+1;
        						}
@@ -188,7 +192,9 @@ public class StatMenuActivity extends Activity {
        					}
    						strErgebnis=String.valueOf(toreHeim)+":"+String.valueOf(toreAusw);
    						helper.updateTickerErgebnis(helper.getTickerId(curTicker), toreHeim, toreAusw, strErgebnis);
-                    	String[] tickArrStr = {curTicker.getString(11),curTicker.getString(6), curTicker.getString(7), 
+   						Integer zeitInt=((Integer.parseInt(curTicker.getString(11)))/1000);
+   						String zeitStr=String.valueOf(zeitInt);
+                    	String[] tickArrStr = {zeitStr,curTicker.getString(6), curTicker.getString(7), 
                     			curTicker.getString(3), curTicker.getString(2), curTicker.getString(4), 
                     			curTicker.getString(10), curTicker.getString(14)};
                         csvWrite.writeNext(tickArrStr);
@@ -200,9 +206,30 @@ public class StatMenuActivity extends Activity {
                 }
                 catch(Exception sqlEx)
                 {
-                	System.out.println("Fehler");
+                	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(StatMenuActivity.this);
+        			alertDialogBuilder
+    	    			.setTitle(R.string.csvFehlerMsgboxTitel)
+    	    			.setMessage(R.string.csvFehlerMsgboxText)
+    	    			.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+    	    				public void onClick(DialogInterface dialog,int id) {
+    	    					
+    	    				}
+    	    			});
+        			AlertDialog alertDialog = alertDialogBuilder.create();
+        			alertDialog.show();
                 	Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
                 }
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(StatMenuActivity.this);
+    			alertDialogBuilder
+	    			.setTitle(R.string.csvFertigMsgboxTitel)
+	    			.setMessage(R.string.csvFertigMsgboxText)
+	    			.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+	    				public void onClick(DialogInterface dialog,int id) {
+	    					
+	    				}
+	    			});
+    			AlertDialog alertDialog = alertDialogBuilder.create();
+    			alertDialog.show();
             }
         });
 	}

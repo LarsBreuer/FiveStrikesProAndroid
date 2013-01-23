@@ -106,77 +106,106 @@ public class FiveStrikesProActivity extends Activity {
         				.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
         					public void onClick(DialogInterface dialog, int which) {			      	
 
-        						File dbfile = new File("/sdcard/database_name.db" ); 
-        						SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
-        						System.out.println("Its open? "  + db.isOpen());
-        						helper=new SQLHelper(FiveStrikesProActivity.this);
-        						if(db.isOpen()==true){
-        							helper.deleteAllTeam();
-        							Cursor cTeam= db.rawQuery("SELECT * FROM team", null);
-        							while(cTeam.moveToNext())
-        		                    {
+        						// File dbfile = new File("/sdcard/database_name.db" ); 
+        						// SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(dbfile, null);
+        						if(new File("/sdcard/database_name.db").exists()){
+        							String dbString = "/sdcard/database_name.db"; 
+            						SQLiteDatabase db = SQLiteDatabase.openDatabase(dbString, null, SQLiteDatabase.OPEN_READONLY);
+            						helper=new SQLHelper(FiveStrikesProActivity.this);
+        							if(db.isOpen()==true){
+        								helper.deleteAllTeam();
+        								helper.deleteAllSpiel();
+        								helper.deleteAllTicker();
+        								helper.deleteAllSpieler();
+        								Cursor cTeam= db.rawQuery("SELECT * FROM team", null);
+        								cTeam.moveToFirst();
         								helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
-        		                    }
-        							cTeam.close();
-        							
-        							helper.deleteAllSpieler();
-        							Cursor cSpieler= db.rawQuery("SELECT * FROM spieler", null);
-        							while(cSpieler.moveToNext())
-        		                    {
-        								helper.insertSpielerImport(Integer.parseInt(cSpieler.getString(1)), cSpieler.getString(2), 
-        										cSpieler.getString(3), cSpieler.getString(4), Integer.parseInt(cSpieler.getString(5)));
-        		                    }
-        							cSpieler.close();
-        							
-        							helper.deleteAllSpiel();
-        							Cursor cSpiel= db.rawQuery("SELECT * FROM spiel", null);
-        							while(cSpiel.moveToNext())
-        		                    {
-        								if(cSpiel.getString(7)!=null && cSpiel.getString(8)!=null){
-        									helper.insertSpielImport(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
-        										Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
-        										Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6), Integer.parseInt(cSpiel.getString(7)), 
-        										Integer.parseInt(cSpiel.getString(8)));
-        								} else {
-        									helper.insertSpielImportOhneTore(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
-            										Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
-            										Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
+        								Cursor lastTeamC=helper.getLastTeamId();
+        								lastTeamC.moveToFirst();
+        								Integer lastId = Integer.parseInt(helper.getTeamId(lastTeamC))-1;
+        								lastTeamC.close();
+        								while(cTeam.moveToNext())
+        								{
+        									helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
         								}
-        		                    }
-        							cSpiel.close();
+        								cTeam.close();
         							
-        							helper.deleteAllTicker();
-        							Cursor cTicker= db.rawQuery("SELECT * FROM ticker", null);
-        							while(cTicker.moveToNext())
-        		                    {
-        								if(cTicker.getString(6)!=null && cTicker.getString(7)!=null && cTicker.getString(8)!=null){
-        									helper.insertTickerImport(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
-        											Integer.parseInt(cTicker.getString(3)), 
-        											cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(6)), 
-        											Integer.parseInt(cTicker.getString(7)), cTicker.getString(8), Integer.parseInt(cTicker.getString(11)), 
-        											Integer.parseInt(cTicker.getString(13)));
-        								} else {
-        									helper.insertTickerImportOhneTore(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
-        											Integer.parseInt(cTicker.getString(3)), 
-        											cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(11)), 
-        											Integer.parseInt(cTicker.getString(13)));
+        								Cursor cSpieler= db.rawQuery("SELECT * FROM spieler", null);
+        								while(cSpieler.moveToNext())
+        								{
+        									helper.insertSpielerImport(Integer.parseInt(cSpieler.getString(1))+lastId, cSpieler.getString(2), 
+        											cSpieler.getString(3), "", Integer.parseInt(cSpieler.getString(5)));
         								}
+        								cSpieler.close();
         								
-        		                    }
-        							cTicker.close();
+        								/* Cursor cSpiel= db.rawQuery("SELECT * FROM spiel", null);
+        								while(cSpiel.moveToNext())
+        		                    	{
+        									if(cSpiel.getString(7)!=null && cSpiel.getString(8)!=null){
+        										helper.insertSpielImport(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+        											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+        											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6), Integer.parseInt(cSpiel.getString(7)), 
+        											Integer.parseInt(cSpiel.getString(8)));
+        									} else {
+        										helper.insertSpielImportOhneTore(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+            											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+            											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
+        									}
+        		                    	}
+        								cSpiel.close();*/
+        							
+        								/* Cursor cTicker= db.rawQuery("SELECT * FROM ticker", null);
+        								while(cTicker.moveToNext())
+        		                    	{
+        									if(cTicker.getString(6)!=null && cTicker.getString(7)!=null && cTicker.getString(8)!=null){
+        										helper.insertTickerImport(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
+        												Integer.parseInt(cTicker.getString(3)), 
+        												cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(6)), 
+        												Integer.parseInt(cTicker.getString(7)), cTicker.getString(8), Integer.parseInt(cTicker.getString(11)), 
+        												Integer.parseInt(cTicker.getString(13)));
+        									} else {
+        										helper.insertTickerImportOhneTore(Integer.parseInt(cTicker.getString(1)), cTicker.getString(2), 
+        												Integer.parseInt(cTicker.getString(3)), 
+        												cTicker.getString(4), Integer.parseInt(cTicker.getString(5)), Integer.parseInt(cTicker.getString(11)), 
+        												Integer.parseInt(cTicker.getString(13)));
+        									}
+        		                    	}
+        								cTicker.close();*/
+        								AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FiveStrikesProActivity.this);
+        								alertDialogBuilder
+        		    	    				.setTitle(R.string.importFertigMsgboxTitel)
+        		    	    				.setMessage(R.string.importFertigMsgboxText)
+        		    	    				.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+        		    	    					public void onClick(DialogInterface dialog,int id) {
+        		    	    					
+        		    	    					}
+        		    	    				});
+        								AlertDialog alertDialog = alertDialogBuilder.create();
+        								alertDialog.show();
+        								}
+        							} else {
+        								AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FiveStrikesProActivity.this);
+        								alertDialogBuilder
+        		    	    				.setTitle(R.string.importFehlMsgboxTitel)
+        		    	    				.setMessage(R.string.importFehlMsgboxText)
+        		    	    				.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+        		    	    					public void onClick(DialogInterface dialog,int id) {
+        		    	    					
+        		    	    					}
+        		    	    				});
+        								AlertDialog alertDialog = alertDialogBuilder.create();
+        								alertDialog.show();
+        							}
         						}
+        					})
+        					.setNegativeButton(R.string.tickerMSGBoxNein, new DialogInterface.OnClickListener() {
+        						public void onClick(DialogInterface dialog, int which) {			      	
         						
-        					}
-        				})
-        				.setNegativeButton(R.string.tickerMSGBoxNein, new DialogInterface.OnClickListener() {
-        					public void onClick(DialogInterface dialog, int which) {			      	
-        						
-        					}
-        				})
+        						}
+        					})
         				.show();
         				break;
-				}
-				
+					}
 			}
 		});
     }

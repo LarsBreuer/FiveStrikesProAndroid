@@ -82,6 +82,11 @@ public class TickerEditActivity extends Activity {
 		if(tickerWurfecke!=null){
 			btnWurfeckeBeschriften();
 			btnWurfposition.setText(R.string.tickerEditWurfpositionWaehlen);
+		} else {
+			tickerWurfecke="";
+		}
+		if(tickerPosition==null){
+			tickerPosition="";
 		}
 	    c.close();
 	    
@@ -329,7 +334,6 @@ public class TickerEditActivity extends Activity {
 	private View.OnClickListener onSave=new View.OnClickListener() {
 		public void onClick(View v) {
 			
-			System.out.println(tickerPosition);
 		    helper.updateTickerEdit(spielId, tickerId, tickerZeitString, (int) tickerZeitLng, tickerAktionString, tickerAktionId, tickerSpielerString, 
 		    						tickerSpielerId, tickerWurfecke, tickerPosition);
 		    /** Hinweis: Brauche ich Long bei tickerZeit? */

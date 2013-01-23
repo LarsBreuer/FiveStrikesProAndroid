@@ -39,6 +39,7 @@ public class TickerSpielerActivity extends ListActivity {
     String torwartAktionString=null;
     String torwartAktionInt=null;
     String aktionTeamHeim=null;
+    String torwartAktionTeamHeim=null;
     String spielerId=null;
     String torwartId=null;
     String spielerString=null;
@@ -172,7 +173,12 @@ public class TickerSpielerActivity extends ListActivity {
 					torwartAktionInt="23";
 					torwartAktionString=getString(R.string.tickerAktionTorwartTGGegentor);
 				}
-				helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(aktionTeamHeim), torwartString, 
+				if(aktionTeamHeim.equals("0")){
+					torwartAktionTeamHeim="1";
+				} else {
+					torwartAktionTeamHeim="0";
+				}
+				helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
 						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit));
 				Cursor lastTickTorwartC=helper.getLastTickerId();
 				lastTickTorwartC.moveToFirst();

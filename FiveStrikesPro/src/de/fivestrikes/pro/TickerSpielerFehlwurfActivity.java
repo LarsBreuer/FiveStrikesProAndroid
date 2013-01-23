@@ -22,6 +22,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
     String wurfecke=null;
     String wurfposition=null;
     String aktionTeamHeim=null;
+    String torwartAktionTeamHeim=null;
     String torwartId=null;
     String aktionInt=null;
     String torwartAktionInt=null;
@@ -610,7 +611,12 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 						torwartAktionInt="22";
 						torwartAktionString=getString(R.string.tickerAktionTorwartTGGehalten);
 					}
-					helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(aktionTeamHeim), torwartString, 
+					if(aktionTeamHeim.equals("0")){
+						torwartAktionTeamHeim="1";
+					} else {
+						torwartAktionTeamHeim="0";
+					}
+					helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
 							Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)+1);
 					Cursor lastTickTorwartC=helper.getLastTickerId();
 					lastTickTorwartC.moveToFirst();

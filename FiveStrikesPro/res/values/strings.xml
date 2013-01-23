@@ -24,9 +24,14 @@
 	<string name="webMsgboxText">Dies öffnet die Webseite Five Strikes mit mehr Informationen, Neuigkeiten und Information zur 
 	    						 Handball-App Five Strikes. Vorgang fortsetzen?</string>
 	<string name="importMsgboxTitel">Import</string>
-	<string name="importMsgboxText">Durch den Import werden Daten aus der Lite-Version in die Pro-Version importiert. Vorheriger 
-	    							Export aus der Pro-Version erforderlich. ACHTUNG!!! Durch den Import werden alle Daten 
-	    							der Pro-Version gelöscht!!!!! Sollen die Daten wirklich importiert werden.</string>
+	<string name="importMsgboxText">Durch den Import werden Daten zu Mannschaften und Spielern aus der Lite-Version in die Pro-Version importiert. Vorheriger 
+	    							Export aus der Pro-Version erforderlich. ACHTUNG !!!!!!! Sämtliche Daten (auch Spiele) aus der Pro-Version werden gelöscht!!!!!!! 
+	    							Sollen die Daten importiert werden?</string>
+	<string name="importFertigMsgboxTitel">Import abgeschlossen</string>
+	<string name="importFertigMsgboxText">Der Import wurde erfolgreich abgeschlossen.</string>	
+	<string name="importFehlMsgboxTitel">Import fehlgeschlagen</string>
+	<string name="importFehlMsgboxText">Der Import der Datenbank ist fehlgeschlagen. Es wurde keine importfähige Datei gefunden. Gehe in der Five Strikes 
+	    								Lite App in der Übersicht auf Export, um eine Datei zu erstellen.</string>					
 	    						  
     <!-- Übersicht ends -->   
 
@@ -48,8 +53,10 @@
 	    								  Überschrift. In die erste Spalte die Rückennummer, in die zweite Spalte den Spielernamen 
 	    								  und in die dritte Spalte die Position: TW für Torwart, LA für Linksaußen, RL für 
 	    								  Rückraum links, RM für Rückraum mitte, RR für Rückraum rechts, RA für Rechtsaußen, 
-	    								  KL für Kreisläufer. Speicher die Datei dann in dem Ordner sdcard/Download/ ab. Gehe dann 
-	    								  auf Spieler importieren um den Import durchzuführen.</string>
+	    								  KL für Kreisläufer. Speicher die Datei dann in dem Ordner sdcard/Download/ unter dem Namen Player.csv ab. 
+	    								  Eine Beispieldatei findest Du auf der Webseite www.fivestrikes.de 
+	    								  im Bereich Download. Gehe dann 
+	    								  in der App auf Spieler importieren um den Import durchzuführen.</string>
 	<string name="teamEditFertigMsgboxTitel">Import</string>
 	<string name="teamEditFertigMsgboxText">Der Import der Spielerdaten wurde erfolgreich durchgeführt.</string>
 	<string name="teamEditFehlerMsgboxTitel">Import</string>
@@ -239,6 +246,11 @@
     <string name="statSpielerGesamtstatistik">Gesamtstatistik</string>
     <string name="statSpielerstatistik">Spielerstatistik</string>
     <string name="statSpielerWurfecke">Wurfecke</string>
+    <string name="csvFehlerMsgboxTitel">Fehler</string>
+	<string name="csvFehlerMsgboxText">Es ist ein Fehler aufgetreten. Der Export der CSV-Datei konnte nicht durchgeführt werden.
+	    Stelle sicher, dass der Ordner sdcard nicht schreibgeschützt ist.</string>	
+	<string name="csvFertigMsgboxTitel">CSV-Export erfolgreich</string>
+	<string name="csvFertigMsgboxText">Der Export der CSV-Datei wurde erfolgreich durchgeführt. Du findest die Datei in dem Ordner sdcard.</string>	
     <!-- Statistik ends -->  
     
 </resources>
