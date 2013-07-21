@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
 import android.os.Environment;
 import android.database.sqlite.SQLiteDatabase;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -142,13 +144,14 @@ public class StatMenuActivity extends Activity {
                 try 
                 {
                     file.createNewFile();  
-                    CSVWriter csvWrite = new CSVWriter(new FileWriter(file), ';', CSVWriter.NO_QUOTE_CHARACTER, "\r\n");
+                    CSVWriter csvWrite = new CSVWriter(new OutputStreamWriter(new FileOutputStream(file), "CP1250"), ';', CSVWriter.NO_QUOTE_CHARACTER, "\r\n"); 
                     SQLiteDatabase db = helper.getReadableDatabase();
                     String[] args={spielId};
                     
                     Cursor curSpiel = db.rawQuery("SELECT * FROM spiel WHERE _ID=?", args);
                     curSpiel.moveToFirst();
-                    String[] arrStr = {curSpiel.getString(6),strHeim,strAusw,curSpiel.getString(7),curSpiel.getString(8),strHeimKurz,strAuswKurz,curSpiel.getString(5)};
+                    int halbzeitlaenge = (Integer.parseInt(curSpiel.getString(5))*60);
+                    String[] arrStr = {curSpiel.getString(6),strHeim,strAusw,curSpiel.getString(7),curSpiel.getString(8),strHeimKurz, strAuswKurz,String.valueOf(halbzeitlaenge)};
                     csvWrite.writeNext(arrStr);
                     
                     String strEnde= "Ende Spiel";

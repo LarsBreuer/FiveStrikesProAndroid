@@ -26,7 +26,7 @@
 	<string name="importMsgboxTitel">Import</string>
 	<string name="importMsgboxText">Durch den Import werden Daten zu Mannschaften und Spielern aus der Lite-Version in die Pro-Version importiert. Vorheriger 
 	    							Export aus der Pro-Version erforderlich. ACHTUNG !!!!!!! Sämtliche Daten (auch Spiele) aus der Pro-Version werden gelöscht!!!!!!! 
-	    							Sollen die Daten importiert werden?</string>
+	    							Sollen die Daten importiert werden? Dies kann einen Moment dauern.</string>
 	<string name="importFertigMsgboxTitel">Import abgeschlossen</string>
 	<string name="importFertigMsgboxText">Der Import wurde erfolgreich abgeschlossen.</string>	
 	<string name="importFehlMsgboxTitel">Import fehlgeschlagen</string>
@@ -145,8 +145,8 @@
 	<string name="tickerAktionTechnischerFehler">Technischer Fehler</string>
 	<string name="tickerAktion7mTor">7m Tor</string>
 	<string name="tickerAktion7mFehlwurf">7m Fehlwurf</string>
-	<string name="tickerAktionTempogegenstossTor">Tempogegenstoss Tor</string>
-	<string name="tickerAktionTempogegenstossFehlwurf">Tempogegenstoss Fehlwurf</string>
+	<string name="tickerAktionTempogegenstossTor">TG Tor</string>
+	<string name="tickerAktionTempogegenstossFehlwurf">TG Fehlwurf</string>
 	<string name="tickerAktionWechsel">Wechsel</string>
 	<string name="tickerAktionEinwechselung">Einwechselung</string>
 	<string name="tickerAktionAuswechselung">Auswechselung</string>
@@ -157,6 +157,7 @@
 	<string name="tickerAktionZweiMalZwei">2x2 Minuten</string>
 	<string name="tickerAktionRoteKarte">Rote Karte</string> 
 	<string name="tickerAktionAuszeit">Auszeit</string> 
+	<string name="tickerAktionZurueck">zurueck</string> 
 	<string name="tickerInfoMsgboxTitel">Info</string>
 	<string name="tickerInfoMsgboxText">Button Mannschaftskürzel =>\nWechsel Ballbesitz.\nButton Spielergebnis =>\nNeue Aktion eingeben.\nUhr =>\nKurzer Klick: Start und Stopp / 2 Sekunden drücken: Uhr stellen.\nTickerfelder =>\nAktion editieren.</string>
 	<string name="tickerAktionWurfecke">Wurfecke</string>
@@ -177,7 +178,7 @@
 	    								Bei der Aktion Ballbesitz sind folgende Änderungen 
 	    								möglich: Einstellung der Spielzeit und löschen.</string>
 	<string name="tickerEditWurfeckeMsgboxTitel">Ändern nicht möglich</string>
-	<string name="tickerEditWurfeckeMsgboxText">Das Ändern der Wurcke ist bei dieser Aktio nicht möglich.</string>
+	<string name="tickerEditWurfeckeMsgboxText">Das Ändern der Wurfeccke ist bei dieser Aktion nicht möglich.</string>
 	<string name="tickerEditWurfpositionWaehlen">Wurfposition wählen</string>
 	<string name="wurfeckeOOLL">Oben links daneben</string>
 	<string name="wurfeckeOOL">Oben links daneben</string>

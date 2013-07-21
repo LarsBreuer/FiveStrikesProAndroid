@@ -228,16 +228,16 @@ public class TickerEditActivity extends Activity {
 				Intent newIntent = new Intent(getApplicationContext(), TickerEditWurfeckeActivity.class);
 				Cursor cTicker=helper.getTickerCursor(tickerId);
 				cTicker.moveToFirst();
-            	if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==1 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==0 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==4 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==5 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==6 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==7 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==8 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==9 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==11 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==24){
+            	if(Integer.parseInt(tickerAktionId)==1 || 
+            			Integer.parseInt(tickerAktionId)==0 || 
+            			Integer.parseInt(tickerAktionId)==4 || 
+            			Integer.parseInt(tickerAktionId)==5 || 
+            			Integer.parseInt(tickerAktionId)==6 || 
+            			Integer.parseInt(tickerAktionId)==7 || 
+            			Integer.parseInt(tickerAktionId)==8 || 
+            			Integer.parseInt(tickerAktionId)==9 || 
+            			Integer.parseInt(tickerAktionId)==11 || 
+            			Integer.parseInt(tickerAktionId)==24){
             		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         	    	alertDialogBuilder
         	    		.setTitle(R.string.tickerEditWurfeckeMsgboxTitel)
@@ -265,16 +265,16 @@ public class TickerEditActivity extends Activity {
 				Intent newIntent = new Intent(getApplicationContext(), TickerEditWurfpositionActivity.class);
 				Cursor cTicker=helper.getTickerCursor(tickerId);
 				cTicker.moveToFirst();
-            	if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==1 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==0 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==4 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==5 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==6 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==7 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==8 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==9 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==11 || 
-            			Integer.parseInt(helper.getTickerAktionInt(cTicker))==24){
+            	if(Integer.parseInt(tickerAktionId)==1 || 
+            			Integer.parseInt(tickerAktionId)==0 || 
+            			Integer.parseInt(tickerAktionId)==4 || 
+            			Integer.parseInt(tickerAktionId)==5 || 
+            			Integer.parseInt(tickerAktionId)==6 || 
+            			Integer.parseInt(tickerAktionId)==7 || 
+            			Integer.parseInt(tickerAktionId)==8 || 
+            			Integer.parseInt(tickerAktionId)==9 || 
+            			Integer.parseInt(tickerAktionId)==11 || 
+            			Integer.parseInt(tickerAktionId)==24){
             		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         	    	alertDialogBuilder
         	    		.setTitle(R.string.tickerEditWurfeckeMsgboxTitel)
@@ -336,10 +336,12 @@ public class TickerEditActivity extends Activity {
 			
 		    helper.updateTickerEdit(spielId, tickerId, tickerZeitString, (int) tickerZeitLng, tickerAktionString, tickerAktionId, tickerSpielerString, 
 		    						tickerSpielerId, tickerWurfecke, tickerPosition);
-		    /** Hinweis: Brauche ich Long bei tickerZeit? */
+		    // TODO: Brauche ich Long bei tickerZeit?
 		    
 		    /* Beschriftung der Ticker ändern, falls Aktion Ticker vor oder nach der Änderung ein Tor war */
-		    if(aktionAnfangID==2 || Integer.parseInt(tickerAktionId)==2){
+		    if(aktionAnfangID==2 || Integer.parseInt(tickerAktionId)==2 || 
+		    		aktionAnfangID==14 || Integer.parseInt(tickerAktionId)==14 || 
+		    		aktionAnfangID==20 || Integer.parseInt(tickerAktionId)==20){
     			String[] args={spielId};
     			SQLiteDatabase db=helper.getWritableDatabase();
     			Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
@@ -348,7 +350,9 @@ public class TickerEditActivity extends Activity {
     	    	int toreAusw=0;
     	    	String strErgebnis=null;
     	    	for (cTicker.moveToFirst(); !cTicker.isAfterLast(); cTicker.moveToNext()) {
-    	    		if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2){
+    	    		if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2 || 
+    	    				Integer.parseInt(helper.getTickerAktionInt(cTicker))==14 || 
+    	    				Integer.parseInt(helper.getTickerAktionInt(cTicker))==20){
     	    			if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==1){
     	    				toreHeim=toreHeim+1;
     	    			}
@@ -362,7 +366,7 @@ public class TickerEditActivity extends Activity {
     	    		}
     	    	}
     	    	cTicker.close();
-    	    	/** Hinweis: Eventuell in eigene Funktion ausgliedern */
+    	    	// TODO: Eventuell in eigene Funktion ausgliedern
 		    }
 		    Intent i=new Intent();
 		    setResult(RESULT_OK, i);
@@ -383,7 +387,9 @@ public class TickerEditActivity extends Activity {
 					helper.deleteTicker(spielId, tickerId);
 					
 				    /* Beschriftung der Ticker ändern, falls Aktion Ticker vor oder nach der Änderung ein Tor war */
-				    if(aktionAnfangID==2 || Integer.parseInt(tickerAktionId)==2){
+				    if(aktionAnfangID==2 || Integer.parseInt(tickerAktionId)==2 ||
+				    		aktionAnfangID==14 || Integer.parseInt(tickerAktionId)==14 || 
+				    		aktionAnfangID==20 || Integer.parseInt(tickerAktionId)==20){
 		    			String[] args={spielId};
 		    			SQLiteDatabase db=helper.getWritableDatabase();
 		    			Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
@@ -392,7 +398,9 @@ public class TickerEditActivity extends Activity {
 		    	    	int toreAusw=0;
 		    	    	String strErgebnis=null;
 		    	    	for (cTicker.moveToFirst(); !cTicker.isAfterLast(); cTicker.moveToNext()) {
-		    	    		if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2){
+		    	    		if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2 || 
+		    	    				Integer.parseInt(helper.getTickerAktionInt(cTicker))==14 || 
+		    	    				Integer.parseInt(helper.getTickerAktionInt(cTicker))==20){
 		    	    			if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==1){
 		    	    				toreHeim=toreHeim+1;
 		    	    			}

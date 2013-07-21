@@ -137,6 +137,10 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM spieler WHERE teamID = ?", new String[] { id }));
   }
   
+  public Cursor getAllSpielerAlle() {
+	  return(getReadableDatabase().rawQuery("SELECT * FROM spieler", null));
+  }
+  
   public Cursor getSpielerById(String id) {
 	  String[] args={id};
 
@@ -195,6 +199,15 @@ class SQLHelper extends SQLiteOpenHelper {
 
 	  getWritableDatabase().update("spieler", cv, "_ID=?", args);
   }
+  
+  public void updateSpielerId(String id, String teamId) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("teamID", teamId);
+
+	  getWritableDatabase().update("spieler", cv, "_ID=?", args);
+  }
 
   public void deleteSpieler(String id, String spielerName, String spielerNummer) {
 	  String[] args={id};
@@ -224,6 +237,10 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(getReadableDatabase()
 			  .rawQuery("SELECT _id, teamHeim, teamAuswaerts, aktuelleHalbzeit, ballbesitz, halbzeitLaenge, spielDatum, toreHeim, toreAuswaerts, zeitAktuell, zeitBisher, " +
 			  		"zeitStart, zeitTicker FROM spiel ORDER BY spielDatum", null));
+  }
+  
+  public Cursor getAllSpielAlle() {
+	  return(getReadableDatabase().rawQuery("SELECT * FROM spiel", null));
   }
   
   public Cursor getSpielById(String id) {
@@ -376,6 +393,24 @@ class SQLHelper extends SQLiteOpenHelper {
 	  String[] args={id};
 	  
 	  cv.put("torwartAuswaerts", spielerId);
+
+	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
+  }
+  
+  public void updateSpielHeimId(String id, String teamId) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("teamHeim", teamId);
+
+	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
+  }
+  
+  public void updateSpielAuswId(String id, String teamId) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("teamAuswaerts", teamId);
 
 	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
   }
@@ -543,6 +578,10 @@ class SQLHelper extends SQLiteOpenHelper {
   public Cursor getAllTicker(String id) {
 	  
 	  return(getReadableDatabase().rawQuery("SELECT * FROM ticker WHERE spielID = ? ORDER BY zeitInteger DESC", new String[] { id }));
+  }
+  
+  public Cursor getAllTickerAlle() {
+	  return(getReadableDatabase().rawQuery("SELECT * FROM ticker", null));
   }
   
   public Cursor getTickerCursor(String tickerId) {
@@ -913,9 +952,13 @@ class SQLHelper extends SQLiteOpenHelper {
 	  /* Aktuelle Spielernamen in Tickermeldungen schreiben */
 	  String[] args={spielId};
 	  SQLiteDatabase db=getWritableDatabase();
-	  Cursor c=db.rawQuery("SELECT * FROM ticker WHERE spielID=?", args);
+	  Cursor c=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
 	  c.moveToFirst();
+	  int toreHeim=0;
+	  int toreAusw=0;
+	  String strErgebnis=null;
 	  for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+		  /* Spielernamen neu einfügen */
 		  if(Integer.parseInt(getTickerSpielerId(c))!=0){
 			  ContentValues cv=new ContentValues();
 			  String[] argse={getTickerId(c)};
@@ -928,6 +971,20 @@ class SQLHelper extends SQLiteOpenHelper {
 			  cv.put("spielerAktion", spieler_name);
 			  getWritableDatabase().update("ticker", cv, "_ID=?", argse);
 		  }
+		  
+		  /* Spielergebnis neu einfügen */
+		  if(Integer.parseInt(getTickerAktionInt(c))==2 || 
+				  Integer.parseInt(getTickerAktionInt(c))==14 || 
+				  Integer.parseInt(getTickerAktionInt(c))==20){
+			  if(Integer.parseInt(getTickerAktionTeamHeim(c))==1){
+				  toreHeim=toreHeim+1;
+			  }
+			  if(Integer.parseInt(getTickerAktionTeamHeim(c))==0){
+				  toreAusw=toreAusw+1;
+			  }
+		  }
+		  strErgebnis=String.valueOf(toreHeim)+":"+String.valueOf(toreAusw);
+		  updateTickerErgebnis(getTickerId(c), toreHeim, toreAusw, strErgebnis);
 	  }
 	  c.close();
   }
@@ -946,6 +1003,24 @@ class SQLHelper extends SQLiteOpenHelper {
 	  String[] args={id};
 	  
 	  cv.put("wurfposition", position);
+
+	  getWritableDatabase().update("ticker", cv, "_ID=?", args);
+  }
+  
+  public void updateTickerSpielId(String id, String spielId) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("spielID", spielId);
+
+	  getWritableDatabase().update("ticker", cv, "_ID=?", args);
+  }
+  
+  public void updateTickerSpielerId(String id, String spielerId) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("spielerID", spielerId);
 
 	  getWritableDatabase().update("ticker", cv, "_ID=?", args);
   }
@@ -1222,7 +1297,7 @@ class SQLHelper extends SQLiteOpenHelper {
     			}
     		}
     		/* Führung / Unentschieden + Tore Überzahl / Unterzahl eintragen */
-    		if(intTickerAktion==2){
+    		if(intTickerAktion==2 || intTickerAktion==14 || intTickerAktion==20){
     			if(intTickerAktionTeam==1){  // Hat das Heimteam das Tor geschossen?
     				torverhaeltnis=torverhaeltnis+1;
     				if(torverhaeltnis==0){	 // Kommt es durch das Tor zum Unentschieden?
@@ -1542,8 +1617,12 @@ class SQLHelper extends SQLiteOpenHelper {
 		for (cSpieler.moveToFirst(); !cSpieler.isAfterLast(); cSpieler.moveToNext()) {
 			spielerId=getSpielerId(cSpieler);
 			if(countStatSpielerId(spielerId, spielId)>0){	// Hat der Spieler im Spiel gespielt?
-				spielerTore=countTickerSpielerAktionen(spielerId, spielId, "2");	// Wie viele Tore hat der Spieler geworfen?
-				spielerFehlwurf=countTickerSpielerAktionen(spielerId, spielId, "3")+spielerTore;	// Wie viele Tore hat der Spieler geworfen?
+				spielerTore=countTickerSpielerAktionen(spielerId, spielId, "2")+
+							countTickerSpielerAktionen(spielerId, spielId, "14")+
+							countTickerSpielerAktionen(spielerId, spielId, "20");	// Wie viele Tore hat der Spieler geworfen?
+				spielerFehlwurf=countTickerSpielerAktionen(spielerId, spielId, "3")+
+								countTickerSpielerAktionen(spielerId, spielId, "15")+
+								countTickerSpielerAktionen(spielerId, spielId, "21")+spielerTore;	// Wie viele Tore hat der Spieler geworfen?
 				if(spielerTore>0 || spielerFehlwurf>0){
 					spielerProzent=spielerTore*100/spielerFehlwurf;
 				} else {

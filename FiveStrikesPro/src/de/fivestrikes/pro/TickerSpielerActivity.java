@@ -197,7 +197,9 @@ public class TickerSpielerActivity extends ListActivity {
    				int toreHeim=0;
    				int toreAusw=0;
    				for (cTicker.moveToFirst(); !cTicker.isAfterLast(); cTicker.moveToNext()) {
-   					if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2){
+   					if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2 || 
+   							Integer.parseInt(helper.getTickerAktionInt(cTicker))==14 || 
+   							Integer.parseInt(helper.getTickerAktionInt(cTicker))==20){
    						if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==1){
    							toreHeim=toreHeim+1;
    						}
@@ -303,7 +305,7 @@ public class TickerSpielerActivity extends ListActivity {
     	    if(zeitZurueck>halbzeitlaenge){
     	    	zeitZurueck=halbzeitlaenge;
     	    }
-    	    helper.insertTicker(10, spielerString+" zurück", Integer.parseInt(aktionTeamHeim), 
+    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
     	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
     	    finish=true;
     	   	finish();
@@ -340,7 +342,7 @@ public class TickerSpielerActivity extends ListActivity {
     	if(Integer.parseInt(aktionInt)== 9){		// Bei Zeitstrafen eintragen, wann Spieler zurück
     	    zeitZurueck=(int)Integer.parseInt(zeit)+2*60000;
     	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
-    	    helper.insertTicker(10, spielerString+" zurück", Integer.parseInt(aktionTeamHeim), 
+    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
     	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
     	    finish=true;
     	   	finish();
@@ -348,7 +350,7 @@ public class TickerSpielerActivity extends ListActivity {
     	if(Integer.parseInt(aktionInt)== 11){		// Bei Zeitstrafen eintragen, wann Spieler zurück
     	    zeitZurueck=(int)Integer.parseInt(zeit)+4*60000;
     	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
-    	    helper.insertTicker(10, spielerString+" zurück", Integer.parseInt(aktionTeamHeim), 
+    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
     	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
     	    finish=true;
     	   	finish();

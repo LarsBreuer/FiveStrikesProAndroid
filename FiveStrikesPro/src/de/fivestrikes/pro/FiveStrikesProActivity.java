@@ -113,48 +113,14 @@ public class FiveStrikesProActivity extends Activity {
             						SQLiteDatabase db = SQLiteDatabase.openDatabase(dbString, null, SQLiteDatabase.OPEN_READONLY);
             						helper=new SQLHelper(FiveStrikesProActivity.this);
         							if(db.isOpen()==true){
+        								/* Alle Datenbanken löschen */
         								helper.deleteAllTeam();
         								helper.deleteAllSpiel();
         								helper.deleteAllTicker();
         								helper.deleteAllSpieler();
-        								Cursor cTeam= db.rawQuery("SELECT * FROM team", null);
-        								cTeam.moveToFirst();
-        								helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
-        								Cursor lastTeamC=helper.getLastTeamId();
-        								lastTeamC.moveToFirst();
-        								Integer lastId = Integer.parseInt(helper.getTeamId(lastTeamC))-1;
-        								lastTeamC.close();
-        								while(cTeam.moveToNext())
-        								{
-        									helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
-        								}
-        								cTeam.close();
-        							
-        								Cursor cSpieler= db.rawQuery("SELECT * FROM spieler", null);
-        								while(cSpieler.moveToNext())
-        								{
-        									helper.insertSpielerImport(Integer.parseInt(cSpieler.getString(1))+lastId, cSpieler.getString(2), 
-        											cSpieler.getString(3), "", Integer.parseInt(cSpieler.getString(5)));
-        								}
-        								cSpieler.close();
         								
-        								/* Cursor cSpiel= db.rawQuery("SELECT * FROM spiel", null);
-        								while(cSpiel.moveToNext())
-        		                    	{
-        									if(cSpiel.getString(7)!=null && cSpiel.getString(8)!=null){
-        										helper.insertSpielImport(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
-        											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
-        											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6), Integer.parseInt(cSpiel.getString(7)), 
-        											Integer.parseInt(cSpiel.getString(8)));
-        									} else {
-        										helper.insertSpielImportOhneTore(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
-            											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
-            											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
-        									}
-        		                    	}
-        								cSpiel.close();*/
-        							
-        								/* Cursor cTicker= db.rawQuery("SELECT * FROM ticker", null);
+        								/* Datenbank Ticker einfügen */
+        								Cursor cTicker= db.rawQuery("SELECT * FROM ticker", null);
         								while(cTicker.moveToNext())
         		                    	{
         									if(cTicker.getString(6)!=null && cTicker.getString(7)!=null && cTicker.getString(8)!=null){
@@ -170,7 +136,106 @@ public class FiveStrikesProActivity extends Activity {
         												Integer.parseInt(cTicker.getString(13)));
         									}
         		                    	}
-        								cTicker.close();*/
+        								cTicker.close();
+        								
+        								/* Datenbank Spiel einfügen */
+        								Cursor cSpiel= db.rawQuery("SELECT * FROM spiel", null);
+        								while(cSpiel.moveToNext())
+        		                    	{
+        									if(cSpiel.getString(7)!=null && cSpiel.getString(8)!=null){
+        										helper.insertSpielImport(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+        											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+        											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6), Integer.parseInt(cSpiel.getString(7)), 
+        											Integer.parseInt(cSpiel.getString(8)));
+        									} else {
+        										helper.insertSpielImportOhneTore(Integer.parseInt(cSpiel.getString(1)), Integer.parseInt(cSpiel.getString(2)), 
+            											Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
+            											Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
+        									}
+        									String spielIdAlt=cSpiel.getString(0);
+        									Cursor lastSpielC=helper.getLastSpielId();
+            								lastSpielC.moveToFirst();
+            								String spielIdNeu = helper.getTeamId(lastSpielC);
+            								lastSpielC.close();
+            								System.out.println("SpielID alt"+ spielIdAlt);
+            								System.out.println("SpielID neu"+ spielIdNeu);
+            								if(!spielIdAlt.equals(spielIdNeu)){
+            									Cursor cTickerAlle=helper.getAllTickerAlle();
+            									while(cTickerAlle.moveToNext())
+                		                    	{
+            										if(cTickerAlle.getString(13).equals(spielIdAlt)){
+            											helper.updateTickerSpielId(cTickerAlle.getString(0), spielIdNeu);
+            										}
+                		                    	}
+            								}
+        		                    	}
+        								cSpiel.close();
+        								
+        								/* Datenbank Spieler einfügen */
+        								Cursor cSpieler= db.rawQuery("SELECT * FROM spieler", null);
+        								while(cSpieler.moveToNext())
+        								{
+        									helper.insertSpielerImport(Integer.parseInt(cSpieler.getString(1)), cSpieler.getString(2), 
+        											cSpieler.getString(3), "", Integer.parseInt(cSpieler.getString(5)));
+            								String spielerIdAlt=cSpieler.getString(0);
+        									Cursor lastSpielerC=helper.getLastSpielerId();
+            								lastSpielerC.moveToFirst();
+            								String spielerIdNeu = helper.getTeamId(lastSpielerC);
+            								lastSpielerC.close();
+            								System.out.println("SpielerID alt"+ spielerIdAlt);
+            								System.out.println("SpielerID neu"+ spielerIdNeu);
+            								if(!spielerIdAlt.equals(spielerIdNeu)){
+            									Cursor cTickerAlle=helper.getAllTickerAlle();
+            									while(cTickerAlle.moveToNext())
+                		                    	{
+            										if(cTickerAlle.getString(5).equals(spielerIdAlt)){
+            											helper.updateTickerSpielerId(cTickerAlle.getString(0), spielerIdNeu);
+            										}
+                		                    	}
+            								}
+        								}
+        								cSpieler.close();
+        								
+        								/* Datenbank Team einfügen */
+        								Cursor cTeam= db.rawQuery("SELECT * FROM team", null);
+        								/* cTeam.moveToFirst();
+        								helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
+        								Cursor lastTeamC=helper.getLastTeamId();
+        								lastTeamC.moveToFirst();
+        								Integer lastId = Integer.parseInt(helper.getTeamId(lastTeamC))-1;
+        								lastTeamC.close(); */
+        								while(cTeam.moveToNext())
+        								{
+        									helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
+            								String teamIdAlt=cTeam.getString(0);
+        									Cursor lastTeamC=helper.getLastTeamId();
+        									lastTeamC.moveToFirst();
+            								String teamIdNeu = helper.getTeamId(lastTeamC);
+            								lastTeamC.close();
+            								System.out.println("SpielerID alt"+ teamIdAlt);
+            								System.out.println("SpielerID neu"+ teamIdNeu);
+            								if(!teamIdAlt.equals(teamIdNeu)){
+            									Cursor cSpielAlle=helper.getAllSpielAlle();
+            									while(cSpielAlle.moveToNext())
+                		                    	{
+            										if(cSpielAlle.getString(1).equals(teamIdAlt)){
+            											helper.updateSpielHeimId(cSpielAlle.getString(0), teamIdNeu);
+            										}
+            										if(cSpielAlle.getString(2).equals(teamIdAlt)){
+            											helper.updateSpielAuswId(cSpielAlle.getString(0), teamIdNeu);
+            										}
+                		                    	}
+            									Cursor cSpielerAlle=helper.getAllSpielerAlle();
+            									while(cSpielerAlle.moveToNext())
+                		                    	{
+            										if(cSpielerAlle.getString(1).equals(teamIdAlt)){
+            											helper.updateSpielerId(cSpielerAlle.getString(0), teamIdNeu);
+            										}
+                		                    	}
+            								}
+        								}
+        								cTeam.close();
+        							
         								AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(FiveStrikesProActivity.this);
         								alertDialogBuilder
         		    	    				.setTitle(R.string.importFertigMsgboxTitel)
