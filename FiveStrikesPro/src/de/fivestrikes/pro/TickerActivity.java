@@ -1,11 +1,13 @@
 package de.fivestrikes.pro;
 
 //import de.fivestrikes.lite.R;
-import android.app.ListActivity;
+//LISTVIEW => import android.app.ListActivity;
 import android.app.AlertDialog;
+import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,15 +17,16 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ImageView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.view.View.OnLongClickListener;
 
 
-public class TickerActivity extends ListActivity {
+public class TickerActivity extends TabActivity {    // LISTVIEW => alt: ListActivtiy
     /** Called when the activity is first created. */
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
@@ -32,7 +35,7 @@ public class TickerActivity extends ListActivity {
 	public final static String ID_TICKER_EXTRA="de.fivestrikes.pro.ticker_ID";
 	private static final int GET_CODE = 0;
 	Cursor model=null;
-	TickerAdapter adapter=null;
+	// LISTVIEW => TickerAdapter adapter=null;
 	SQLHelper helper=null;
 	String spielId=null;
 	String teamId=null;
@@ -53,6 +56,9 @@ public class TickerActivity extends ListActivity {
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_info);
         getWindow().setWindowAnimations(0);
         
+		Resources ressources = getResources(); 
+		TabHost tabHost = getTabHost();
+        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackInfoText);
         customTitleText.setText(R.string.tickerTitel);
         
@@ -60,8 +66,8 @@ public class TickerActivity extends ListActivity {
         helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
-        adapter=new TickerAdapter(model);
-        setListAdapter(adapter);
+        // LISTVIEW => adapter=new TickerAdapter(model);
+        // LISTVIEW => setListAdapter(adapter);
         
         Button backButton=(Button) findViewById(R.id.back_button);
         Button infoButton = (Button) findViewById(R.id.info_button);
@@ -96,6 +102,7 @@ public class TickerActivity extends ListActivity {
             stopped = false;
             ((Button)findViewById(R.id.btnUhr)).setBackgroundResource(R.drawable.buttonuhrgruen);
     	}
+    	
     	/* Button Ballbesitz stellen */
     	switch(Integer.parseInt(helper.getSpielBallbesitz(c))){
 			case 1:
@@ -193,7 +200,7 @@ public class TickerActivity extends ListActivity {
         			btnSpielerAusw.setBackgroundResource(R.drawable.buttonabwehr);
         			String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(c);
         			helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) elapsedTime);
-        			adapter.getCursor().requery();  // ListView aktualisieren
+        			// LISTVIEW => adapter.getCursor().requery();  // ListView aktualisieren
         			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
         		}
         		c.close();
@@ -214,7 +221,7 @@ public class TickerActivity extends ListActivity {
     				btnSpielerAusw.setBackgroundResource(R.drawable.buttonangriff);
     				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(c);
     				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) elapsedTime);
-    				adapter.getCursor().requery();   // ListView aktualisieren
+    				// LISTVIEW => adapter.getCursor().requery();   // ListView aktualisieren
     				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
         		}
         		c.close();
@@ -296,6 +303,36 @@ public class TickerActivity extends ListActivity {
                 return true;
             }
         });
+        
+        // Create tabs
+		// Menu tab
+		Intent intentMenu = new Intent().setClass(this, TabMenuActivity.class);
+		TabSpec tabSpecMenu = tabHost
+		  .newTabSpec("Ticker")
+		  .setIndicator("Menü", ressources.getDrawable(R.drawable.tab_icon_menu))
+		  .setContent(intentMenu);
+ 
+		// Menu tab
+		Intent intentList = new Intent().setClass(this, TabListActivity.class);
+		TabSpec tabSpecList = tabHost
+		  .newTabSpec("Ticker")
+		  .setIndicator("Ticker", ressources.getDrawable(R.drawable.tab_icon_menu))
+		  .setContent(intentList);
+ 
+		// Menu tab
+		Intent intentStatistic = new Intent().setClass(this, TabStatisticActivity.class);
+		TabSpec tabSpecStatistic = tabHost
+		  .newTabSpec("Stat")
+		  .setIndicator("Stat", ressources.getDrawable(R.drawable.tab_icon_menu))
+		  .setContent(intentStatistic);
+ 
+		// add all tabs 
+		tabHost.addTab(tabSpecMenu);
+		tabHost.addTab(tabSpecList);
+		tabHost.addTab(tabSpecStatistic);
+ 
+		//set Windows tab as default (zero based)
+		tabHost.setCurrentTab(0);
     }
 	
 	/**
@@ -457,6 +494,7 @@ public class TickerActivity extends ListActivity {
 	// Stoppuhr Ende
 	//
 	
+	/**
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
@@ -550,4 +588,5 @@ public class TickerActivity extends ListActivity {
 	      }
 	    }
 	}
+	**/
 }
