@@ -59,8 +59,8 @@ public class TickerEditActivity extends Activity {
 	    Button btnWurfecke = (Button) findViewById(R.id.btnEditWurfecke);
 	    Button btnWurfposition = (Button) findViewById(R.id.btnEditWurfposition);
 	    
-	    tickerId=getIntent().getStringExtra(TickerActivity.ID_TICKER_EXTRA);
-	    spielId=getIntent().getStringExtra(TickerActivity.ID_SPIEL_EXTRA);
+	    tickerId=getIntent().getStringExtra(TabListActivity.ID_TICKER_EXTRA);
+	    spielId=getIntent().getStringExtra(TabListActivity.ID_SPIEL_EXTRA);
 	    
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);

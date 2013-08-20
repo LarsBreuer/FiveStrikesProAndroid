@@ -253,5 +253,9 @@
 	<string name="csvFertigMsgboxTitel">CSV-Export erfolgreich</string>
 	<string name="csvFertigMsgboxText">Der Export der CSV-Datei wurde erfolgreich durchgeführt. Du findest die Datei in dem Ordner sdcard.</string>	
     <!-- Statistik ends -->  
-    
+
+	<string name="aktionen">Aktionen</string>
+	<string name="ticker">Ticker</string>
+	<string name="statistik">Statistik</string>
+
 </resources>

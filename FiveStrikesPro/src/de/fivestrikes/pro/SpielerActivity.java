@@ -1,6 +1,5 @@
 package de.fivestrikes.pro;
 
-//import de.fivestrikes.lite.R;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
