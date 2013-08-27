@@ -88,7 +88,7 @@
 		    android:name=".TickerSpielerActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme"> 
+            android:theme="@style/noShadow"> 
         </activity>
         
 		<activity 
@@ -219,6 +219,20 @@
         
 		<activity 
             android:name=".TabStatisticActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait"
+            android:theme="@style/noShadow">          
+        </activity>	
+        
+		<activity 
+            android:name=".TabTickerSpielerHeimActivity"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait"
+            android:theme="@style/noShadow">          
+        </activity>	
+        
+		<activity 
+            android:name=".TabTickerSpielerAuswActivity"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
             android:theme="@style/noShadow">          

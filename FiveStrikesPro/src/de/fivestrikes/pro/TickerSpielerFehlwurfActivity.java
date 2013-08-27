@@ -48,7 +48,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
         radio_ja.setChecked(true);
         
         helper=new SQLHelper(this);
-        tickerId=getIntent().getStringExtra(TickerSpielerActivity.ID_SPIELERID_EXTRA);
+        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_SPIELERID_EXTRA);
         aktionInt=getIntent().getStringExtra(TickerSpielerActivity.ID_AKTIONINT_EXTRA);
         spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_SPIEL_EXTRA);
         aktionTeamHeim=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA);

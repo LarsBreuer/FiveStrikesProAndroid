@@ -6,7 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import java.lang.ref.WeakReference;
+
 
 
 public class AktionenImageAdapter extends BaseAdapter {
@@ -38,7 +47,7 @@ public class AktionenImageAdapter extends BaseAdapter {
         	// get layout from mobile.xml
         	gridView = inflater.inflate(R.layout.aktionen_uebersicht, null);
         	ImageView imageView = (ImageView) gridView.findViewById(R.id.grid_aktion_image);
-            imageView.setImageResource(mThumbIds[position]);        	
+            imageView.setImageResource(mThumbIds[position]);
         } else {
         	gridView = (View) convertView;
         }
@@ -53,4 +62,5 @@ public class AktionenImageAdapter extends BaseAdapter {
             R.drawable.aktion_wechsel, R.drawable.aktion_aufstellung, R.drawable.aktion_gelbekarte, R.drawable.aktion_rotekarte,
             R.drawable.aktion_zweipluszwei, R.drawable.aktion_auszeit_heim, R.drawable.aktion_auszeit_auswaerts
     };
+    
 }

@@ -257,5 +257,7 @@
 	<string name="aktionen">Aktionen</string>
 	<string name="ticker">Ticker</string>
 	<string name="statistik">Statistik</string>
+	
+	<string name="description">Image</string>
 
 </resources>

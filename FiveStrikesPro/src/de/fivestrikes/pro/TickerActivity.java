@@ -17,11 +17,19 @@ import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.LinearLayout;
 import android.view.View.OnLongClickListener;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 
 
 public class TickerActivity extends TabActivity {    
@@ -54,8 +62,6 @@ public class TickerActivity extends TabActivity {
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_info);
         getWindow().setWindowAnimations(0);
         
-		Resources res = getResources(); 
-
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackInfoText);
         customTitleText.setText(R.string.tickerTitel);
         
@@ -63,12 +69,15 @@ public class TickerActivity extends TabActivity {
         helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
-
+        
+        /* Tabs einrichten */
+		Resources res = getResources();
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 	    setupTab(new TextView(this), res.getString(R.string.aktionen));
 	    setupTab(new TextView(this), res.getString(R.string.ticker));
 	    setupTab(new TextView(this), res.getString(R.string.statistik));
-
+	    
+	    /* Button einrichten */
         Button backButton=(Button) findViewById(R.id.back_button);
         Button infoButton = (Button) findViewById(R.id.info_button);
         Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
@@ -76,7 +85,7 @@ public class TickerActivity extends TabActivity {
         Button btnToreHeim=(Button) findViewById(R.id.btn_tore_heim);
         Button btnToreAusw=(Button) findViewById(R.id.btn_tore_auswaerts);
         Button btn_uhr=(Button) findViewById(R.id.btn_uhr);
-
+        
     	/* Tore eingeben */
         btnToreHeim.setText(String.valueOf(helper.countTickerTore(spielId, "1", "9999999")));
         btnToreAusw.setText(String.valueOf(helper.countTickerTore(spielId, "0", "9999999")));

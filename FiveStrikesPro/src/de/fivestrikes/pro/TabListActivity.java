@@ -4,13 +4,20 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.CursorAdapter;
+import android.util.Log;
 
 public class TabListActivity extends ListActivity {
 	
@@ -77,53 +84,101 @@ public class TabListActivity extends ListActivity {
 	    private TextView zeit=null;
 	    private TextView spieler=null;
 	    private TextView icon=null;
+	    private View teamColor=null;
 	    
 	    TickerHolder(View row) {
 	      aktion=(TextView)row.findViewById(R.id.rowTickerAktion);
 	      zeit=(TextView)row.findViewById(R.id.rowTickerZeit);
 	      spieler=(TextView)row.findViewById(R.id.rowTickerSpieler);
 	      icon=(TextView)row.findViewById(R.id.rowTickerIcon);
+	      teamColor=(View)row.findViewById(R.id.rowTickerTeamColor);
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
 	      aktion.setText(helper.getTickerAktion(c));
-	      zeit.setText(helper.getTickerZeit(c));
-	      spieler.setText(helper.getTickerSpieler(c));			
+	      zeit.setText(helper.getTickerZeit(c) + " Min.");
+	      spieler.setText(helper.getTickerSpieler(c));
+	      
+	      if (Integer.parseInt(helper.getTickerAktionTeamHeim(c))==1){
+	    	  teamColor.setBackgroundColor(0xFF404895);   	  
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionTeamHeim(c))==0){
+	    	  teamColor.setBackgroundColor(0xFFCB061D);   	  
+	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==2 || Integer.parseInt(helper.getTickerAktionInt(c))==14 || 
 	    		  Integer.parseInt(helper.getTickerAktionInt(c))==20){
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_none);
-	    	  icon.setText(helper.getTickerErgebnis(c));
-	      }
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==3 || Integer.parseInt(helper.getTickerAktionInt(c))==4 || 
-	    		  Integer.parseInt(helper.getTickerAktionInt(c))==15 || Integer.parseInt(helper.getTickerAktionInt(c))==21) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_spieler);
+	    	  icon.setText(helper.getTickerErgebnis(c));   	  
+	      }   
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==3) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_fehlwurf);
 	    	  icon.setText("");
 	      } 
-			
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==6 || Integer.parseInt(helper.getTickerAktionInt(c))==9) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_karte);
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==4) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_techfehl);
+	    	  icon.setText("");
+	      } 
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==15) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_7m_fehlwurf);
+	    	  icon.setText("");
+	      } 
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==21) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_tg_fehlwurf);
+	    	  icon.setText("");
+	      } 
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==6) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_gelbekarte);
+	    	  icon.setText("");
+	      }	      
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==9) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_rotekarte);
 	    	  icon.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==5 || Integer.parseInt(helper.getTickerAktionInt(c))==11) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_zwei);
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_zwei_raus);
 	    	  icon.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==0 || Integer.parseInt(helper.getTickerAktionInt(c))==1) {
 	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_ballbesitz);
 	    	  icon.setText("");
 	      }
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==8 || Integer.parseInt(helper.getTickerAktionInt(c))==10) {
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==8) {
 	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_auswechsel);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==10) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_zwei_rein);
 	    	  icon.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
 	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
 	    	  icon.setText("");
 	      }
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==16 || Integer.parseInt(helper.getTickerAktionInt(c))==17 || 
-	    		  Integer.parseInt(helper.getTickerAktionInt(c))==18 || Integer.parseInt(helper.getTickerAktionInt(c))==19 || 
-	    		  Integer.parseInt(helper.getTickerAktionInt(c))==22 || Integer.parseInt(helper.getTickerAktionInt(c))==23){
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart);
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==16 || Integer.parseInt(helper.getTickerAktionInt(c))==22) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_gehalten);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==17 || Integer.parseInt(helper.getTickerAktionInt(c))==23) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_tor);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==18) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_7m_gehalten);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==19) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_7m_tor);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
+	    	  icon.setText("");
+	      }
+	      if (Integer.parseInt(helper.getTickerAktionInt(c))==24) {
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_auszeit);
 	    	  icon.setText("");
 	      }
 	    }

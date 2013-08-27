@@ -1,13 +1,13 @@
 package de.fivestrikes.pro;
 
-import android.app.ListActivity;
+import android.app.TabActivity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,22 +17,34 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 
-
-public class TickerSpielerActivity extends ListActivity {
+public class TickerSpielerActivity extends TabActivity {
     /** Called when the activity is first created. */
-	public final static String ID_SPIELERID_EXTRA="de.fivestrikes.pro.spielerId";
-	public final static String ID_TORWARTID_EXTRA="de.fivestrikes.pro.torwartId";
-	public final static String ID_AKTIONINT_EXTRA="de.fivestrikes.pro.torwartId";
+
+	public final static String ID_AKTIONINT_EXTRA="de.fivestrikes.pro.aktionInt_ID";
+	public final static String ID_AKTION_EXTRA="de.fivestrikes.pro.aktion_ID";
+	public final static String ID_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
+	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
+	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
+	public final static String ID_TEAM_HEIM_EXTRA="de.fivestrikes.pro.teamHeim_ID";
+	public final static String ID_TEAM_AUSW_EXTRA="de.fivestrikes.pro.teamAusw_ID";
+	
+	
 	public final static String ID_AUSWECHSEL_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_AUSWECHSEL_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
 	public final static String ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
 	public final static String ID_AUSWECHSEL_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
 	public final static String ID_AUSWECHSEL_TICKER_EXTRA="de.fivestrikes.pro.ticker_ID";
-	Cursor model=null;
-	SpielerAdapter adapter=null;
-	SQLHelper helper=null;
+	
+	
+
 	String mannschaftId=null;
+	String teamHeimId=null;
+	String teamAuswId=null;
+	String teamHeimString=null;
+	String teamAuswString=null;
     String spielId=null;
     String aktionString=null;
     String aktionInt=null;
@@ -49,6 +61,9 @@ public class TickerSpielerActivity extends ListActivity {
     String tickerId=null;
     String torwartTickerId=null;
     Boolean finish=false;
+	View tabview;
+	private TabHost mTabHost;
+	SQLHelper helper=null;
 	 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,19 +76,22 @@ public class TickerSpielerActivity extends ListActivity {
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         
         /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
+         *           Genauso bei anderen Activitys verfahren*/
+        
+        aktionInt=getIntent().getStringExtra(TabMenuActivity.ID_AKTIONINT_EXTRA);
+        aktionString=getIntent().getStringExtra(TabMenuActivity.ID_AKTION_EXTRA);
+        aktionTeamHeim=getIntent().getStringExtra(TabMenuActivity.ID_AKTIONTEAMHEIM_EXTRA); 
+        spielId=getIntent().getStringExtra(TabMenuActivity.ID_SPIEL_EXTRA);
+        zeit=getIntent().getStringExtra(TabMenuActivity.ID_ZEIT_EXTRA);
+        teamHeimId=getIntent().getStringExtra(TabMenuActivity.ID_TEAM_HEIM_EXTRA);
+        teamAuswId=getIntent().getStringExtra(TabMenuActivity.ID_TEAM_AUSW_EXTRA);
         
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(TickerAktionActivity.ID_TEAM_EXTRA);
-        model=helper.getAllSpieler(mannschaftId);
-        startManagingCursor(model);
-        adapter=new SpielerAdapter(model);
-        setListAdapter(adapter);
-        spielId=getIntent().getStringExtra(TickerAktionActivity.ID_SPIEL_EXTRA);
-        aktionString=getIntent().getStringExtra(TickerAktionActivity.ID_AKTION_EXTRA);
-        aktionInt=getIntent().getStringExtra(TickerAktionActivity.ID_AKTIONINT_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerAktionActivity.ID_AKTIONTEAMHEIM_EXTRA);
-        zeit=getIntent().getStringExtra(TickerAktionActivity.ID_ZEIT_EXTRA);
+        Cursor c=helper.getSpielCursor(spielId);
+		c.moveToFirst();
+		teamHeimString = helper.getTeamHeimKurzBySpielID(c);
+		teamAuswString = helper.getTeamAuswKurzBySpielID(c);
+		c.close();
         
         if(aktionInt.equals("7")){
         	 customTitleText.setText(R.string.tickerAktionEinwechselung);
@@ -83,6 +101,11 @@ public class TickerSpielerActivity extends ListActivity {
         }
         
         Button backButton = (Button) findViewById(R.id.back_button);
+        
+        /* Tabs einrichten */
+		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
+	    setupTab(new TextView(this), teamHeimString);
+	    setupTab(new TextView(this), teamAuswString);
         
         /** Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -97,313 +120,47 @@ public class TickerSpielerActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
+
+	}
+	
+	//
+	// Tabs einrichten Start
+	//
+	
+	private void setupTab(final View view, final String tag) {
+	    View tabview = createTabView(mTabHost.getContext(), tag);
+	    Intent tabIntent;
+	    TabSpec setContent;
 	    
-	  helper.close();
-	}
-	
-	@Override
-	public void onListItemClick(ListView list, View view,
-            int position, long id) {
-		
-		/** Spielernamen anhand Spieler ID erhalten und neuen Ticker einfügen */
-		
-		int maxZeit = helper.maxTickerZeit(spielId); 	// Zeit der letzten Spielaktion des Spiel ermitteln
-		spielerId=String.valueOf(id);
-		Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();    
-		spielerString=helper.getSpielerName(c);
-		spielerPosition=helper.getSpielerPosition(c);
-		c.close();
-		helper.insertTicker(Integer.parseInt(aktionInt), aktionString, Integer.parseInt(aktionTeamHeim), spielerString, 
-				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit));
-		Cursor lastTickC=helper.getLastTickerId();
-		lastTickC.moveToFirst();
-		tickerId = helper.getTickerId(lastTickC);
-		lastTickC.close();
-		helper.updateSpielErgebnis(Integer.parseInt(spielId));
-		int zeitZurueck=0;
-		Cursor cSpiel=helper.getSpielCursor(spielId);
-    	cSpiel.moveToFirst();
-	    int halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(cSpiel))*60*2000;
-	    finish=false;
-    	if(Integer.parseInt(aktionInt)==2 || 
-    			Integer.parseInt(aktionInt)==14 || 
-    			Integer.parseInt(aktionInt)==20){		// Wenn Tor geworfen wurde...
-    		
-    		/* Änderung des Ballbesitzes */
-    		if(Integer.parseInt(aktionTeamHeim)==1 && 
-    				Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
-    			String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-    			helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
-    			helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
-    		}
-    		if(Integer.parseInt(aktionTeamHeim)==0 && 
-    				Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
-    			String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-    			helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
-    			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
-    		}
-
-   			/* Überprüfen, ob bei gegnerischer Mannschaft ein Torwart angegeben wurde. */
-   			/* Falls ja, für den Torwart ein Gegentor eintragen. */
-    		if(Integer.parseInt(aktionTeamHeim)==1){
-    			if(helper.getSpielTorwartAuswaerts(cSpiel)!=null){
-    				torwartId=helper.getSpielTorwartAuswaerts(cSpiel);
-    			}
-    		}
-    		if(Integer.parseInt(aktionTeamHeim)==0){
-    			if(helper.getSpielTorwartHeim(cSpiel)!=null){
-    				torwartId=helper.getSpielTorwartHeim(cSpiel);
-    			}
-    		}
-    		if(torwartId!=null){
-				Cursor cTorwart=helper.getSpielerById(torwartId);
-				cTorwart.moveToFirst();    
-				torwartString=helper.getSpielerName(cTorwart);
-				cTorwart.close();
-				if(aktionInt.equals("2")){
-					torwartAktionInt="17";
-					torwartAktionString=getString(R.string.tickerAktionTorwartGegentor);
-				}
-				if(aktionInt.equals("14")){
-					torwartAktionInt="19";
-					torwartAktionString=getString(R.string.tickerAktionTorwart7mGegentor);
-				}
-				if(aktionInt.equals("20")){
-					torwartAktionInt="23";
-					torwartAktionString=getString(R.string.tickerAktionTorwartTGGegentor);
-				}
-				if(aktionTeamHeim.equals("0")){
-					torwartAktionTeamHeim="1";
-				} else {
-					torwartAktionTeamHeim="0";
-				}
-				helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
-						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit));
-				Cursor lastTickTorwartC=helper.getLastTickerId();
-				lastTickTorwartC.moveToFirst();
-				torwartTickerId = helper.getTickerId(lastTickTorwartC);
-				lastTickTorwartC.close();
-    		}
-    		
-    		/* Spielstand in Tickereinträge schreiben falls Tor geworfen wurde */
-   			/* Wenn es Tickereinträge nach dem aktuellen Eintrag gibt, ändere die Torfolge bei den Einträgen */
-			String[] args={spielId};
-			SQLiteDatabase db=helper.getWritableDatabase();
-			Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
-   			cTicker.moveToFirst(); 
-			String strErgebnis=null;
-   			if(Integer.parseInt(zeit)<=maxZeit){	
-   				int toreHeim=0;
-   				int toreAusw=0;
-   				for (cTicker.moveToFirst(); !cTicker.isAfterLast(); cTicker.moveToNext()) {
-   					if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==2 || 
-   							Integer.parseInt(helper.getTickerAktionInt(cTicker))==14 || 
-   							Integer.parseInt(helper.getTickerAktionInt(cTicker))==20){
-   						if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==1){
-   							toreHeim=toreHeim+1;
-   						}
-   						if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==0){
-   							toreAusw=toreAusw+1;
-   						}
-   					}
-   					if(Integer.parseInt(helper.getTickerZeitInt(cTicker))>=Integer.parseInt(zeit)){	// Wenn die Zeit der Schleifeneintrags größer ist als der aktuelle Eintrag, dann hat sich die Torfolge geändert und der Eintrag muss geändert werden
-   						strErgebnis=String.valueOf(toreHeim)+":"+String.valueOf(toreAusw);
-   						helper.updateTickerErgebnis(helper.getTickerId(cTicker), toreHeim, toreAusw, strErgebnis);
-   					}
-   				}
-   			} else {
-   				strErgebnis=String.valueOf(helper.countTickerTore(spielId, "1", "9999999"))+
-   							":"+
-   							String.valueOf(helper.countTickerTore(spielId, "0", "9999999"));
-   				helper.updateTickerErgebnis(tickerId, 
-   											helper.countTickerTore(spielId, "1", "9999999"), 
-   											helper.countTickerTore(spielId, "0", "9999999"), 
-   											strErgebnis);
-   			}
-   			cTicker.close();
-   			
-   			/* Activity starten um Wurfecke und Wurfposition einzugeben */
-    		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerWurfeckeActivity.class);
-    		newIntent.putExtra(ID_SPIELERID_EXTRA, tickerId);
-    		if(torwartTickerId!=null){
-        		newIntent.putExtra(ID_TORWARTID_EXTRA, torwartTickerId);	
-    		}
-    		newIntent.putExtra(ID_AUSWECHSEL_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_AUSWECHSEL_ZEIT_EXTRA, zeit);
-    		startActivity(newIntent);
-    			
-    		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-    		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-    		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-    		 */
-    		finish=true;
-    		Intent i=new Intent();
-    		setResult(RESULT_OK, i);
-   			finish();
-    	}
-    	if(Integer.parseInt(aktionInt)== 3 || 
-    			Integer.parseInt(aktionInt)==15 || 
-    			Integer.parseInt(aktionInt)==21){  	// Wenn Fehlwurf...
-   			/* Activity starten um Wurfecke und Wurfposition einzugeben */
-    		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerFehlwurfActivity.class);
-    		newIntent.putExtra(ID_SPIELERID_EXTRA, tickerId);
-    		newIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
-    		newIntent.putExtra(ID_AUSWECHSEL_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_AUSWECHSEL_ZEIT_EXTRA, zeit);
-    		startActivity(newIntent);
-    			
-    		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-    		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-    		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-    		 */
-    		finish=true;
-    		Intent i=new Intent();
-    		setResult(RESULT_OK, i);
-   			finish();
-    	}
-    	if(Integer.parseInt(aktionInt)== 4){  // Wenn technischer Fehler, dann Abfrage, ob Ballbesitzwechsel...
-   			finish=true;
-    		AlertDialog.Builder tfBuilder = new AlertDialog.Builder(this);
-   			tfBuilder
-   			.setTitle(R.string.tickerMSGBoxFehlerTitel)
-   			.setMessage(R.string.tickerMSGBoxFehlerNachricht)
-   			.setIcon(android.R.drawable.ic_dialog_alert)
-   			.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
-   				public void onClick(DialogInterface dialog, int which) {			      	
-   	    			Cursor cSpiel=helper.getSpielCursor(spielId);
-   	    	    	cSpiel.moveToFirst();
-   	    			if(Integer.parseInt(aktionTeamHeim)==1 && 
-   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
-   	    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
-   	    				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
-   	    			}
-   	    			if(Integer.parseInt(aktionTeamHeim)==0 && 
-   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
-   	    				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
-   	    				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
-   	    			}
-   	    			cSpiel.close();
-   	    			/** Hinweis: Ballbesitzwechsel vielleicht in eigene Funktion schreiben */
-   					finish();
-   				}
-   			})
-   			.setNegativeButton(R.string.tickerMSGBoxNein, new DialogInterface.OnClickListener() {
-   				public void onClick(DialogInterface dialog, int which) {
-   					finish();
-   				}
-   			})
-   			.show();
-    	}
-    	if(Integer.parseInt(aktionInt)== 5){		// Bei Zeitstrafen eintragen, wann Spieler zurück
-    	    zeitZurueck=(int)Integer.parseInt(zeit)+2*60000;
-    	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
-    	    if(zeitZurueck>halbzeitlaenge){
-    	    	zeitZurueck=halbzeitlaenge;
-    	    }
-    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
-    	    finish=true;
-    	   	finish();
-    	}
-    	if(Integer.parseInt(aktionInt)== 7){		// Bei Einwechselung auf den Auswechselungs-Bildschirm springen
-    		/* Torwart eintragen, falls ein Torwart ausgewählt wurde */
-    		if(spielerPosition.equals(getString(R.string.spielerPositionTorwart))){
-    			if(Integer.parseInt(aktionTeamHeim)==1){
-    				helper.updateSpielTorwartHeim(spielId, Integer.parseInt(spielerId));
-    			}
-    			if(Integer.parseInt(aktionTeamHeim)==0){
-    				helper.updateSpielTorwartAuswaerts(spielId, Integer.parseInt(spielerId));
-    			}
-    		}
-
-    		/* Activity Auswechselung aufrufen */
-    		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerAuswechselungActivity.class);
-    		newIntent.putExtra(ID_AUSWECHSEL_TEAM_EXTRA, mannschaftId);
-    		newIntent.putExtra(ID_AUSWECHSEL_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_AUSWECHSEL_ZEIT_EXTRA, zeit);
-    		startActivity(newIntent);
-    			
-    		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-    		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-    		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-    		 */
-    		
-    		finish=true;
-    		Intent i=new Intent();
-    		setResult(RESULT_OK, i);
-    		finish();
-    	}
-    	if(Integer.parseInt(aktionInt)== 9){		// Bei Zeitstrafen eintragen, wann Spieler zurück
-    	    zeitZurueck=(int)Integer.parseInt(zeit)+2*60000;
-    	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
-    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
-    	    finish=true;
-    	   	finish();
-    	}
-    	if(Integer.parseInt(aktionInt)== 11){		// Bei Zeitstrafen eintragen, wann Spieler zurück
-    	    zeitZurueck=(int)Integer.parseInt(zeit)+4*60000;
-    	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
-    	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
-    	    finish=true;
-    	   	finish();
-    	}
-		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-		 */
-		if(finish==false){
-			finish();
-		}
-    	cSpiel.close();
-	}
-	
-	class SpielerAdapter extends CursorAdapter {
-		SpielerAdapter(Cursor c) {
-			super(TickerSpielerActivity.this, c);
-		}
-    
-		@Override
-		public void bindView(View row, Context ctxt,
-				Cursor c) {
-			SpielerHolder holder=(SpielerHolder)row.getTag();
-			      
-			holder.populateFrom(c, helper);
-		}
-
-		@Override
-		public View newView(Context ctxt, Cursor c,
-				ViewGroup parent) {
-			LayoutInflater inflater=getLayoutInflater();
-			View row=inflater.inflate(R.layout.row_player, parent, false);
-			SpielerHolder holder=new SpielerHolder(row);
-
-			row.setTag(holder);
-
-			return(row);
-		}
-	}
-	
-	static class SpielerHolder {
-	    private TextView name=null;
-	    private TextView nummer=null;
-	    
-	    SpielerHolder(View row) {
-	      name=(TextView)row.findViewById(R.id.rowMannschaftName);
-	      nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
+	    if (tag.compareTo(teamHeimString) == 0) {
+	    	tabIntent = new Intent().setClass(this, TabTickerSpielerHeimActivity.class);
+	    	tabIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
+	    	tabIntent.putExtra(ID_AKTION_EXTRA, aktionString);
+	    	tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
+	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
+	    	tabIntent.putExtra(ID_TEAM_HEIM_EXTRA, teamHeimId);
+	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
+			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
+			mTabHost.addTab(setContent);
 	    }
-	    
-	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getSpielerName(c));
-	      nummer.setText(helper.getSpielerNummer(c));
-	  
+
+	    if (tag.compareTo(teamAuswString) == 0) {
+	    	tabIntent = new Intent().setClass(this, TabTickerSpielerAuswActivity.class);
+			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
+			mTabHost.addTab(setContent);
 	    }
+		
 	}
+
+	private static View createTabView(final Context context, final String text) {
+	    View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
+	    TextView tv = (TextView) view.findViewById(R.id.tabsText);
+	    tv.setText(text);
+	    return view;
+	}
+
+	//
+	// Tabs einrichten Ende
+	//
 }
