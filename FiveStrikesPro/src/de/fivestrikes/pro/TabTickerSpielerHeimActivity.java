@@ -69,7 +69,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
         setListAdapter(adapter);
         aktionInt=getIntent().getStringExtra(TickerSpielerActivity.ID_AKTIONINT_EXTRA);
         aktionString=getIntent().getStringExtra(TickerSpielerActivity.ID_AKTION_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerSpielerActivity.ID_AKTIONTEAMHEIM_EXTRA); 
+        aktionTeamHeim="1"; 
         spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_SPIEL_EXTRA);
         zeit=getIntent().getStringExtra(TickerSpielerActivity.ID_ZEIT_EXTRA);
         

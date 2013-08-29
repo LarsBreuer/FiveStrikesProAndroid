@@ -106,7 +106,14 @@ public class TickerSpielerActivity extends TabActivity {
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 	    setupTab(new TextView(this), teamHeimString);
 	    setupTab(new TextView(this), teamAuswString);
-        
+	    /**
+	    if (aktionTeamHeim.equals("1")){
+	    	mTabHost.setCurrentTab(0);
+	    } else {
+	    	mTabHost.setCurrentTab(1);
+	    }
+	    **/
+
         /** Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override

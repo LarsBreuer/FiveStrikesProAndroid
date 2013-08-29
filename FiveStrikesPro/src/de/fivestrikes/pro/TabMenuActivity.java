@@ -33,6 +33,7 @@ public class TabMenuActivity extends Activity {
 	String strAktion=null;
 	String strAktionInt=null;
 	String zeit=null;
+	String strBallbesitz=null;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,9 +43,19 @@ public class TabMenuActivity extends Activity {
         helper=new SQLHelper(this);
         
         teamId=getIntent().getStringExtra(TickerAktionActivity.ID_TEAM_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerAktionActivity.ID_AKTIONTEAMHEIM_EXTRA);
         spielId=getIntent().getStringExtra(TickerAktionActivity.ID_SPIEL_EXTRA);
         zeit=getIntent().getStringExtra(TickerAktionActivity.ID_ZEIT_EXTRA);
+        
+		Cursor c=helper.getSpielById(spielId);
+		c.moveToFirst();    
+		teamHeimId = helper.getSpielHeim(c);
+		teamAuswId = helper.getSpielAusw(c);
+		if (helper.getSpielBallbesitz (c)!=null){
+			strBallbesitz = helper.getSpielBallbesitz (c);
+			} else {
+			strBallbesitz = "1";
+			}
+		c.close();
         
         GridView gridview = (GridView) findViewById(R.id.aktionen_gridview);
         gridview.setAdapter(new AktionenImageAdapter(this));
@@ -57,35 +68,123 @@ public class TabMenuActivity extends Activity {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				
+				Resources res = getResources();
+				
 				switch(position) {
-        			case 0:
-                    	aktion="2";
-                    	startAktion(aktion);
-        				break;
-        			case 1:
+    			case 0:
+strAktionInt="2";
+strAktion=res.getString(R.string.tickerAktionTor);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 1:
+strAktionInt="14";
+strAktion=res.getString(R.string. tickerAktion7mTor);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 2:
+strAktionInt="20";
+strAktion=res.getString(R.string. tickerAktionTempogegenstossTor);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 3:
+strAktionInt="4";
+strAktion=res.getString(R.string. tickerAktionTechnischerFehler);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 4:
+strAktionInt="3";
+strAktion=res.getString(R.string. tickerAktionFehlwurf);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 5:
+strAktionInt="15";
+strAktion=res.getString(R.string. tickerAktion7mFehlwurf);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 6:
+strAktionInt="21";
+strAktion=res.getString(R.string. tickerAktionTempogegenstossFehlwurf);
+aktionTeamHeim=strBallbesitz;
+startAktion();
+    				break;
+    			case 7:
+strAktionInt="5";
+strAktion=res.getString(R.string. tickerAktionZweiMinuten);
+if (strBallbesitz.equals("1")){
+aktionTeamHeim = "0";
+} else {
+aktionTeamHeim = "1";
+}
 
-        				break;
-        			case 2:
+startAktion();
+    				break;
+    			case 8:
+strAktionInt="7";
+strAktion=res.getString(R.string. tickerAktionEinwechselung);
+startAktion();
+    				break;
+    			case 9:
+strAktionInt="12";
+strAktion=res.getString(R.string. tickerAktionStartaufstellung);
+startAktion();
+    				break;
+    			case 10:
+strAktionInt="6";
+strAktion=res.getString(R.string. tickerAktionGelbeKarte);
+if (strBallbesitz.equals("1")){
+aktionTeamHeim = "0";
+} else {
+aktionTeamHeim = "1";
+}
+startAktion();
+    				break;
+    			case 11:
+strAktionInt="9";
+strAktion=res.getString(R.string. tickerAktionRoteKarte);
+if (strBallbesitz.equals("1")){
+aktionTeamHeim = "0";
+} else {
+aktionTeamHeim = "1";
+}
+startAktion();
+    				break;
+    			case 12:
+strAktionInt="11";
+strAktion=res.getString(R.string. tickerAktionZweiMalZwei);
+if (strBallbesitz.equals("1")){
+aktionTeamHeim = "0";
+} else {
+aktionTeamHeim = "1";
+}
+startAktion();
+    				break;
+    			case 13:
+strAktionInt="24";
+strAktion=res.getString(R.string. tickerAktionAuszeit);
+startAktion();
+    				break;
+    			case 14:
+strAktionInt="24";
+strAktion=res.getString(R.string. tickerAktionAuszeit);
+startAktion();
+    				break;
 
-        				break;
+
 				}
 			}
 		});
 		
     }
     
-    public void startAktion(String aktion) {
+    public void startAktion() {
     	
-    	Resources res = getResources();
 		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerActivity.class);
-		Cursor c=helper.getSpielById(spielId);
-		c.moveToFirst();    
-		teamHeimId = helper.getSpielHeim(c);
-		teamAuswId = helper.getSpielAusw(c);
-		c.close();
-		aktionTeamHeim="1";
-		strAktion=res.getString(R.string.tickerAktionTor);
-		strAktionInt="2";
 		newIntent.putExtra(ID_AKTIONINT_EXTRA, strAktionInt);
 		newIntent.putExtra(ID_AKTION_EXTRA, strAktion);
 		newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);

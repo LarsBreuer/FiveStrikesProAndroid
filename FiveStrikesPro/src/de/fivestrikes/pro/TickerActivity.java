@@ -36,7 +36,6 @@ public class TickerActivity extends TabActivity {
     /** Called when the activity is first created. */
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
-	public final static String ID_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
 	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
 	public static Long elapsedTime;
 	private static final int GET_CODE = 0;
@@ -44,7 +43,6 @@ public class TickerActivity extends TabActivity {
 	SQLHelper helper=null;
 	String spielId=null;
 	String teamId=null;
-	String aktionTeamHeim=null;
 	private long zeitStart=0;
 	private Handler mHandler = new Handler();
 	private long startTime;
@@ -76,6 +74,7 @@ public class TickerActivity extends TabActivity {
 	    setupTab(new TextView(this), res.getString(R.string.aktionen));
 	    setupTab(new TextView(this), res.getString(R.string.ticker));
 	    setupTab(new TextView(this), res.getString(R.string.statistik));
+	    mTabHost.setCurrentTab(0);
 	    
 	    /* Button einrichten */
         Button backButton=(Button) findViewById(R.id.back_button);
@@ -156,45 +155,6 @@ public class TickerActivity extends TabActivity {
             }
         });
         
-        /* Button Aktion Spieler Heim */
-        btnToreHeim.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-				Intent newIntent = new Intent(getApplicationContext(), TickerAktionActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				Cursor c=helper.getSpielById(spielId);
-				c.moveToFirst();    
-				teamId = helper.getSpielHeim(c);
-				c.close();
-				newIntent.putExtra(ID_TEAM_EXTRA, teamId);
-				aktionTeamHeim="1";
-				newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-				newIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(elapsedTime));
-				startActivityForResult(newIntent, GET_CODE);
-				/** Hinweis: Alles einheitlich newIntent oder i */
-            }
-        });
-        
-        /* Button Aktion Spieler Auswärts */
-        btnToreAusw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-				Intent newIntent = new Intent(getApplicationContext(), TickerAktionActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				Cursor c=helper.getSpielById(spielId);
-				c.moveToFirst();    
-				teamId = helper.getSpielAusw(c);
-				c.close();
-				newIntent.putExtra(ID_TEAM_EXTRA, teamId);
-				aktionTeamHeim="0";
-				newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-				newIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(elapsedTime));
-				startActivityForResult(newIntent, GET_CODE);
-            }
-        });
- 
         /* Button Team Heim */
         btnTeamHeim.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -492,8 +452,6 @@ public class TickerActivity extends TabActivity {
 			teamId = helper.getSpielHeim(cMenu);
 			cMenu.close();
 			tabIntent.putExtra(ID_TEAM_EXTRA, teamId);
-			aktionTeamHeim="1";
-			tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
 			tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(elapsedTime));
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
