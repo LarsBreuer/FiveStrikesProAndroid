@@ -57,10 +57,10 @@ public class AktionenImageAdapter extends BaseAdapter {
 
     // references to our images
     private Integer[] mThumbIds = {
-            R.drawable.aktion_torwurf, R.drawable.aktion_7m_tor, R.drawable.aktion_tg_tor, R.drawable.aktion_techfehl,
-            R.drawable.aktion_fehlwurf, R.drawable.aktion_7m_fehlwurf, R.drawable.aktion_tg_fehlwurf, R.drawable.aktion_zweimin,
-            R.drawable.aktion_wechsel, R.drawable.aktion_aufstellung, R.drawable.aktion_gelbekarte, R.drawable.aktion_rotekarte,
-            R.drawable.aktion_zweipluszwei, R.drawable.aktion_auszeit_heim, R.drawable.aktion_auszeit_auswaerts
+    		R.drawable.aktion_torwurf, R.drawable.aktion_7m_tor, R.drawable.aktion_tg_tor, R.drawable.aktion_gelbekarte, R.drawable.aktion_fehlwurf, 
+    		R.drawable.aktion_7m_fehlwurf, R.drawable.aktion_tg_fehlwurf, R.drawable.aktion_zweimin, R.drawable.aktion_techfehl, R.drawable.aktion_aufstellung_heim, 
+    		R.drawable.aktion_auszeit_heim, R.drawable.aktion_zweipluszwei, R.drawable.aktion_wechsel, R.drawable.aktion_aufstellung_auswaerts, 
+    		R.drawable.aktion_auszeit_auswaerts, R.drawable.aktion_rotekarte
     };
     
 }

@@ -259,5 +259,7 @@
 	<string name="statistik">Statistik</string>
 	
 	<string name="description">Image</string>
+	<string name="tickerWarnmeldungTorwartEinsatz">Kein Gegnertorwart eingesetzt.</string>
+	
 
 </resources>

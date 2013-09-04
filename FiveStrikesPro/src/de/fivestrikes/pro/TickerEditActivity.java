@@ -106,8 +106,6 @@ public class TickerEditActivity extends Activity {
             	// get prompts.xml view
 				LayoutInflater li = LayoutInflater.from(context);
 				View promptsView = li.inflate(R.layout.ticker_set_watch, null);
-            	
-            	// Toast.makeText(TickerActivity.this, "Yes button pressed", Toast.LENGTH_SHORT).show();
             	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
 				// set prompts.xml to alertdialog builder

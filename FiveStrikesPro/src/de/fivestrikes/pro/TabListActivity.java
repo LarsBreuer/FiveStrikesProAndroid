@@ -107,6 +107,7 @@ public class TabListActivity extends ListActivity {
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==2 || Integer.parseInt(helper.getTickerAktionInt(c))==14 || 
 	    		  Integer.parseInt(helper.getTickerAktionInt(c))==20){
+	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_none);
 	    	  icon.setText(helper.getTickerErgebnis(c));   	  
 	      }   
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==3) {

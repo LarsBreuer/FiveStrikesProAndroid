@@ -37,7 +37,7 @@ public class TickerActivity extends TabActivity {
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
 	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
-	public static Long elapsedTime;
+	public static Long elapsedTime=Long.parseLong("0");
 	private static final int GET_CODE = 0;
 	Cursor model=null;
 	SQLHelper helper=null;
@@ -213,7 +213,6 @@ public class TickerActivity extends TabActivity {
 				LayoutInflater li = LayoutInflater.from(context);
 				View promptsView = li.inflate(R.layout.ticker_set_watch, null);
             	
-            	// Toast.makeText(TickerActivity.this, "Yes button pressed", Toast.LENGTH_SHORT).show();
             	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
 				// set prompts.xml to alertdialog builder
@@ -280,78 +279,73 @@ public class TickerActivity extends TabActivity {
 	* main activity.
 	*/
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		if (requestCode == GET_CODE){
-			if (resultCode == RESULT_OK) {
+	public void onResume() {
+	    super.onResume();  // Always call the superclass method first
 				
-				/* Spielergebnis auf die Button schreiben */
-				Button btnToreHeim=(Button)findViewById(R.id.btn_tore_heim);
-				Button btnToreAusw=(Button)findViewById(R.id.btn_tore_auswaerts);
-				Cursor c=helper.getSpielById(spielId);
-				c.moveToFirst();
-				if(helper.getSpielToreHeim(c)!=null){
-					btnToreHeim.setText(helper.getSpielToreHeim(c));
-				}else{
-					btnToreHeim.setText("0");
-				}
-				if(helper.getSpielToreAusw(c)!=null){
-					btnToreAusw.setText(helper.getSpielToreAusw(c));
-				}else{
-					btnToreAusw.setText("0");
-				}
-		    	/* Button Ballbesitz stellen */
-		        Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
-		        Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
-		    	switch(Integer.parseInt(helper.getSpielBallbesitz(c))){
-		    		case 1:
-		    			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
-		    			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
-		    			break;
-		    		case 0:
-		    			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
-		    			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
-		    			break;
-		    		case 2:
-		    			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
-		    			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
-		    			break;
-		    	}
-				/* Nachprüfen, ob während der Eingabe die Halbzeit oder das Spielende erreicht wurde */
-		    	if(!stopped){	// Überprüfung nur notwenidg, wenn Zeit nicht gestoppt
-					/* Wenn noch 1. Halbzeit und Zeit über der Halbzeitlänge */
-					if(Integer.parseInt(helper.getSpielAktuelleHalbzeit(c))==0 &&
-							((System.currentTimeMillis() - startTime)/60000)>Integer.parseInt(helper.getSpielHalbzeitlaenge(c))){
-						/* Dann Uhrzeit stoppen */
-		        		startTime = System.currentTimeMillis();
-		            	mHandler.removeCallbacks(startTimer);
-		            	stopped = true;
-		            	((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrrot);
-		            	/* Stoppuhr auf Halbzeit stellen */
-						elapsedTime=(long) (Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*60000);
-						((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
-		            	helper.updateSpielTicker(spielId, elapsedTime, zeitStart);
-						/** Hinweis: Stoppen der Uhr in Funktion ausgliedern */
-					}
-					/* Wenn noch 2. Halbzeit und Zeit über Spielende */
-					if(Integer.parseInt(helper.getSpielAktuelleHalbzeit(c))==1 &&
-							((System.currentTimeMillis() - startTime)/60000)>(Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2)){
-						/* Dann Uhrzeit stoppen */
-		        		startTime = System.currentTimeMillis();
-		            	mHandler.removeCallbacks(startTimer);
-		            	stopped = true;
-		            	((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrrot);
-		            	/* Stoppuhr auf Halbzeit stellen */
-						elapsedTime=(long) (Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2*60000);
-						((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
-		            	helper.updateSpielTicker(spielId, elapsedTime, zeitStart);
-						/** Hinweis: Stoppen der Uhr in Funktion ausgliedern */
-					}
-				}
-				c.close();
+	    /* Spielergebnis auf die Button schreiben */
+		Button btnToreHeim=(Button)findViewById(R.id.btn_tore_heim);
+		Button btnToreAusw=(Button)findViewById(R.id.btn_tore_auswaerts);
+		Cursor c=helper.getSpielById(spielId);
+		c.moveToFirst();
+		if(helper.getSpielToreHeim(c)!=null){
+			btnToreHeim.setText(helper.getSpielToreHeim(c));
+		}else{
+			btnToreHeim.setText("0");
+		}
+		if(helper.getSpielToreAusw(c)!=null){
+			btnToreAusw.setText(helper.getSpielToreAusw(c));
+		}else{
+			btnToreAusw.setText("0");
+		}
+		/* Button Ballbesitz stellen */
+		Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
+		Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
+		switch(Integer.parseInt(helper.getSpielBallbesitz(c))){
+			case 1:
+				btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
+		    	btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
+					break;
+			case 0:
+		    	btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
+		    	btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
+		    	break;
+			case 2:
+		    	btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
+		    	btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
+		    	break;
+		}
+		/* Nachprüfen, ob während der Eingabe die Halbzeit oder das Spielende erreicht wurde */
+		if(!stopped){	// Überprüfung nur notwenidg, wenn Zeit nicht gestoppt
+			/* Wenn noch 1. Halbzeit und Zeit über der Halbzeitlänge */
+			if(Integer.parseInt(helper.getSpielAktuelleHalbzeit(c))==0 &&
+					((System.currentTimeMillis() - startTime)/60000)>Integer.parseInt(helper.getSpielHalbzeitlaenge(c))){
+				/* Dann Uhrzeit stoppen */
+		        startTime = System.currentTimeMillis();
+		        mHandler.removeCallbacks(startTimer);
+		        
+		        ((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrrot);
+		        /* Stoppuhr auf Halbzeit stellen */
+				elapsedTime=(long) (Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*60000);
+				((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
+		            
+				/** Hinweis: Stoppen der Uhr in Funktion ausgliedern */
+			}
+			/* Wenn noch 2. Halbzeit und Zeit über Spielende */
+			if(Integer.parseInt(helper.getSpielAktuelleHalbzeit(c))==1 &&
+					((System.currentTimeMillis() - startTime)/60000)>(Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2)){
+				/* Dann Uhrzeit stoppen */
+		        startTime = System.currentTimeMillis();
+		        mHandler.removeCallbacks(startTimer);
+		        stopped = true;
+		        ((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrrot);
+		        /* Stoppuhr auf Halbzeit stellen */
+				elapsedTime=(long) (Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2*60000);
+				((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
+		        helper.updateSpielTicker(spielId, elapsedTime, zeitStart);
+				/** Hinweis: Stoppen der Uhr in Funktion ausgliedern */
 			}
 		}
+		c.close();
 	}
 	
 	@Override

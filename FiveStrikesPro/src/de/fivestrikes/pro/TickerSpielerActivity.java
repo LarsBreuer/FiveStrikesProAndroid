@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.TabHost;
+import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 public class TickerSpielerActivity extends TabActivity {
@@ -69,7 +70,7 @@ public class TickerSpielerActivity extends TabActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-        setContentView(R.layout.spieler);
+        setContentView(R.layout.spieler_tab);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
         
@@ -91,6 +92,7 @@ public class TickerSpielerActivity extends TabActivity {
 		c.moveToFirst();
 		teamHeimString = helper.getTeamHeimKurzBySpielID(c);
 		teamAuswString = helper.getTeamAuswKurzBySpielID(c);
+		aktionTeamHeim = helper.getSpielBallbesitz(c);
 		c.close();
         
         if(aktionInt.equals("7")){
@@ -106,14 +108,12 @@ public class TickerSpielerActivity extends TabActivity {
 		mTabHost = (TabHost) findViewById(android.R.id.tabhost);
 	    setupTab(new TextView(this), teamHeimString);
 	    setupTab(new TextView(this), teamAuswString);
-	    /**
 	    if (aktionTeamHeim.equals("1")){
 	    	mTabHost.setCurrentTab(0);
 	    } else {
 	    	mTabHost.setCurrentTab(1);
 	    }
-	    **/
-
+	    
         /** Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,13 +147,18 @@ public class TickerSpielerActivity extends TabActivity {
 	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
 	    	tabIntent.putExtra(ID_TEAM_HEIM_EXTRA, teamHeimId);
-	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
 	    }
 
 	    if (tag.compareTo(teamAuswString) == 0) {
 	    	tabIntent = new Intent().setClass(this, TabTickerSpielerAuswActivity.class);
+	    	tabIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
+	    	tabIntent.putExtra(ID_AKTION_EXTRA, aktionString);
+	    	tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
+	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
+	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamHeimId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
 	    }

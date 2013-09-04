@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 public class TickerSpielerWurfeckeActivity extends Activity {
@@ -34,8 +35,16 @@ public class TickerSpielerWurfeckeActivity extends Activity {
          *           Genauso bei andren Activitys verfahren*/
         
         helper=new SQLHelper(this);
-        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_SPIELERID_EXTRA);
+        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TICKERID_EXTRA);
         torwartTickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TORWARTID_EXTRA);
+        if(tickerId==null){
+        	Toast.makeText(getApplicationContext(), "Aktion Auswärtsmannschaft", Toast.LENGTH_SHORT).show();
+            tickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TICKERID_EXTRA);
+            torwartTickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TORWARTID_EXTRA);
+        }
+        if(torwartTickerId==null){
+        	Toast.makeText(getApplicationContext(), getString(R.string.tickerWarnmeldungTorwartEinsatz), Toast.LENGTH_SHORT).show();
+        }
         
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button tor_ol_Button = (Button) findViewById(R.id.tor_ol);

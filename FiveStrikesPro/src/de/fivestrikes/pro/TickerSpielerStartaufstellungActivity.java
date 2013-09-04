@@ -54,7 +54,12 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
          *           Genauso bei andren Activitys verfahren*/
         
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(TickerAktionActivity.ID_TEAM_EXTRA);
+        aktionTeamHeim=getIntent().getStringExtra(TabMenuActivity.ID_AKTIONTEAMHEIM_EXTRA);
+        if (aktionTeamHeim.equals("1")){
+        	mannschaftId=getIntent().getStringExtra(TabMenuActivity. ID_TEAM_HEIM_EXTRA);
+        } else {
+        	mannschaftId=getIntent().getStringExtra(TabMenuActivity. ID_TEAM_AUSW_EXTRA);
+        }
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
@@ -62,11 +67,10 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
         model.moveToFirst();
         spielerCount = model.getCount();
         checkBoxState=new boolean[spielerCount];
-        spielId=getIntent().getStringExtra(TickerAktionActivity.ID_SPIEL_EXTRA);
-        aktionString=getIntent().getStringExtra(TickerAktionActivity.ID_AKTION_EXTRA);
-        aktionInt=getIntent().getStringExtra(TickerAktionActivity.ID_AKTIONINT_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerAktionActivity.ID_AKTIONTEAMHEIM_EXTRA);
-        zeit=getIntent().getStringExtra(TickerAktionActivity.ID_ZEIT_EXTRA);
+        spielId=getIntent().getStringExtra(TabMenuActivity .ID_SPIEL_EXTRA);
+        aktionString=getIntent().getStringExtra(TabMenuActivity .ID_AKTION_EXTRA);
+        aktionInt=getIntent().getStringExtra(TabMenuActivity .ID_AKTIONINT_EXTRA);
+        zeit=getIntent().getStringExtra(TabMenuActivity .ID_ZEIT_EXTRA);
 		Cursor cSpiel=helper.getSpielCursor(spielId);
     	cSpiel.moveToFirst();
 	    halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(cSpiel))*60*1000;

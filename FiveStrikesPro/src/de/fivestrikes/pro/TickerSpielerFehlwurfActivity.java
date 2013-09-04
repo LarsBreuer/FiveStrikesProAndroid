@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 
 public class TickerSpielerFehlwurfActivity extends Activity {
@@ -48,11 +49,34 @@ public class TickerSpielerFehlwurfActivity extends Activity {
         radio_ja.setChecked(true);
         
         helper=new SQLHelper(this);
-        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_SPIELERID_EXTRA);
-        aktionInt=getIntent().getStringExtra(TickerSpielerActivity.ID_AKTIONINT_EXTRA);
-        spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_SPIEL_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA);
-        zeit=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_ZEIT_EXTRA);
+        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TICKERID_EXTRA);
+        aktionInt=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_AKTIONINT_EXTRA);
+        spielId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_SPIEL_EXTRA);
+        aktionTeamHeim=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_AKTIONTEAMHEIM_EXTRA);
+        zeit=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_ZEIT_EXTRA);
+        if(tickerId==null){
+        	tickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TICKERID_EXTRA);
+            aktionInt=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_AKTIONINT_EXTRA);
+            spielId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_SPIEL_EXTRA);
+            aktionTeamHeim=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_AKTIONTEAMHEIM_EXTRA);
+            zeit=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_ZEIT_EXTRA);
+        }
+		Cursor c=helper.getSpielCursor(spielId);
+    	c.moveToFirst();
+		if(Integer.parseInt(aktionTeamHeim)==1){
+			if(helper.getSpielTorwartAuswaerts(c)!=null){
+				torwartId=helper.getSpielTorwartAuswaerts(c);
+			}
+		}
+		if(Integer.parseInt(aktionTeamHeim)==0){
+			if(helper.getSpielTorwartHeim(c)!=null){
+				torwartId=helper.getSpielTorwartHeim(c);
+			}
+		}
+		c.close();
+        if(torwartTickerId==null){
+        	Toast.makeText(getApplicationContext(), getString(R.string.tickerWarnmeldungTorwartEinsatz), Toast.LENGTH_SHORT).show();
+        }
         
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button fehl_ooll_Button = (Button) findViewById(R.id.fehl_ooll);
@@ -581,19 +605,6 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 			if(wurfecke.equals("OL") || wurfecke.equals("OM") || wurfecke.equals("OR") 
 					|| wurfecke.equals("ML") || wurfecke.equals("MM") || wurfecke.equals("MR")
 					|| wurfecke.equals("UL") || wurfecke.equals("UM") || wurfecke.equals("UR")){
-				Cursor c=helper.getSpielCursor(spielId);
-		    	c.moveToFirst();
-	    		if(Integer.parseInt(aktionTeamHeim)==1){
-	    			if(helper.getSpielTorwartAuswaerts(c)!=null){
-	    				torwartId=helper.getSpielTorwartAuswaerts(c);
-	    			}
-	    		}
-	    		if(Integer.parseInt(aktionTeamHeim)==0){
-	    			if(helper.getSpielTorwartHeim(c)!=null){
-	    				torwartId=helper.getSpielTorwartHeim(c);
-	    			}
-	    		}
-	    		c.close();
 	    		if(torwartId!=null){
 					Cursor cTorwart=helper.getSpielerById(torwartId);
 					cTorwart.moveToFirst();    

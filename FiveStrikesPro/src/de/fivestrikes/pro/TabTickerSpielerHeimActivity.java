@@ -16,6 +16,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class TabTickerSpielerHeimActivity extends ListActivity {
 	
@@ -23,6 +24,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
 	public final static String ID_AKTION_EXTRA="de.fivestrikes.pro.aktion_ID";
 	public final static String ID_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
 	public final static String ID_SPIELERID_EXTRA="de.fivestrikes.pro.spielerId";
+	public final static String ID_TICKERID_EXTRA="de.fivestrikes.pro.tickerId";
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
 	public final static String ID_TEAM_HEIM_EXTRA="de.fivestrikes.pro.teamHeim_ID";
@@ -62,7 +64,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
         setContentView(R.layout.tab_spieler_heim);
         
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(TabMenuActivity.ID_TEAM_HEIM_EXTRA);
+        mannschaftId=getIntent().getStringExtra(TickerSpielerActivity.ID_TEAM_HEIM_EXTRA);
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
@@ -165,8 +167,8 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
 				lastTickTorwartC.moveToFirst();
 				torwartTickerId = helper.getTickerId(lastTickTorwartC);
 				lastTickTorwartC.close();
-    		}
-    		
+    		} 
+
     		/* Spielstand in Tickereinträge schreiben falls Tor geworfen wurde */
    			/* Wenn es Tickereinträge nach dem aktuellen Eintrag gibt, ändere die Torfolge bei den Einträgen */
 			String[] args={spielId};
@@ -206,13 +208,10 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
    			
    			/* Activity starten um Wurfecke und Wurfposition einzugeben */
     		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerWurfeckeActivity.class);
-    		newIntent.putExtra(ID_SPIELERID_EXTRA, tickerId);
+    		newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
     		if(torwartTickerId!=null){
         		newIntent.putExtra(ID_TORWARTID_EXTRA, torwartTickerId);	
     		}
-    		newIntent.putExtra(ID_AUSWECHSEL_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_AUSWECHSEL_ZEIT_EXTRA, zeit);
     		startActivity(newIntent);
     			
     		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
@@ -229,11 +228,11 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     			Integer.parseInt(aktionInt)==21){  	// Wenn Fehlwurf...
    			/* Activity starten um Wurfecke und Wurfposition einzugeben */
     		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerFehlwurfActivity.class);
-    		newIntent.putExtra(ID_SPIELERID_EXTRA, tickerId);
+    		newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
     		newIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
-    		newIntent.putExtra(ID_AUSWECHSEL_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_AUSWECHSEL_ZEIT_EXTRA, zeit);
+    		newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+    		newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
+    		newIntent.putExtra(ID_ZEIT_EXTRA, zeit);
     		startActivity(newIntent);
     			
     		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
