@@ -109,7 +109,7 @@ public class StatToreActivity extends ListActivity {
 			TextView tore=(TextView)row.findViewById(R.id.torTore);
 			TextView chancen=(TextView)row.findViewById(R.id.torChance);
 			TextView quote=(TextView)row.findViewById(R.id.torQuote);
-			if(helper.getStatSpielBezeichnung(c).equals("Name")){
+			if(helper.getStatSpielBezeichnung(c).equals("Name")){  // Hinweis: statt Name Dictionary verwenden
 				row.setBackgroundResource(R.drawable.tablecell44blau);
 				bezeichnung.setTextColor(Color.WHITE);
 				tore.setTextColor(Color.WHITE);

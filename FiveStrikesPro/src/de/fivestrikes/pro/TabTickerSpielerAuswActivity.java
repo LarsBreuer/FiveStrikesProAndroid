@@ -206,50 +206,58 @@ public class TabTickerSpielerAuswActivity extends ListActivity {
    			}
    			cTicker.close();
    			
-   			/* Activity starten um Wurfecke und Wurfposition einzugeben */
-    		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerWurfeckeActivity.class);
-    		newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
-    		if(torwartTickerId!=null){
-        		newIntent.putExtra(ID_TORWARTID_EXTRA, torwartTickerId);	
-    		}
-    		startActivity(newIntent);
+   			if(helper.getSpielSpielerWurfecke(cSpiel)!=null){
+   				if(helper.getSpielSpielerWurfecke(cSpiel).equals("1")){
+   					/* Activity starten um Wurfecke und Wurfposition einzugeben */
+   					Intent newIntent = new Intent(getApplicationContext(), TickerSpielerWurfeckeActivity.class);
+   					newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
+   					if(torwartTickerId!=null){
+   						newIntent.putExtra(ID_TORWARTID_EXTRA, torwartTickerId);	
+   					}
+   					startActivity(newIntent);
     			
-    		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-    		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-    		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-    		 */
-    		finish=true;
-    		Intent i=new Intent();
-    		setResult(RESULT_OK, i);
-   			finish();
+   					/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
+   					 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
+   					 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
+   					 */
+   					finish=true;
+   					Intent i=new Intent();
+   					setResult(RESULT_OK, i);
+   					finish();
+   				}
+   			}
     	}
     	if(Integer.parseInt(aktionInt)== 3 || 
     			Integer.parseInt(aktionInt)==15 || 
     			Integer.parseInt(aktionInt)==21){  	// Wenn Fehlwurf...
-   			/* Activity starten um Wurfecke und Wurfposition einzugeben */
-    		Intent newIntent = new Intent(getApplicationContext(), TickerSpielerFehlwurfActivity.class);
-    		newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
-    		newIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
-    		newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-    		newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-    		newIntent.putExtra(ID_ZEIT_EXTRA, zeit);
-    		startActivity(newIntent);
+    		if(helper.getSpielSpielerWurfecke(cSpiel)!=null){
+   				if(helper.getSpielSpielerWurfecke(cSpiel).equals("1")){
+   					/* Activity starten um Wurfecke und Wurfposition einzugeben */
+   					Intent newIntent = new Intent(getApplicationContext(), TickerSpielerFehlwurfActivity.class);
+   					newIntent.putExtra(ID_TICKERID_EXTRA, tickerId);
+   					newIntent.putExtra(ID_AKTIONINT_EXTRA, aktionInt);
+   					newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+   					newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
+   					newIntent.putExtra(ID_ZEIT_EXTRA, zeit);
+   					startActivity(newIntent);
     			
-    		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
-    		 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
-    		 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
-    		 */
-    		finish=true;
-    		Intent i=new Intent();
-    		setResult(RESULT_OK, i);
-   			finish();
+   					/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).
+   					 *  Dies geschieht auch bei dem Back-Button. Einrichten, dass man bei der Auswahl zurück zum Ticker kommt und 
+   					 *  bei dem Back-Button nur zurück zur TickerSpielerActivity.  
+   					 */
+   					finish=true;
+   					Intent i=new Intent();
+   					setResult(RESULT_OK, i);
+   					finish();
+   				}
+    		}
     	}
     	if(Integer.parseInt(aktionInt)== 4){  // Wenn technischer Fehler, dann Abfrage, ob Ballbesitzwechsel...
    			finish=true;
     		AlertDialog.Builder tfBuilder = new AlertDialog.Builder(this);
    			tfBuilder
-   			.setTitle(R.string.tickerMSGBoxFehlerTitel)
-   			.setMessage(R.string.tickerMSGBoxFehlerNachricht)
+   			.setTitle(R.string.tickerMSGBoxAktionTitel)
+   			.setMessage(R.string.tickerMSGBoxAktionNachricht)
    			.setIcon(android.R.drawable.ic_dialog_alert)
    			.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
    				public void onClick(DialogInterface dialog, int which) {			      	

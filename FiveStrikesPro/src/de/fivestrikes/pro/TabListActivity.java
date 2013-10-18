@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.ImageView;
 import android.widget.CursorAdapter;
+import android.widget.Toast;
 import android.util.Log;
 
 public class TabListActivity extends ListActivity {
@@ -42,6 +43,22 @@ public class TabListActivity extends ListActivity {
         setListAdapter(adapter);
     }
     
+    @Override
+	public void onResume() {
+    	super.onResume();  // Always call the superclass method first
+    	
+    	refreshContent();
+    }
+    
+    public void refreshContent() {
+    	helper.close();
+    	helper=new SQLHelper(this);
+        model=helper.getAllTicker(spielId);
+        startManagingCursor(model);
+        adapter=new TickerAdapter(model);
+        setListAdapter(adapter);        
+    }
+    
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
@@ -51,6 +68,12 @@ public class TabListActivity extends ListActivity {
 		i.putExtra(ID_SPIEL_EXTRA, spielId);
 		startActivityForResult(i, GET_CODE);
 		
+	}
+	
+	@Override
+	public void onDestroy() {
+	  super.onDestroy();	  
+	  helper.close();
 	}
 	
 	class TickerAdapter extends CursorAdapter {
@@ -97,8 +120,12 @@ public class TabListActivity extends ListActivity {
 	    void populateFrom(Cursor c, SQLHelper helper) {
 	      aktion.setText(helper.getTickerAktion(c));
 	      zeit.setText(helper.getTickerZeit(c) + " Min.");
-	      spieler.setText(helper.getTickerSpieler(c));
-	      
+	      //if(!(helper.getTickerAktionInt(c)).equals("0") && !(helper.getTickerAktionInt(c)).equals("1") && !(helper.getTickerAktionInt(c)).equals("24")){
+	      if(!helper.getTickerSpielerId(c).equals("0") ){
+	    	  spieler.setText(helper.getSpielerNummerById(helper.getTickerSpielerId(c)) + " - " + helper.getTickerSpieler(c));
+	      } else {
+			  spieler.setText("");
+		  }
 	      if (Integer.parseInt(helper.getTickerAktionTeamHeim(c))==1){
 	    	  teamColor.setBackgroundColor(0xFF404895);   	  
 	      }

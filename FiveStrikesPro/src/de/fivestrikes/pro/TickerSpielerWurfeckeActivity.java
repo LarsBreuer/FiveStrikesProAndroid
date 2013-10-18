@@ -38,14 +38,13 @@ public class TickerSpielerWurfeckeActivity extends Activity {
         tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TICKERID_EXTRA);
         torwartTickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TORWARTID_EXTRA);
         if(tickerId==null){
-        	Toast.makeText(getApplicationContext(), "Aktion Auswärtsmannschaft", Toast.LENGTH_SHORT).show();
             tickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TICKERID_EXTRA);
             torwartTickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TORWARTID_EXTRA);
         }
         if(torwartTickerId==null){
         	Toast.makeText(getApplicationContext(), getString(R.string.tickerWarnmeldungTorwartEinsatz), Toast.LENGTH_SHORT).show();
         }
-        
+		
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button tor_ol_Button = (Button) findViewById(R.id.tor_ol);
         final Button tor_om_Button = (Button) findViewById(R.id.tor_om);
@@ -84,7 +83,17 @@ public class TickerSpielerWurfeckeActivity extends Activity {
             	finish();
             }
         });
-
+		
+		/** Bei Siebenmeter, den Siebenmeterpunkt einrichten **/
+		Cursor c=helper.getTickerCursor(tickerId);
+		c.moveToFirst();
+		if(Integer.parseInt(helper.getTickerAktionInt(c))==14){
+			wurfposition="3_3";
+			wurf_button_leeren();
+			feld_3_3_Button.setText("X");
+		}
+		c.close();
+		
         /** Button Wurfecke*/
         tor_ol_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -349,6 +358,7 @@ public class TickerSpielerWurfeckeActivity extends Activity {
             	uebertragen();
             }
         });
+		
     }
 	
 	@Override
@@ -424,7 +434,6 @@ public class TickerSpielerWurfeckeActivity extends Activity {
         feld_4_4_Button.setText("");
         feld_5_4_Button.setText("");
         
-
 	}
 	
 	public void uebertragen() {

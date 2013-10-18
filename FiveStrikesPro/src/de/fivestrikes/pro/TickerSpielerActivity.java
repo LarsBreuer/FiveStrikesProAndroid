@@ -127,7 +127,7 @@ public class TickerSpielerActivity extends TabActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
-
+	  helper.close();
 	}
 	
 	//
@@ -158,7 +158,7 @@ public class TickerSpielerActivity extends TabActivity {
 	    	tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
 	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
-	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamHeimId);
+	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
 	    }

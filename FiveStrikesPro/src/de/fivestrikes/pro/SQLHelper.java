@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import java.util.Calendar;
 import java.util.Date;
+import android.util.Log;
+import android.widget.Toast;
+
 import java.text.SimpleDateFormat;
 
 class SQLHelper extends SQLiteOpenHelper {
   private static final String DATABASE_NAME="fivestrikespro.db";
-  private static final int SCHEMA_VERSION=1;
+  private static final int SCHEMA_VERSION=2;
   private String minutes,seconds;
   private long secs,mins;
   
@@ -39,8 +42,14 @@ class SQLHelper extends SQLiteOpenHelper {
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    // no-op, since will not be called until 2nd schema
-    // version exists
+	  if (newVersion > oldVersion) {
+	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerEingabe INTEGER DEFAULT 0");
+	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerWurfecke INTEGER DEFAULT 0");
+	        db.execSQL("ALTER TABLE spiel ADD COLUMN notiz TEXT");
+	        db.execSQL("ALTER TABLE ticker ADD COLUMN realzeit STRING");
+	        db.execSQL("CREATE TABLE statTickerTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, tickerTorName STRING, " +
+	        		"tickerTorTeam STRING, tickerTorTore STRING, tickerTorFehl STRING, tickerTorProzent STRING);");
+	    }
   }
   
   // Start Mannschaft
@@ -68,6 +77,14 @@ class SQLHelper extends SQLiteOpenHelper {
 	  
 	  return(getReadableDatabase()
 			  .rawQuery("SELECT * FROM team WHERE _ID=?", args));
+  }
+  
+  public String getTeamNameById(String teamId) {
+	  
+	  Cursor newC=getTeamById(teamId);
+	  newC.moveToFirst();
+	  return(getTeamName(newC));
+	  
   }
   
   public void deleteAllTeam() {
@@ -160,6 +177,20 @@ class SQLHelper extends SQLiteOpenHelper {
 		
   }
   
+  public String getSpielerNummerById(String spielerId) {
+	  
+	  String spielerNummer=null;
+	  Cursor newC=getSpielerById(spielerId);
+	  newC.moveToFirst();
+	  if(getSpielerNummer(newC)!=null){
+		  spielerNummer=getSpielerNummer(newC);
+	  } else {
+		  spielerNummer="";
+	  }
+	  return(spielerNummer);
+	  
+  }
+  
   public void insertSpieler(String spielerName, String spielerNummer, String teamID, String spielerPosition) {
 	  ContentValues cv=new ContentValues();
 	  ContentValues cvs=new ContentValues();
@@ -219,12 +250,22 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(c.getString(0));
   }
   
+  public String getSpielerTeamId(Cursor c) {
+	  return(c.getString(1));
+  }
+  
   public String getSpielerName(Cursor c) {
 	  return(c.getString(2));
   }
 	  
   public String getSpielerNummer(Cursor c) {
-	  return(c.getString(3));
+	  String strSpielerNummer=null;
+	  if(c.getString(3)!=null){
+		  strSpielerNummer=c.getString(3);
+	  } else {
+		  strSpielerNummer="";
+	  }
+	  return(strSpielerNummer);
   }
   
   public String getSpielerPosition(Cursor c) {
@@ -292,6 +333,8 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("teamAuswaerts", teamAuswaerts);
 	  cv.put("aktuelleHalbzeit", 0);
 	  cv.put("ballbesitz", 2);
+	  cv.put("spielerEingabe", 1);
+	  cv.put("spielerWurfecke", 1);
 	  
 	  getWritableDatabase().insert("spiel", "spielDatum", cv);
   }
@@ -411,6 +454,24 @@ class SQLHelper extends SQLiteOpenHelper {
 	  String[] args={id};
 	  
 	  cv.put("teamAuswaerts", teamId);
+
+	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
+  }
+  
+  public void updateSpielSpielerEingeben(String id, Integer wert) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("spielerEingabe", wert);
+
+	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
+  }
+  
+  public void updateSpielSpielerWurfecke(String id, Integer wert) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("spielerWurfecke", wert);
 
 	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
   }
@@ -547,6 +608,18 @@ class SQLHelper extends SQLiteOpenHelper {
   
   public String getSpielTorwartAuswaerts(Cursor c) {
 	  return(c.getString(14));
+  }
+  
+  public String getSpielSpielerEingabe(Cursor c) {
+	  return(c.getString(15));
+  }
+
+  public String getSpielSpielerWurfecke(Cursor c) {
+	  return(c.getString(16));
+  }
+  
+  public String getSpielNotiz(Cursor c) {
+	  return(c.getString(17));
   }
   
   public String getTeamHeimNameBySpielID(Cursor c) {
@@ -865,8 +938,7 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("spielId", spielId);
 	  cv.put("wurfecke", "");
 	  cv.put("wurfposition", "");
-	  
-	  
+
 	  getWritableDatabase().insert("ticker", "aktionString", cv);
   }
   
@@ -1152,6 +1224,11 @@ class SQLHelper extends SQLiteOpenHelper {
 				  .rawQuery("SELECT * FROM statTor ORDER BY torTore DESC", null));
 	  }
 	  
+	  public Cursor getAllStatTickerTore() {
+		  return(getReadableDatabase()
+				  .rawQuery("SELECT * FROM statTickerTor ORDER BY tickerTorTore DESC", null));
+	  }
+	  
 	  /** Hinweis: statTor missbraucht für Statistik Spieler */ 
 	  public Cursor getAllStatSpieler() {
 		  return(getReadableDatabase()
@@ -1197,6 +1274,18 @@ class SQLHelper extends SQLiteOpenHelper {
 		  getWritableDatabase().insert("statTor", "torName", cv);
 	  }
 	  
+	  public void insertStatTickerTor(String name, String team, String tore, String fehl, String prozent) {
+		  ContentValues cv=new ContentValues();
+	      
+		  cv.put("tickerTorName", name);
+		  cv.put("tickerTorTeam", team);
+		  cv.put("tickerTorTore", tore);
+		  cv.put("tickerTorFehl", fehl);
+		  cv.put("tickerTorProzent", prozent);
+
+		  getWritableDatabase().insert("statTickerTor", "tickerTorName", cv);
+	  }
+	  
 	  public void insertStatSpieler(String spielerBezeichnung, String spielerWert) {
 		  ContentValues cv=new ContentValues();
 
@@ -1209,6 +1298,12 @@ class SQLHelper extends SQLiteOpenHelper {
 		public void deleteStatTor() {
 
 			getWritableDatabase().delete("statTor", null, null);
+			
+		}
+
+		public void deleteStatTickerTor() {
+
+			getWritableDatabase().delete("statTickerTor", null, null);
 			
 		}
 		
@@ -1635,6 +1730,54 @@ class SQLHelper extends SQLiteOpenHelper {
 		}
 	}
 	
+	public void createStatTickerTore(String spielId, String teamHeimId, String teamAuswId, Context context) {
+		
+		deleteStatTickerTor();
+		
+		Cursor c=getSpielById(spielId);
+		c.moveToFirst();
+		
+		int spielerTore=0;
+		int spielerFehlwurf=0;
+		int spielerProzent=0;
+		String spielerId=null;
+		String strSpielerName=null;
+		String strTeamName=null;
+		Resources res = context.getResources();
+		
+		SQLiteDatabase db=getWritableDatabase();
+		Cursor cSpieler=db.rawQuery("SELECT * FROM spieler WHERE teamID=? OR teamID=?", new String[] {teamHeimId, teamAuswId});
+		
+		insertStatTickerTor("",
+							"",
+							res.getString(R.string.statBezeichnungToreKurz), 
+							res.getString(R.string.statBezeichnungWuerfeKurz), 
+							res.getString(R.string.statBezeichnungEffektivitaetKurz));
+		
+		for (cSpieler.moveToFirst(); !cSpieler.isAfterLast(); cSpieler.moveToNext()) {
+			spielerId=getSpielerId(cSpieler);
+			if(countStatSpielerId(spielerId, spielId)>0){	// Hat der Spieler im Spiel gespielt?
+				spielerTore=countTickerSpielerAktionen(spielerId, spielId, "2")+
+							countTickerSpielerAktionen(spielerId, spielId, "14")+
+							countTickerSpielerAktionen(spielerId, spielId, "20");	// Wie viele Tore hat der Spieler geworfen?
+				spielerFehlwurf=countTickerSpielerAktionen(spielerId, spielId, "3")+
+								countTickerSpielerAktionen(spielerId, spielId, "15")+
+								countTickerSpielerAktionen(spielerId, spielId, "21")+spielerTore;	// Wie viele Tore hat der Spieler geworfen?
+				if(spielerTore>0 || spielerFehlwurf>0){
+					spielerProzent=spielerTore*100/spielerFehlwurf;
+				} else {
+					spielerProzent=0;
+				}
+				strSpielerName=getSpielerName(cSpieler);
+				strTeamName=getTeamNameById(getSpielerTeamId(cSpieler));
+				Log.v("Spieler: ", strSpielerName);
+				Log.v("Team: ", strTeamName);
+				insertStatTickerTor(strSpielerName, strTeamName, String.valueOf(spielerTore), String.valueOf(spielerFehlwurf), 
+						String.valueOf(spielerProzent)+"%");
+			}
+		}
+	}
+
 	public void createStatSpieler(String spielId, String teamId) {
 		
 		deleteStatTor();
@@ -1779,6 +1922,26 @@ class SQLHelper extends SQLiteOpenHelper {
 	  
 	  public String getStatSpielTeamAusw(Cursor c) {
 		  return(c.getString(3));
+	  }
+	  
+	  public String getStatTickerTorSpieler(Cursor c) {
+		  return(c.getString(1));
+	  }
+	  
+	  public String getStatTickerTorTeam(Cursor c) {
+		  return(c.getString(2));
+	  }
+	  
+	  public String getStatTickerTorTore(Cursor c) {
+		  return(c.getString(3));
+	  }
+	  
+	  public String getStatTickerTorChancen(Cursor c) {
+		  return(c.getString(4));
+	  }
+	  
+	  public String getStatTickerTorQuote(Cursor c) {
+		  return(c.getString(5));
 	  }
 	  
 	  public String getStatTorBezeichnung(Cursor c) {

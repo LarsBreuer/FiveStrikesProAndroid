@@ -5,9 +5,44 @@
     <string name="app_name">FiveStrikesPro</string>
     <string name="speichern">Speichern</string>
     <string name="loeschen">Löschen</string>
+	<string name="info">Info</string>
     <string name="ja">Ja</string>
     <string name="nein">Nein</string>
-
+	<string name="einstellungen">Einstellungen</string>
+	<string name="spieler_eingeben">Eingabe von Spielern</string>
+	<string name="wurfecke_eingeben">Eingabe der Wurfecke</string>
+	<string name="symbole">Symbole</string>
+	<string name="Import">Import</string>
+	<string name="Export">Export</string>
+	<string name="importData">Daten aus Lite-Version einfügen</string>
+	<string name="importDatabase">Datenbank importieren</string>
+	<string name="exportDatabase">Datenbank exportieren</string>
+	<string name="importexportTitel">Import/Export</string>
+	<string name="aktion_torwurf">Torwurf</string>
+	<string name="aktion_fehlwurf">Fehlwurf</string>
+	<string name="aktion_7m_fehlwurf">7m Fehlwurf</string>
+	<string name="aktion_7m_tor">7m Tor</string>
+	<string name="aktion_tg_tor">Tempogegenstoss Tor</string>
+	<string name="aktion_tg_fehlwurf">Tempogegenstoss Fehlwurf</string>
+	<string name="aktion_gelbekarte">Gelbe Karte</string>
+	<string name="aktion_zweimin">Zwei Minuten</string>
+	<string name="aktion_zweipluszwei">Zwei mal zwei Minuten</string>
+	<string name="aktion_rotekarte">Rote Karte</string>
+	<string name="aktion_wechsel">Spielerwechsel</string>
+	<string name="aktion_techfehl">Technischer Fehler</string>
+	<string name="aktion_aufstellung_heim">Aufstellung Heimmannschaft</string>
+	<string name="aktion_aufstellung_auswaerts">Aufstellung Auswärtsmannschaft</string>
+	<string name="aktion_auszeit_heim">Auszeit Heimmannschaft</string>
+	<string name="aktion_auszeit_auswaerts">Auszeit Auswärtsmannschaft</string>
+	<string name="importDatabaseComplete">Die Datenbank wurde erfolgreich importiert.</string>
+	<string name="importDatabaseError">Der Import der Datenbank ist fehlgeschlagen. Schaue bitte nach, ob der Ordner \'sdcard\' eine Datei mit dem Namen \'fivestrikespro.db\' enthält.</string>
+	<string name="exportDatabaseComplete">Die Datenbank wurde erfolgreich in den Ordner \'sdcard\' exportiert.</string>
+	<string name="exportDatabaseError">Der Export der Datenbank ist fehlgeschlagen.</string>
+	<string name="anwurfMsgboxTitel">Anwurf</string>
+	<string name="anwurfMsgboxText">Bitte wähle aus, welche Mannschaft Anwurf hat.</string>
+	<string name="anwurfHeim">Heim</string>
+	<string name="anwurfAusw">Auswärts</string>
+	
     <!-- Übersicht starts -->   
     <string name="uebersichtTitel">Übersicht</string>
     <string name="uebersichtMannschaft">Mannschaft</string>
@@ -16,7 +51,7 @@
     <string name="uebersichtInfo">Info</string>
     <string name="uebersichtSchnellesSpiel">Schnelles Spiel</string>
     <string name="uebersichtWebseite">Webseite</string>
-    <string name="uebersichtDownload">Download</string>
+    <string name="uebersichtDownload">Im-/Export</string>
     <string name="infoMsgboxTitel">Handbuch öffnen</string>
 	<string name="infoMsgboxText">Dies öffnet das Handuch zu dieser App im PDF-Format. Internetzugang ist erforderlich.
 	    						  Vorgang fortsetzen?</string>
@@ -27,6 +62,10 @@
 	<string name="importMsgboxText">Durch den Import werden Daten zu Mannschaften und Spielern aus der Lite-Version in die Pro-Version importiert. Vorheriger 
 	    							Export aus der Pro-Version erforderlich. ACHTUNG !!!!!!! Sämtliche Daten (auch Spiele) aus der Pro-Version werden gelöscht!!!!!!! 
 	    							Sollen die Daten importiert werden? Dies kann einen Moment dauern.</string>
+	<string name="importDatabaseMsgboxText">Durch den Import wird eine zuvor gespeicherte Datenbank importiert. Vorheriger 
+	    							Export einer Five Strikes-Datenabnk ist erforderlich. ACHTUNG !!!!!!! Sämtliche vorhandenen 
+	    							Daten werden gelöscht!!!!!!! Eine Wiederherstellung ist nicht möglich. 
+	    							Sollen die Daten importiert werden? </string>
 	<string name="importFertigMsgboxTitel">Import abgeschlossen</string>
 	<string name="importFertigMsgboxText">Der Import wurde erfolgreich abgeschlossen.</string>	
 	<string name="importFehlMsgboxTitel">Import fehlgeschlagen</string>
@@ -130,10 +169,8 @@
 	<string name="tickerAktionTitel">Aktion</string>
 	<string name="tickerSpielerTitel">Spieler</string>
 	<!-- Hinweis: Doppelte Bezeichnungwn wie 'Fehlwurf' nur einmal verwenden -->  
-	<string name="tickerMSGBoxFehlwurfTitel">Fehlwurf</string>
-	<string name="tickerMSGBoxFehlwurfNachricht">Führte der Fehlwurf zu einem Ballverlust?</string>
-	<string name="tickerMSGBoxFehlerTitel">Technischer Fehler</string>
-	<string name="tickerMSGBoxFehlerNachricht">Führte der technische Fehler zu einem Ballverlust?</string>
+	<string name="tickerMSGBoxAktionTitel">Ballverlust</string>
+	<string name="tickerMSGBoxAktionNachricht">Führte die Aktion zu einem Ballverlust?</string>
 	<string name="tickerMSGBoxJa">Ja</string>
 	<string name="tickerMSGBoxNein">Nein</string>
 	<string name="tickerMSGBoxSpielzeit">Spielzeit:</string>

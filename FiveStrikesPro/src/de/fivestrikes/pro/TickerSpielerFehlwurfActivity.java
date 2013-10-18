@@ -127,7 +127,17 @@ public class TickerSpielerFehlwurfActivity extends Activity {
             	finish();
             }
         });
-
+		
+		/** Bei Siebenmeter, den Siebenmeterpunkt einrichten **/
+		Cursor cTicker=helper.getTickerCursor(tickerId);
+		cTicker.moveToFirst();
+		if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==15){
+			wurfposition="3_3";
+			wurf_button_leeren();
+			feld_3_3_Button.setText("X");
+		}
+		cTicker.close();
+		
         /** Button Wurfecke*/
         fehl_ooll_Button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -600,8 +610,6 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 			helper.updateTickerWurfposition(tickerId, wurfposition);
 
 			/* Wurfecke und -position bei Torwart eintragen */
-			System.out.print("Wurfecke: "+wurfecke);
-			System.out.println("aktionInt: "+aktionInt);
 			if(wurfecke.equals("OL") || wurfecke.equals("OM") || wurfecke.equals("OR") 
 					|| wurfecke.equals("ML") || wurfecke.equals("MM") || wurfecke.equals("MR")
 					|| wurfecke.equals("UL") || wurfecke.equals("UM") || wurfecke.equals("UR")){

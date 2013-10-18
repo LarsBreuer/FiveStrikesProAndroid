@@ -3,7 +3,6 @@ package de.fivestrikes.pro;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-//import de.fivestrikes.lite.R;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +16,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.util.Log;
 
 
 public class SpielActivity extends ListActivity {
@@ -68,6 +68,13 @@ public class SpielActivity extends ListActivity {
 	  super.onDestroy();
 	    
 	  helper.close();
+	  model.close();
+	}
+	
+	@Override
+	public void onStop() {
+	  super.onDestroy();
+	  Log.v("SpielActivity", "onStop aufgerufen");
 	}
 	
 	@Override

@@ -43,6 +43,7 @@ public class TickerActivity extends TabActivity {
 	SQLHelper helper=null;
 	String spielId=null;
 	String teamId=null;
+	String strBallbesitz=null;
 	private long zeitStart=0;
 	private Handler mHandler = new Handler();
 	private long startTime;
@@ -67,6 +68,7 @@ public class TickerActivity extends TabActivity {
         helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
+        
         
         /* Tabs einrichten */
 		Resources res = getResources();
@@ -96,8 +98,14 @@ public class TickerActivity extends TabActivity {
 
 		/* Zeit stellen */
 		if (helper.getSpielZeitStart(c)!=null) zeitStart=Long.parseLong(helper.getSpielZeitStart(c));
-		if (helper.getSpielZeitBisher(c)!=null) elapsedTime=Long.parseLong(helper.getSpielZeitBisher(c));
-    	if(zeitStart==0){		// wenn Zeit beim letzten Verlassen gestoppt war
+		
+		if (helper.getSpielZeitBisher(c)!=null){
+			elapsedTime=Long.parseLong(helper.getSpielZeitBisher(c));
+		} else {
+			elapsedTime=Long.parseLong("0");
+		}
+    	
+		if(zeitStart==0){		// wenn Zeit beim letzten Verlassen gestoppt war
     		((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
     		stopped = true;
     		btn_uhr.setBackgroundResource(R.drawable.buttonuhrrot);
@@ -112,7 +120,8 @@ public class TickerActivity extends TabActivity {
     	}
     	
     	/* Button Ballbesitz stellen */
-    	switch(Integer.parseInt(helper.getSpielBallbesitz(c))){
+		strBallbesitz=helper.getSpielBallbesitz(c);
+    	switch(Integer.parseInt(strBallbesitz)){
 			case 1:
 				btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
 				btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
@@ -141,17 +150,9 @@ public class TickerActivity extends TabActivity {
         infoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-    	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-    	    	alertDialogBuilder
-    	    		.setTitle(R.string.tickerInfoMsgboxTitel)
-    	    		.setMessage(R.string.tickerInfoMsgboxText)
-    	    		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
-    					public void onClick(DialogInterface dialog,int id) {
-
-    					}
-    	    		});
-    	    	AlertDialog alertDialog = alertDialogBuilder.create();
-    	    	alertDialog.show();
+            	Intent newIntent = new Intent(getApplicationContext(), TickerInfoActivity.class);
+            	newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+    	    	startActivityForResult(newIntent, GET_CODE);
             }
         });
         
@@ -162,17 +163,29 @@ public class TickerActivity extends TabActivity {
 
                 Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
                 Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
+                Resources res = getResources(); 
             	Cursor c=helper.getSpielCursor(spielId);
         		c.moveToFirst();
-        		if (Integer.parseInt(helper.getSpielBallbesitz(c))!=1){
+        		String ballbesitz=helper.getSpielBallbesitz(c);
+        		String teamKurz=helper.getTeamHeimKurzBySpielID(c);
+        		c.close();
+        		if (Integer.parseInt(ballbesitz)!=1){
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
-        			String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(c);
-        			helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
+        			String strBallbesitzText="Ballbesitz " + teamKurz;
+        			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
         			// LISTVIEW => adapter.getCursor().requery();  // ListView aktualisieren
         			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
+					strBallbesitz="1";
         		}
-        		c.close();
+        		TabListActivity activity = (TabListActivity) 
+						getLocalActivityManager().getActivity(res.getString(R.string.ticker));
+				try {
+					activity.refreshContent();
+				} catch(Exception e){
+
+				}
+        		
             }
         });
         
@@ -183,18 +196,28 @@ public class TickerActivity extends TabActivity {
 
                 Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
                 Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
+                Resources res = getResources(); 
             	Cursor c=helper.getSpielCursor(spielId);
         		c.moveToFirst();
-        		if (Integer.parseInt(helper.getSpielBallbesitz(c))!=0){
+        		String ballbesitz=helper.getSpielBallbesitz(c);
+        		String teamKurz=helper.getTeamAuswKurzBySpielID(c);
+        		c.close();
+        		if (Integer.parseInt(ballbesitz)!=0){
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
-    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(c);
-    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
+    				String strBallbesitzText="Ballbesitz " + teamKurz;
+    				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
     				// LISTVIEW => adapter.getCursor().requery();   // ListView aktualisieren
     				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
-        		}
-        		c.close();
-				
+					strBallbesitz="0";
+					TabListActivity activity = (TabListActivity) 
+							getLocalActivityManager().getActivity(res.getString(R.string.ticker));
+					try {
+						activity.refreshContent();
+					} catch(Exception e){
+
+					}
+        		}				
             }
         });
         
@@ -281,7 +304,6 @@ public class TickerActivity extends TabActivity {
 	@Override
 	public void onResume() {
 	    super.onResume();  // Always call the superclass method first
-				
 	    /* Spielergebnis auf die Button schreiben */
 		Button btnToreHeim=(Button)findViewById(R.id.btn_tore_heim);
 		Button btnToreAusw=(Button)findViewById(R.id.btn_tore_auswaerts);
@@ -300,11 +322,12 @@ public class TickerActivity extends TabActivity {
 		/* Button Ballbesitz stellen */
 		Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
 		Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
-		switch(Integer.parseInt(helper.getSpielBallbesitz(c))){
+		strBallbesitz=helper.getSpielBallbesitz(c);
+		switch(Integer.parseInt(strBallbesitz)){
 			case 1:
 				btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
 		    	btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
-					break;
+				break;
 			case 0:
 		    	btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
 		    	btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
@@ -369,15 +392,71 @@ public class TickerActivity extends TabActivity {
 	//
 	
     public void uhrClick (View view){
+    	uhrStartStopp();
+    }
+	
+    public void uhrStartStopp() {
     	if(stopped){
     		startTime = System.currentTimeMillis() - elapsedTime; 
         	mHandler.removeCallbacks(startTimer);
             mHandler.postDelayed(startTimer, 0);
             stopped = false;
+            Resources res = getResources(); 
             helper.updateSpielTicker(spielId, elapsedTime, zeitStart);
             ((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrgruen);
-    	}
-    	else{
+			/** Falls noch keine Mannschaft im Ballbesitz: ¨Einstellen, welche Mannschaft im Ballbesitz ist¨ **/
+			if(strBallbesitz.equals("2")){
+				AlertDialog.Builder builderWebside = new AlertDialog.Builder(TickerActivity.this);
+				builderWebside
+	        		.setTitle(R.string.anwurfMsgboxTitel)
+	        		.setMessage(R.string.anwurfMsgboxText)
+	        		.setIcon(android.R.drawable.ic_dialog_alert)
+	        		.setPositiveButton(R.string.anwurfHeim, new DialogInterface.OnClickListener() {
+	        			public void onClick(DialogInterface dialog, int which) {
+	        				Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
+	                        Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
+	                    	Cursor c=helper.getSpielCursor(spielId);
+	                		c.moveToFirst();
+	                		if (Integer.parseInt(helper.getSpielBallbesitz(c))!=1){
+	                			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
+	                			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
+	                			String strBallbesitzText="Ballbesitz " + helper.getTeamHeimKurzBySpielID(c);
+	                			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), 0);
+	                			// LISTVIEW => adapter.getCursor().requery();  // ListView aktualisieren
+	                			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
+	        					strBallbesitz="1";
+	                		}
+	                		c.close();
+	        			}
+	        		})
+	        		.setNegativeButton(R.string.anwurfAusw, new DialogInterface.OnClickListener() {
+	        			public void onClick(DialogInterface dialog, int which) {			      	
+	        				Button btnTeamHeim=(Button) findViewById(R.id.btn_heim);
+	                        Button btnTeamAusw=(Button) findViewById(R.id.btn_auswaerts);
+	                    	Cursor c=helper.getSpielCursor(spielId);
+	                		c.moveToFirst();
+	                		if (Integer.parseInt(helper.getSpielBallbesitz(c))!=0){
+	                			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
+	                			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
+	            				String strBallbesitzText="Ballbesitz " + helper.getTeamAuswKurzBySpielID(c);
+	            				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), 0);
+	            				// LISTVIEW => adapter.getCursor().requery();   // ListView aktualisieren
+	            				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
+	        					strBallbesitz="0";
+	                		}
+	                		c.close();
+	        			}
+	        		})
+	        		.show();
+				TabListActivity activity = (TabListActivity) 
+						getLocalActivityManager().getActivity(res.getString(R.string.ticker));
+				try {
+					activity.refreshContent();
+				} catch(Exception e){
+
+				}
+			}
+    	}else{
     		startTime = System.currentTimeMillis();
         	mHandler.removeCallbacks(startTimer);
         	stopped = true;
@@ -385,7 +464,7 @@ public class TickerActivity extends TabActivity {
         	((Button)findViewById(R.id.btn_uhr)).setBackgroundResource(R.drawable.buttonuhrrot);
     	}
     }
-	
+    
     private Runnable startTimer = new Runnable() {
     	public void run() {
     		elapsedTime = System.currentTimeMillis() - startTime;
@@ -441,11 +520,11 @@ public class TickerActivity extends TabActivity {
 	    if (tag.compareTo(res.getString(R.string.aktionen)) == 0) {
 	    	tabIntent = new Intent().setClass(this, TabMenuActivity.class);
 	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-			Cursor cMenu=helper.getSpielById(spielId);
+			/*Cursor cMenu=helper.getSpielById(spielId);
 			cMenu.moveToFirst();    
 			teamId = helper.getSpielHeim(cMenu);
 			cMenu.close();
-			tabIntent.putExtra(ID_TEAM_EXTRA, teamId);
+			tabIntent.putExtra(ID_TEAM_EXTRA, teamId);*/
 			tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(elapsedTime));
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
@@ -460,6 +539,7 @@ public class TickerActivity extends TabActivity {
 	    
 	    if (tag.compareTo(res.getString(R.string.statistik)) == 0) {
 	    	tabIntent = new Intent().setClass(this, TabStatisticActivity.class);
+	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
 	    }
