@@ -30,6 +30,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
     String torwartAktionString=null;
     String torwartString=null;
     String zeit=null;
+    String realzeit=null;
 	 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,12 +55,14 @@ public class TickerSpielerFehlwurfActivity extends Activity {
         spielId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_SPIEL_EXTRA);
         aktionTeamHeim=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_AKTIONTEAMHEIM_EXTRA);
         zeit=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_ZEIT_EXTRA);
+        realzeit=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_REALZEIT_EXTRA);
         if(tickerId==null){
         	tickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TICKERID_EXTRA);
             aktionInt=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_AKTIONINT_EXTRA);
             spielId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_SPIEL_EXTRA);
             aktionTeamHeim=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_AKTIONTEAMHEIM_EXTRA);
             zeit=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_ZEIT_EXTRA);
+            realzeit=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_REALZEIT_EXTRA);
         }
 		Cursor c=helper.getSpielCursor(spielId);
     	c.moveToFirst();
@@ -636,7 +639,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 						torwartAktionTeamHeim="0";
 					}
 					helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
-							Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)+1);
+							Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)+1, realzeit);
 					Cursor lastTickTorwartC=helper.getLastTickerId();
 					lastTickTorwartC.moveToFirst();
 					torwartTickerId = helper.getTickerId(lastTickTorwartC);
@@ -655,13 +658,13 @@ public class TickerSpielerFehlwurfActivity extends Activity {
    	    			if(Integer.parseInt(aktionTeamHeim)==1 && 
    	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Fehlwurf, dann trage Ballbesitz Auswärtsmannschaft ein
    	    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
    	    				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
    	    			}
    	    			if(Integer.parseInt(aktionTeamHeim)==0 && 
    	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
    	    				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
    	    				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
    	    			}
    	    			cSpiel.close();

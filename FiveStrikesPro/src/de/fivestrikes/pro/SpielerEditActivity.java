@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Spinner;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.view.inputmethod.InputMethodManager;
 
 
 public class SpielerEditActivity extends Activity {
@@ -44,6 +46,7 @@ public class SpielerEditActivity extends Activity {
 	    
 	    Button save=(Button)findViewById(R.id.savePlayer);
 	    Button delete=(Button)findViewById(R.id.deletePlayer);
+	    Button okButton = (Button) findViewById(R.id.okay);
 	    Button backButton = (Button) findViewById(R.id.back_button);
 	    
 	    Spinner spinner = (Spinner)findViewById(R.id.spinnerPositionen);
@@ -83,6 +86,15 @@ public class SpielerEditActivity extends Activity {
             @Override
             public void onClick(View view) {
             	finish();
+            }
+        });
+        
+        /* Okay Button */
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            	InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+            	inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
         

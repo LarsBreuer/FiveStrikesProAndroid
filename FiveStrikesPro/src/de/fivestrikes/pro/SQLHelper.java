@@ -43,8 +43,8 @@ class SQLHelper extends SQLiteOpenHelper {
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	  if (newVersion > oldVersion) {
-	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerEingabe INTEGER DEFAULT 0");
-	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerWurfecke INTEGER DEFAULT 0");
+	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerEingabe INTEGER DEFAULT 1");
+	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerWurfecke INTEGER DEFAULT 1");
 	        db.execSQL("ALTER TABLE spiel ADD COLUMN notiz TEXT");
 	        db.execSQL("ALTER TABLE ticker ADD COLUMN realzeit STRING");
 	        db.execSQL("CREATE TABLE statTickerTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, tickerTorName STRING, " +
@@ -151,7 +151,7 @@ class SQLHelper extends SQLiteOpenHelper {
   public Cursor getAllSpieler(String id) {
 	  
 	  return(getReadableDatabase()
-			  .rawQuery("SELECT * FROM spieler WHERE teamID = ?", new String[] { id }));
+			  .rawQuery("SELECT * FROM spieler WHERE teamID = ? ORDER BY cast(spielerNummer as integer) ASC", new String[] { id }));
   }
   
   public Cursor getAllSpielerAlle() {
@@ -472,6 +472,15 @@ class SQLHelper extends SQLiteOpenHelper {
 	  String[] args={id};
 	  
 	  cv.put("spielerWurfecke", wert);
+
+	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
+  }
+  
+  public void updateSpielNotiz(String id, String notiz) {
+	  ContentValues cv=new ContentValues();
+	  String[] args={id};
+	  
+	  cv.put("notiz", notiz);
 
 	  getWritableDatabase().update("spiel", cv, "_ID=?", args);
   }
@@ -923,7 +932,7 @@ class SQLHelper extends SQLiteOpenHelper {
   }
  
   public void insertTicker(int aktionInt, String aktionString, int aktionTeamHeim, String spielerString, 
-		  Integer spielerId, Integer spielId, Integer zeit) {
+		  Integer spielerId, Integer spielId, Integer zeit, String realzeit) {
 	  ContentValues cv=new ContentValues();
 	  
 	  String zeitString=updateTimer(zeit);
@@ -938,6 +947,7 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("spielId", spielId);
 	  cv.put("wurfecke", "");
 	  cv.put("wurfposition", "");
+	  cv.put("realzeit", realzeit);
 
 	  getWritableDatabase().insert("ticker", "aktionString", cv);
   }
@@ -1024,6 +1034,7 @@ class SQLHelper extends SQLiteOpenHelper {
 	  /* Aktuelle Spielernamen in Tickermeldungen schreiben */
 	  String[] args={spielId};
 	  SQLiteDatabase db=getWritableDatabase();
+	  Log.v("SQLHelper", "updateTickerSpieler");
 	  Cursor c=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
 	  c.moveToFirst();
 	  int toreHeim=0;
@@ -1354,6 +1365,7 @@ class SQLHelper extends SQLiteOpenHelper {
 		
 		String[] args={spielId};
 		SQLiteDatabase db=getWritableDatabase();
+		Log.v("SQLHelper", "createStatSpiel");
 		Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
     	cTicker.moveToFirst();
 

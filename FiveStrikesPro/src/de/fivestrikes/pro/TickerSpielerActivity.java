@@ -29,6 +29,7 @@ public class TickerSpielerActivity extends TabActivity {
 	public final static String ID_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
+	public final static String ID_REALZEIT_EXTRA="de.fivestrikes.pro.realzeit_ID";
 	public final static String ID_TEAM_HEIM_EXTRA="de.fivestrikes.pro.teamHeim_ID";
 	public final static String ID_TEAM_AUSW_EXTRA="de.fivestrikes.pro.teamAusw_ID";
 	
@@ -37,6 +38,7 @@ public class TickerSpielerActivity extends TabActivity {
 	public final static String ID_AUSWECHSEL_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
 	public final static String ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
 	public final static String ID_AUSWECHSEL_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
+	public final static String ID_AUSWECHSEL_REALZEIT_EXTRA="de.fivestrikes.pro.realzeit_ID";
 	public final static String ID_AUSWECHSEL_TICKER_EXTRA="de.fivestrikes.pro.ticker_ID";
 	
 	
@@ -59,6 +61,7 @@ public class TickerSpielerActivity extends TabActivity {
     String torwartString=null;
     String spielerPosition=null;
     String zeit=null;
+    String realzeit=null;
     String tickerId=null;
     String torwartTickerId=null;
     Boolean finish=false;
@@ -84,6 +87,7 @@ public class TickerSpielerActivity extends TabActivity {
         aktionTeamHeim=getIntent().getStringExtra(TabMenuActivity.ID_AKTIONTEAMHEIM_EXTRA); 
         spielId=getIntent().getStringExtra(TabMenuActivity.ID_SPIEL_EXTRA);
         zeit=getIntent().getStringExtra(TabMenuActivity.ID_ZEIT_EXTRA);
+        realzeit=getIntent().getStringExtra(TabMenuActivity.ID_REALZEIT_EXTRA);
         teamHeimId=getIntent().getStringExtra(TabMenuActivity.ID_TEAM_HEIM_EXTRA);
         teamAuswId=getIntent().getStringExtra(TabMenuActivity.ID_TEAM_AUSW_EXTRA);
         
@@ -92,7 +96,9 @@ public class TickerSpielerActivity extends TabActivity {
 		c.moveToFirst();
 		teamHeimString = helper.getTeamHeimKurzBySpielID(c);
 		teamAuswString = helper.getTeamAuswKurzBySpielID(c);
-		aktionTeamHeim = helper.getSpielBallbesitz(c);
+		if(aktionTeamHeim==null){
+			aktionTeamHeim = helper.getSpielBallbesitz(c);
+		}
 		c.close();
         
         if(aktionInt.equals("7")){
@@ -146,6 +152,7 @@ public class TickerSpielerActivity extends TabActivity {
 	    	tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
 	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
+	    	tabIntent.putExtra(ID_REALZEIT_EXTRA, realzeit);
 	    	tabIntent.putExtra(ID_TEAM_HEIM_EXTRA, teamHeimId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);
@@ -158,6 +165,7 @@ public class TickerSpielerActivity extends TabActivity {
 	    	tabIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
 	    	tabIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 	    	tabIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
+	    	tabIntent.putExtra(ID_REALZEIT_EXTRA, realzeit);
 	    	tabIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
 			setContent = mTabHost.newTabSpec(tag).setIndicator(tabview).setContent(tabIntent);
 			mTabHost.addTab(setContent);

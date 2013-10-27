@@ -12,8 +12,10 @@
 	<string name="spieler_eingeben">Eingabe von Spielern</string>
 	<string name="wurfecke_eingeben">Eingabe der Wurfecke</string>
 	<string name="symbole">Symbole</string>
+	<string name="notiz">Notizen</string>
 	<string name="Import">Import</string>
 	<string name="Export">Export</string>
+	<string name="okay">OK</string>
 	<string name="importData">Daten aus Lite-Version einfügen</string>
 	<string name="importDatabase">Datenbank importieren</string>
 	<string name="exportDatabase">Datenbank exportieren</string>

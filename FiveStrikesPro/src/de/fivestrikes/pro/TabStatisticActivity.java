@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ public class TabStatisticActivity extends ListActivity {
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v("TabStatisticActivity", "onCreate");
         setContentView(R.layout.tab_list);
  
         spielId=getIntent().getStringExtra(TickerActivity.ID_SPIEL_EXTRA);

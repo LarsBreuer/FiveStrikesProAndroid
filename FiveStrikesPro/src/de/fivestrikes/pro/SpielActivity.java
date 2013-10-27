@@ -72,12 +72,6 @@ public class SpielActivity extends ListActivity {
 	}
 	
 	@Override
-	public void onStop() {
-	  super.onDestroy();
-	  Log.v("SpielActivity", "onStop aufgerufen");
-	}
-	
-	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
 		Intent i=new Intent(SpielActivity.this, SpielEditActivity.class);

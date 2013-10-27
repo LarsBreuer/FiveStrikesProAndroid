@@ -33,6 +33,7 @@ public class TabListActivity extends ListActivity {
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v("TabListActivity", "onCreate");
         setContentView(R.layout.tab_list);
  
         spielId=getIntent().getStringExtra(SpielEditActivity.ID_SPIEL_EXTRA);
@@ -46,17 +47,17 @@ public class TabListActivity extends ListActivity {
     @Override
 	public void onResume() {
     	super.onResume();  // Always call the superclass method first
-    	
+    	Log.v("TabListActivity", "onResume");
     	refreshContent();
     }
     
     public void refreshContent() {
-    	helper.close();
+    	Log.v("TabListActivity", "refreshContent");
     	helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
         adapter=new TickerAdapter(model);
-        setListAdapter(adapter);        
+        setListAdapter(adapter);  
     }
     
 	@Override

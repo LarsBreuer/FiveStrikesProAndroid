@@ -27,6 +27,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
 	public final static String ID_TICKERID_EXTRA="de.fivestrikes.pro.tickerId";
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
 	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
+	public final static String ID_REALZEIT_EXTRA="de.fivestrikes.pro.realzeit_ID";
 	public final static String ID_TEAM_HEIM_EXTRA="de.fivestrikes.pro.teamHeim_ID";
 	public final static String ID_TEAM_AUSW_EXTRA="de.fivestrikes.pro.teamAusw_ID";
 	public final static String ID_TORWARTID_EXTRA="de.fivestrikes.pro.torwartId";
@@ -56,6 +57,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     String zeit=null;
     String tickerId=null;
     String torwartTickerId=null;
+    String realzeit=null;
     Boolean finish=false;
     
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
         aktionTeamHeim="1"; 
         spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_SPIEL_EXTRA);
         zeit=getIntent().getStringExtra(TickerSpielerActivity.ID_ZEIT_EXTRA);
+        realzeit=getIntent().getStringExtra(TickerSpielerActivity.ID_REALZEIT_EXTRA);
         
     }
 	
@@ -98,7 +101,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
 		spielerPosition=helper.getSpielerPosition(c);
 		c.close();
 		helper.insertTicker(Integer.parseInt(aktionInt), aktionString, Integer.parseInt(aktionTeamHeim), spielerString, 
-				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit));
+				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit), realzeit);
 		Cursor lastTickC=helper.getLastTickerId();
 		lastTickC.moveToFirst();
 		tickerId = helper.getTickerId(lastTickC);
@@ -117,13 +120,13 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     		if(Integer.parseInt(aktionTeamHeim)==1 && 
     				Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
     			String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-    			helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+    			helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
     			helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
     		}
     		if(Integer.parseInt(aktionTeamHeim)==0 && 
     				Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
     			String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-    			helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+    			helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
     			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
     		}
 
@@ -162,7 +165,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
 					torwartAktionTeamHeim="0";
 				}
 				helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
-						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit));
+						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit), realzeit);
 				Cursor lastTickTorwartC=helper.getLastTickerId();
 				lastTickTorwartC.moveToFirst();
 				torwartTickerId = helper.getTickerId(lastTickTorwartC);
@@ -268,13 +271,13 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
    	    			if(Integer.parseInt(aktionTeamHeim)==1 && 
    	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
    	    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
    	    				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
    	    			}
    	    			if(Integer.parseInt(aktionTeamHeim)==0 && 
    	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
    	    				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1);
+   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
    	    				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
    	    			}
    	    			cSpiel.close();
@@ -296,7 +299,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     	    	zeitZurueck=halbzeitlaenge;
     	    }
     	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
+    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck, realzeit);
     	    finish=true;
     	   	finish();
     	}
@@ -333,7 +336,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     	    zeitZurueck=(int)Integer.parseInt(zeit)+2*60000;
     	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
     	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
+    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck, realzeit);
     	    finish=true;
     	   	finish();
     	}
@@ -341,7 +344,7 @@ public class TabTickerSpielerHeimActivity extends ListActivity {
     	    zeitZurueck=(int)Integer.parseInt(zeit)+4*60000;
     	    /** Hinweis: Nach Spiellänge 2 Minuten auf Spiellänge setzen */
     	    helper.insertTicker(10, spielerString+" "+getString(R.string.tickerAktionZurueck), Integer.parseInt(aktionTeamHeim), 
-    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck);
+    	    		spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), zeitZurueck, realzeit);
     	    finish=true;
     	   	finish();
     	}

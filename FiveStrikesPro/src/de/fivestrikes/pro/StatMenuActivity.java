@@ -46,6 +46,7 @@ public class StatMenuActivity extends Activity {
 	    
 	    Button backButton = (Button) findViewById(R.id.back_button);
 	    Button btnSpielstatistik = (Button) findViewById(R.id.statSpielstatistik);
+	    Button btnNotiz = (Button) findViewById(R.id.statNotiz);
 	    Button btnToreHeim = (Button) findViewById(R.id.statTorschuetzenHeim);
 	    Button btnToreAusw = (Button) findViewById(R.id.statTorschuetzenAusw);
 	    Button btnSpielerHeim = (Button) findViewById(R.id.statSpielerHeim);
@@ -82,6 +83,16 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatSpielActivity.class);
+				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+				startActivity(newIntent);
+            }
+        });
+        
+        /* Button Statistik Spiel */
+        btnNotiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				Intent newIntent = new Intent(getApplicationContext(), StatNotizActivity.class);
 				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
 				startActivity(newIntent);
             }
@@ -151,7 +162,7 @@ public class StatMenuActivity extends Activity {
                     Cursor curSpiel = db.rawQuery("SELECT * FROM spiel WHERE _ID=?", args);
                     curSpiel.moveToFirst();
                     int halbzeitlaenge = (Integer.parseInt(curSpiel.getString(5))*60);
-                    String[] arrStr = {curSpiel.getString(6),strHeim,strAusw,curSpiel.getString(7),curSpiel.getString(8),strHeimKurz, strAuswKurz,String.valueOf(halbzeitlaenge)};
+                    String[] arrStr = {curSpiel.getString(6),strHeim,strAusw,curSpiel.getString(7),curSpiel.getString(8),strHeimKurz, strAuswKurz,String.valueOf(halbzeitlaenge), curSpiel.getString(17)};
                     csvWrite.writeNext(arrStr);
                     
                     String strEnde= "Ende Spiel";
@@ -199,7 +210,7 @@ public class StatMenuActivity extends Activity {
    						String zeitStr=String.valueOf(zeitInt);
                     	String[] tickArrStr = {zeitStr,curTicker.getString(6), curTicker.getString(7), 
                     			curTicker.getString(3), curTicker.getString(2), curTicker.getString(4), 
-                    			curTicker.getString(10), curTicker.getString(14)};
+                    			curTicker.getString(10), curTicker.getString(14), curTicker.getString(15)};
                         csvWrite.writeNext(tickArrStr);
                     }
                     arrStrEnde[0] = "Ende Ticker";

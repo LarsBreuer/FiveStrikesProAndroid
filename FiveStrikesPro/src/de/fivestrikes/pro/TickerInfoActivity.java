@@ -3,8 +3,10 @@ package de.fivestrikes.pro;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 public class TickerInfoActivity extends Activity {
 	SQLHelper helper=null;
 	String spielId=null;
+	EditText notiz=null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,7 @@ public class TickerInfoActivity extends Activity {
 	    Button backButton = (Button) findViewById(R.id.back_button);
 	    CheckBox chkSpieler = (CheckBox) findViewById(R.id.checkbox_spieler_eingeben);
 	    CheckBox chkWurfecke = (CheckBox) findViewById(R.id.checkbox_wurfecke_eingeben);
+	    notiz=(EditText)findViewById(R.id.notiz);
 
         spielId=getIntent().getStringExtra(TickerActivity.ID_SPIEL_EXTRA);
         helper=new SQLHelper(this);
@@ -50,12 +54,14 @@ public class TickerInfoActivity extends Activity {
 		} else {
 			chkWurfecke.setChecked(true);
 		}
+		notiz.setText(helper.getSpielNotiz(c));
 		c.close();
 
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					helper.updateSpielNotiz(spielId, notiz.getText().toString());
 					finish();
 				}
 			});
@@ -67,6 +73,16 @@ public class TickerInfoActivity extends Activity {
 		super.onDestroy();
 	    helper.close();
 	}
+	
+	/*
+	@Override
+	public void onStop() {
+		super.onStop();
+		Log.v("TickerInfoActivity", "onStop Start");
+	    helper.close();
+	    Log.v("TickerInfoActivity", "onStop Ende");
+	}
+	*/
 	
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();

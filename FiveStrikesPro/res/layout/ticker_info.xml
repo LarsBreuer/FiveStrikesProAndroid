@@ -8,6 +8,8 @@
 	android:layout_height="fill_parent"
     android:orientation="vertical"
 	android:background="@drawable/hintergrund"
+	android:paddingLeft="25dp"
+	android:paddingRight="25dp"
 >
 	
 	<TextView 
@@ -70,6 +72,24 @@
 	
 	</LinearLayout>
 	
+	<TextView 
+		android:text="@string/notiz"
+		android:layout_width="fill_parent"
+		android:layout_height="40dip"
+		android:gravity="center"
+		android:textColor="@color/standardfarbe"
+		android:textSize="16dip"
+		android:textStyle="bold"
+	/>
+	
+	<EditText
+	    android:id="@+id/notiz"
+	    android:inputType="text"
+	    android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:gravity="left|top"
+	/>
+		
 	<TextView 
 		android:text="@string/symbole"
 		android:layout_width="fill_parent"

@@ -30,6 +30,7 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
     String spielerId=null;
     String spielerString=null;
     String zeit=null;
+    String realzeit=null;
 	 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
         spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_SPIEL_EXTRA);
         aktionTeamHeim=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA);
         zeit=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_ZEIT_EXTRA);
+        realzeit=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_REALZEIT_EXTRA);
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button okButton = (Button) findViewById(R.id.ok_button);
@@ -94,7 +96,7 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
 		spielerString=helper.getSpielerName(c);
 		c.close();
 		helper.insertTicker(8, getString(R.string.tickerAktionAuswechselung), Integer.parseInt(aktionTeamHeim), spielerString, 
-				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit) + 1);
+				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit) + 1, realzeit);
 		finish();
 	}
 	

@@ -1,6 +1,9 @@
 package de.fivestrikes.pro;
 
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import android.app.AlertDialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -44,6 +47,7 @@ public class TickerActivity extends TabActivity {
 	String spielId=null;
 	String teamId=null;
 	String strBallbesitz=null;
+	String realzeit=null;
 	private long zeitStart=0;
 	private Handler mHandler = new Handler();
 	private long startTime;
@@ -56,6 +60,7 @@ public class TickerActivity extends TabActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.v("TickerActivity", "onCreate");
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.ticker);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_info);
@@ -173,7 +178,8 @@ public class TickerActivity extends TabActivity {
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
         			String strBallbesitzText="Ballbesitz " + teamKurz;
-        			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
+        			realzeit = DateFormat.getDateTimeInstance().format(new Date());
+        			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime, realzeit);
         			// LISTVIEW => adapter.getCursor().requery();  // ListView aktualisieren
         			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
 					strBallbesitz="1";
@@ -206,7 +212,8 @@ public class TickerActivity extends TabActivity {
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
     				String strBallbesitzText="Ballbesitz " + teamKurz;
-    				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime);
+    				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+    				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime, realzeit);
     				// LISTVIEW => adapter.getCursor().requery();   // ListView aktualisieren
     				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
 					strBallbesitz="0";
@@ -246,45 +253,52 @@ public class TickerActivity extends TabActivity {
 
 				// set dialog message
 				alertDialogBuilder
-						.setCancelable(false)
-						.setPositiveButton(R.string.tickerMSGBoxEinstellen,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										int min=0;
-										int sec=0;
-										if(editMinutes.getText().length() != 0){
-											min=Integer.parseInt(editMinutes.getText().toString());
-										}
-										else{
-											min=0;
-										}
-										if(editSeconds.getText().length() != 0){
-											sec=Integer.parseInt(editSeconds.getText().toString());
-										}
-										else{
-											sec=0;
-										}
-										if (sec>59) {
-											sec=59;
-										}
-										elapsedTime=(long) (min*60000)+(sec*1000);
-										((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
-						            	/* Schreibe in die Datenbank, in welcher Halbzeit man sich befindet */
-							            Cursor c=helper.getSpielCursor(spielId);
-							    		c.moveToFirst();
-						            	if(min<Integer.parseInt(helper.getSpielHalbzeitlaenge(c))){
-						            		helper.updateSpielAktuelleHalbzeit(spielId, 0);
-						            	}
-						            	if(min<=Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2 && min>=30){
-						            		helper.updateSpielAktuelleHalbzeit(spielId, 1);
-						            	}
-						            	if(min>Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2){
-						            		helper.updateSpielAktuelleHalbzeit(spielId, 0);
-						            	}
-						            	c.close();
-									}
-								});
+					.setCancelable(false)
+					.setPositiveButton(R.string.tickerMSGBoxEinstellen,
+							new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog,
+								int id) {
+								int min=0;
+								int sec=0;
+								Resources res = getResources();
+								if(editMinutes.getText().length() != 0){
+									min=Integer.parseInt(editMinutes.getText().toString());
+								}
+								else{
+									min=0;
+								}
+								if(editSeconds.getText().length() != 0){
+									sec=Integer.parseInt(editSeconds.getText().toString());
+								}
+								else{
+									sec=0;
+								}
+								if (sec>59) {
+									sec=59;
+								}
+								elapsedTime=(long) (min*60000)+(sec*1000);
+								((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
+						        /* Schreibe in die Datenbank, in welcher Halbzeit man sich befindet */
+							    Cursor c=helper.getSpielCursor(spielId);
+							    c.moveToFirst();
+						        if(min<Integer.parseInt(helper.getSpielHalbzeitlaenge(c))){
+						        	helper.updateSpielAktuelleHalbzeit(spielId, 0);
+						        }
+						        if(min<=Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2 && min>=30){
+						        	helper.updateSpielAktuelleHalbzeit(spielId, 1);
+						        }
+						        if(min>Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*2){
+						        	helper.updateSpielAktuelleHalbzeit(spielId, 0);
+						        }
+						        c.close();
+						        TabListActivity activity = (TabListActivity) 
+						        	getLocalActivityManager().getActivity(res.getString(R.string.ticker));
+						        try {
+						        	activity.refreshContent();
+						        } catch(Exception e){
+							}
+						}
+					});
 
 				// create alert dialog
 				AlertDialog alertDialog = alertDialogBuilder.create();
@@ -294,7 +308,7 @@ public class TickerActivity extends TabActivity {
                 return true;
             }
         });
-
+        
     }
 	
 	/**
@@ -304,6 +318,7 @@ public class TickerActivity extends TabActivity {
 	@Override
 	public void onResume() {
 	    super.onResume();  // Always call the superclass method first
+	    Log.v("TickerActivity", "onResume");
 	    /* Spielergebnis auf die Button schreiben */
 		Button btnToreHeim=(Button)findViewById(R.id.btn_tore_heim);
 		Button btnToreAusw=(Button)findViewById(R.id.btn_tore_auswaerts);
@@ -374,7 +389,7 @@ public class TickerActivity extends TabActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
-	  
+	  Log.v("TickerActivity", "onStop Start");
 	  /** Aktuelle Zeit auf der Stoppuhr in Datenbank übertragen */
 	  if(stopped){
 		  zeitStart=0;
@@ -392,10 +407,12 @@ public class TickerActivity extends TabActivity {
 	//
 	
     public void uhrClick (View view){
+    	Log.v("TickerActivity", "uhrClick");
     	uhrStartStopp();
     }
 	
     public void uhrStartStopp() {
+    	Log.v("TickerActivity", "uhrStartStopp");
     	if(stopped){
     		startTime = System.currentTimeMillis() - elapsedTime; 
         	mHandler.removeCallbacks(startTimer);
@@ -421,7 +438,8 @@ public class TickerActivity extends TabActivity {
 	                			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
 	                			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
 	                			String strBallbesitzText="Ballbesitz " + helper.getTeamHeimKurzBySpielID(c);
-	                			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), 0);
+	                			realzeit = DateFormat.getDateTimeInstance().format(new Date());
+	                			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), 0, realzeit);
 	                			// LISTVIEW => adapter.getCursor().requery();  // ListView aktualisieren
 	                			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
 	        					strBallbesitz="1";
@@ -439,7 +457,8 @@ public class TickerActivity extends TabActivity {
 	                			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
 	                			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
 	            				String strBallbesitzText="Ballbesitz " + helper.getTeamAuswKurzBySpielID(c);
-	            				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), 0);
+	            				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+	            				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), 0, realzeit);
 	            				// LISTVIEW => adapter.getCursor().requery();   // ListView aktualisieren
 	            				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
 	        					strBallbesitz="0";
@@ -467,6 +486,7 @@ public class TickerActivity extends TabActivity {
     
     private Runnable startTimer = new Runnable() {
     	public void run() {
+    		Log.v("TickerActivity", "run");
     		elapsedTime = System.currentTimeMillis() - startTime;
     		((TextView)findViewById(R.id.btn_uhr)).setText(helper.updateTimer(elapsedTime));
     		mHandler.postDelayed(this,REFRESH_RATE);
@@ -512,7 +532,8 @@ public class TickerActivity extends TabActivity {
 	//
 	
 	private void setupTab(final View view, final String tag) {
-	    View tabview = createTabView(mTabHost.getContext(), tag);
+		Log.v("TickerActivity", "setupTab");
+		View tabview = createTabView(mTabHost.getContext(), tag);
 	    Resources res = getResources(); 
 	    Intent tabIntent;
 	    TabSpec setContent;
@@ -547,7 +568,8 @@ public class TickerActivity extends TabActivity {
 	}
 
 	private static View createTabView(final Context context, final String text) {
-	    View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
+		Log.v("TickerActivity", "createTabView");
+		View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
 	    TextView tv = (TextView) view.findViewById(R.id.tabsText);
 	    tv.setText(text);
 	    return view;

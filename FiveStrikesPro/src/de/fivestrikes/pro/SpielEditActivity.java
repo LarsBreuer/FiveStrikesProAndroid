@@ -45,19 +45,13 @@ public class SpielEditActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        Log.v("SpielEditActivity", "Stufe 1");
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-		Log.v("SpielEditActivity", "Stufe 2");
 		setContentView(R.layout.spiel_edit);
-		Log.v("SpielEditActivity", "Stufe 3");
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-	    Log.v("SpielEditActivity", "Stufe 4");
 	    
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.spielEditTitel);
-        Log.v("SpielEditActivity", "Stufe 5");
 		helper=new SQLHelper(this);
-		Log.v("SpielEditActivity", "Stufe 6");
 		
 		spiel_halbzeitlaenge=(EditText)findViewById(R.id.spielHalbzeitlaenge);
 	    

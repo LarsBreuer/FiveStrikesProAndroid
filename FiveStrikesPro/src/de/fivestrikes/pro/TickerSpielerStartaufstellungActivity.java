@@ -35,6 +35,7 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
     String spielerString=null;
     String spielerPosition=null;
     String zeit=null;
+    String realzeit=null;
     static boolean[] checkBoxState;
     int spielerZaehler;
     int spielerCount;
@@ -71,6 +72,7 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
         aktionString=getIntent().getStringExtra(TabMenuActivity .ID_AKTION_EXTRA);
         aktionInt=getIntent().getStringExtra(TabMenuActivity .ID_AKTIONINT_EXTRA);
         zeit=getIntent().getStringExtra(TabMenuActivity .ID_ZEIT_EXTRA);
+        realzeit=getIntent().getStringExtra(TabMenuActivity .ID_REALZEIT_EXTRA);
 		Cursor cSpiel=helper.getSpielCursor(spielId);
     	cSpiel.moveToFirst();
 	    halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(cSpiel))*60*1000;
@@ -179,7 +181,7 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
     			}
     			helper.insertTicker(7, getString(R.string.tickerAktionEinwechselung), Integer.parseInt(aktionTeamHeim), 
     								spielerString, Integer.parseInt(spielerId), Integer.parseInt(spielId), 
-    								zeitAufstellung);
+    								zeitAufstellung, realzeit);
     			if(spielerPosition.equals(getString(R.string.spielerPositionTorwart))){
         			if(Integer.parseInt(aktionTeamHeim)==1){
         				helper.updateSpielTorwartHeim(spielId, Integer.parseInt(spielerId));
