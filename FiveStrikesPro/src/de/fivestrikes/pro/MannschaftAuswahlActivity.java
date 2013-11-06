@@ -1,8 +1,10 @@
 package de.fivestrikes.pro;
 
 //import de.fivestrikes.lite.R;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.util.Log;
 
 
 public class MannschaftAuswahlActivity extends ListActivity {
@@ -23,6 +26,8 @@ public class MannschaftAuswahlActivity extends ListActivity {
 	Cursor model=null;
 	MannschaftAdapter adapter=null;
 	SQLHelper helper=null;
+	String haTeam=null;
+	String gegnerID=null;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,8 @@ public class MannschaftAuswahlActivity extends ListActivity {
         setListAdapter(adapter);
         
         Button backButton = (Button) findViewById(R.id.back_button);
-        
+        haTeam=getIntent().getStringExtra(SpielEditActivity.ID_HATEAM_EXTRA);
+        gegnerID=getIntent().getStringExtra(SpielEditActivity.ID_GEGNER_EXTRA);
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,11 +68,26 @@ public class MannschaftAuswahlActivity extends ListActivity {
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
-
-		Intent i=new Intent();
-		i.putExtra("Mannschaft", String.valueOf(id));
-		setResult(RESULT_OK, i);
-		finish();
+		if(String.valueOf(id).equals(gegnerID)){
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MannschaftAuswahlActivity.this);
+			alertDialogBuilder
+    			.setTitle(R.string.spielTeamauswahlMsgboxTitel)
+    			.setMessage(R.string.spielGegnerauswahlMsgboxText)
+    			.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog,int id) {
+    					
+    				}
+    			});
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+		}else{
+			Intent i=new Intent();
+			i.putExtra("Mannschaft", String.valueOf(id));
+			i.putExtra("haTeam", haTeam);
+			setResult(RESULT_OK, i);
+			finish();
+		}
+		
 		
 	}
 	

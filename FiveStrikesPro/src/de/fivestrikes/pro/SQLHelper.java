@@ -31,25 +31,28 @@ class SQLHelper extends SQLiteOpenHelper {
 	  db.execSQL("CREATE TABLE spiel (_id INTEGER PRIMARY KEY AUTOINCREMENT, teamHeim INTEGER, teamAuswaerts INTEGER, " +
 	  			 "aktuelleHalbzeit INTEGER, ballbesitz INTEGER, halbzeitLaenge INTEGER, spielDatum STRING, toreHeim INTEGER, " +
 	  			 "toreAuswaerts INTEGER, zeitAktuell DATE, zeitBisher LONG, zeitStart LONG, zeitTicker INTEGER, " +
-	  			 "torwartHeim INTEGER, torwartAuswaerts INTEGER);");
+	  			 "torwartHeim INTEGER, torwartAuswaerts INTEGER, spielerEingabe INTEGER DEFAULT 1, spielerWurfecke INTEGER DEFAULT 1, " +
+	  			 "notiz TEXT);");
 	  db.execSQL("CREATE TABLE ticker (_id INTEGER PRIMARY KEY AUTOINCREMENT, aktionInteger INTEGER, aktionString STRING, aktionTeamHeim INTEGER, spielerAktion STRING, " +
 		  		"spielerID INTEGER, tickerHeimTore INTEGER, tickerAuswaertsTore INTEGER, tickerErgebnisString STRING, tickerID INTEGER, wurfecke STRING, zeitInteger INTEGER, " +
-		  		"zeitString STRING, spielID INTEGER, wurfposition STRING);");
+		  		"zeitString STRING, spielID INTEGER, wurfposition STRING, realzeit STRING);");
 	  db.execSQL("CREATE TABLE statSpiel (_id INTEGER PRIMARY KEY AUTOINCREMENT, spielHeim STRING, spielBezeichnung STRING, spielAusw STRING);");
 	  db.execSQL("CREATE TABLE statTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, torName STRING, torTore STRING, torFehl STRING, torProzent STRING);");
 	  db.execSQL("CREATE TABLE statSpieler (_id INTEGER PRIMARY KEY AUTOINCREMENT, spielerBezeichnung STRING, spielerWert STRING);");
+	  db.execSQL("CREATE TABLE statTickerTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, tickerTorName STRING, " +
+      		"tickerTorTeam STRING, tickerTorTore STRING, tickerTorFehl STRING, tickerTorProzent STRING);");
   }
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	  if (newVersion > oldVersion) {
-	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerEingabe INTEGER DEFAULT 1");
-	        db.execSQL("ALTER TABLE spiel ADD COLUMN spielerWurfecke INTEGER DEFAULT 1");
-	        db.execSQL("ALTER TABLE spiel ADD COLUMN notiz TEXT");
-	        db.execSQL("ALTER TABLE ticker ADD COLUMN realzeit STRING");
-	        db.execSQL("CREATE TABLE statTickerTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, tickerTorName STRING, " +
+	  	db.execSQL("ALTER TABLE spiel ADD COLUMN spielerEingabe INTEGER DEFAULT 1");
+	    db.execSQL("ALTER TABLE spiel ADD COLUMN spielerWurfecke INTEGER DEFAULT 1");
+	    db.execSQL("ALTER TABLE spiel ADD COLUMN notiz TEXT");
+	    db.execSQL("ALTER TABLE ticker ADD COLUMN realzeit STRING");
+	    db.execSQL("CREATE TABLE statTickerTor (_id INTEGER PRIMARY KEY AUTOINCREMENT, tickerTorName STRING, " +
 	        		"tickerTorTeam STRING, tickerTorTore STRING, tickerTorFehl STRING, tickerTorProzent STRING);");
-	    }
+	  }
   }
   
   // Start Mannschaft
@@ -203,6 +206,8 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("spielerID", spielerID);
 	  cv.put("spielerPosition", spielerPosition);
 	  getWritableDatabase().insert("spieler", "spielerName", cv);
+	  
+	  Log.v("SQLHelper", spielerPosition);
 	  
 	  cvs.put("spielerAnzahl", Integer.parseInt(spielerNummer));
 	  String[] args={teamID};
@@ -492,7 +497,7 @@ class SQLHelper extends SQLiteOpenHelper {
 	  getWritableDatabase().delete("ticker", "spielID=?", args);
   }
   
-  public void createSchnellesSpiel() {
+  public void createSchnellesSpiel(Context context) {
 	
 		Date spielDatum=null;
 		int year;
@@ -516,7 +521,9 @@ class SQLHelper extends SQLiteOpenHelper {
 		auswC.close();
 		
 		/* Spieler erstellen */
-		insertSpieler("Spieler 1", "1", String.valueOf(heimID), "");
+
+		Resources res = context.getResources();
+		insertSpieler("Spieler 1", "1", String.valueOf(heimID), res.getString(R.string.spielerPositionTorwart));
 		insertSpieler("Spieler 2", "2", String.valueOf(heimID), "");
 		insertSpieler("Spieler 3", "3", String.valueOf(heimID), "");
 		insertSpieler("Spieler 4", "4", String.valueOf(heimID), "");
@@ -530,7 +537,7 @@ class SQLHelper extends SQLiteOpenHelper {
 		insertSpieler("Spieler 12", "12", String.valueOf(heimID), "");
 		insertSpieler("Spieler 13", "13", String.valueOf(heimID), "");
 		insertSpieler("Spieler 14", "14", String.valueOf(heimID), "");
-		insertSpieler("Spieler 1", "1", String.valueOf(auswID), "");
+		insertSpieler("Spieler 1", "1", String.valueOf(auswID), res.getString(R.string.spielerPositionTorwart));
 		insertSpieler("Spieler 2", "2", String.valueOf(auswID), "");
 		insertSpieler("Spieler 3", "3", String.valueOf(auswID), "");
 		insertSpieler("Spieler 4", "4", String.valueOf(auswID), "");

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@drawable/hintergrund">
+  
+<LinearLayout
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:paddingLeft="10dp"
   android:paddingRight="10dp"
   android:orientation="vertical"
-  android:background="@drawable/hintergrund">
+  >
   
 	<TextView 
 	    android:text="@string/spielDatum" 
@@ -103,13 +108,12 @@
     <TableLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" 
-        android:gravity="bottom"
+        android:layout_marginTop="40dp"
     > 
         
         <TableRow
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content" 
-        	android:layout_marginBottom="10dp"
         >
         	
         	<Button 
@@ -141,3 +145,4 @@
     </TableLayout>
 
 </LinearLayout>
+</ScrollView>

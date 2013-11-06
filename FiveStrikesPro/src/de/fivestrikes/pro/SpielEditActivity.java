@@ -25,6 +25,8 @@ import android.content.Context;
 
 public class SpielEditActivity extends Activity {
 	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
+	public final static String ID_HATEAM_EXTRA="de.fivestrikes.pro.hateam_ID";
+	public final static String ID_GEGNER_EXTRA="de.fivestrikes.pro.gegener_ID";
 	private static final int GET_CODE = 0;
 	int spiel_ID=0;
 	EditText spiel_halbzeitlaenge=null;
@@ -180,11 +182,15 @@ public class SpielEditActivity extends Activity {
             		} else {
             			haTeam="Heim";
             			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+            			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
+            			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(auswID));
             			startActivityForResult(newIntent, GET_CODE);
             		}
             	} else{
         			haTeam="Heim";
         			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+        			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
+        			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(auswID));
         			startActivityForResult(newIntent, GET_CODE);
             	}
             }
@@ -202,7 +208,7 @@ public class SpielEditActivity extends Activity {
             			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
             			alertDialogBuilder
         	    			.setTitle(R.string.spielTeamauswahlMsgboxTitel)
-        	    			.setMessage(R.string.spielTeamauswahlMsgboxText)
+        	    			.setMessage(R.string.spielGegnerauswahlMsgboxText)
         	    			.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
         	    				public void onClick(DialogInterface dialog,int id) {
         	    					
@@ -213,11 +219,15 @@ public class SpielEditActivity extends Activity {
             		} else {
             			haTeam="Auswaerts";
             			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+            			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
+            			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(heimID));
             			startActivityForResult(newIntent, GET_CODE);
             		}
             	} else {
         			haTeam="Auswaerts";
         			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+        			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
+        			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(heimID));
         			startActivityForResult(newIntent, GET_CODE);
             	}
             }
@@ -234,7 +244,10 @@ public class SpielEditActivity extends Activity {
 				
 		if (requestCode == GET_CODE){
 			if (resultCode == RESULT_OK) {
-				if (haTeam=="Heim") {
+				Log.v("SpielEdit", haTeam);
+				haTeam=data.getStringExtra("haTeam");
+				Log.v("SpielEdit", haTeam);
+				if (haTeam.equals("Heim")) {
 					
 					heimID=Integer.parseInt(data.getStringExtra("Mannschaft"));
 					Button btnHeim=(Button)findViewById(R.id.spielHeim);

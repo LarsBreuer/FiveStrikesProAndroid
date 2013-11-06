@@ -164,6 +164,8 @@
 	    									  Eine Änderung der Mannschaften ist daher nicht mehr möglich.
 	    									  Um die Mannschaft ändern zu können müssen alle Aktionen im Ticker 
 	    									  gelöscht werden.</string>
+	<string name="spielGegnerauswahlMsgboxText">Auswahl nicht möglich. Du hast diese Mannschaft schon für den 
+	    										Gegner ausgewählt</string>
     <!-- Spiel ends -->  
     
     <!-- Ticker starts -->   

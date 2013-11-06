@@ -77,7 +77,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 			}
 		}
 		c.close();
-        if(torwartTickerId==null){
+        if(torwartId==null){
         	Toast.makeText(getApplicationContext(), getString(R.string.tickerWarnmeldungTorwartEinsatz), Toast.LENGTH_SHORT).show();
         }
         

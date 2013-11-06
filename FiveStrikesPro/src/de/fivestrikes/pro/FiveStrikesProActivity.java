@@ -88,7 +88,7 @@ public class FiveStrikesProActivity extends Activity {
         				break;
         			case 4:
         				helper=new SQLHelper(FiveStrikesProActivity.this);
-        				helper.createSchnellesSpiel();
+        				helper.createSchnellesSpiel(FiveStrikesProActivity.this);
         				Intent newIntent = new Intent(getApplicationContext(), TickerActivity.class);
         				Cursor c=helper.getLastSpielId();
         				c.moveToFirst();

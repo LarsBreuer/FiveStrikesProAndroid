@@ -6,12 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -48,6 +50,7 @@ public class MannschaftEditActivity extends Activity {
 	    Button spielerButton = (Button) findViewById(R.id.spieler);
 	    Button spielerImportButton = (Button) findViewById(R.id.spielerimport);
 	    Button spielerInfoButton = (Button) findViewById(R.id.spielerimportinfo);
+	    Button okButton = (Button) findViewById(R.id.okay);
 	    
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);
@@ -83,6 +86,15 @@ public class MannschaftEditActivity extends Activity {
             @Override
             public void onClick(View view) {
             	finish();
+            }
+        });
+        
+        /* Okay Button */
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            	InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+            	inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
         

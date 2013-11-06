@@ -227,7 +227,7 @@ public class TabTickerSpielerAuswActivity extends ListActivity {
    					Intent i=new Intent();
    					setResult(RESULT_OK, i);
    					finish();
-   				}
+   				} 
    			}
     	}
     	if(Integer.parseInt(aktionInt)== 3 || 
@@ -253,6 +253,40 @@ public class TabTickerSpielerAuswActivity extends ListActivity {
    					Intent i=new Intent();
    					setResult(RESULT_OK, i);
    					finish();
+   				} else {
+   					finish=true;
+   		    		AlertDialog.Builder tfBuilder = new AlertDialog.Builder(this);
+   		   			tfBuilder
+   		   			.setTitle(R.string.tickerMSGBoxAktionTitel)
+   		   			.setMessage(R.string.tickerMSGBoxAktionNachricht)
+   		   			.setIcon(android.R.drawable.ic_dialog_alert)
+   		   			.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
+   		   				public void onClick(DialogInterface dialog, int which) {			      	
+   		   	    			Cursor cSpiel=helper.getSpielCursor(spielId);
+   		   	    	    	cSpiel.moveToFirst();
+   		   	    			if(Integer.parseInt(aktionTeamHeim)==1 && 
+   		   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
+   		   	    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
+   		   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+   		   	    				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
+   		   	    			}
+   		   	    			if(Integer.parseInt(aktionTeamHeim)==0 && 
+   		   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
+   		   	    				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
+   		   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+   		   	    				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
+   		   	    			}
+   		   	    			cSpiel.close();
+   		   	    			/** Hinweis: Ballbesitzwechsel vielleicht in eigene Funktion schreiben */
+   		   					finish();
+   		   				}
+   		   			})
+   		   			.setNegativeButton(R.string.tickerMSGBoxNein, new DialogInterface.OnClickListener() {
+   		   				public void onClick(DialogInterface dialog, int which) {
+   		   					finish();
+   		   				}
+   		   			})
+   		   			.show();
    				}
     		}
     	}
