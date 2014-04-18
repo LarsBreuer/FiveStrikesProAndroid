@@ -20,24 +20,34 @@ public class TickerInfoActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.ticker_info);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.info);
-
+        
+/* Button, CheckBox und Textfeld definieren */
+        
 	    Button backButton = (Button) findViewById(R.id.back_button);
 	    CheckBox chkSpieler = (CheckBox) findViewById(R.id.checkbox_spieler_eingeben);
 	    CheckBox chkWurfecke = (CheckBox) findViewById(R.id.checkbox_wurfecke_eingeben);
 	    notiz=(EditText)findViewById(R.id.notiz);
 
-        spielId=getIntent().getStringExtra(TickerActivity.ID_SPIEL_EXTRA);
+/* Daten aus Activity laden */ 
+        
+        spielId=getIntent().getStringExtra("GameID");
+        
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
-		Cursor c=helper.getSpielCursor(spielId);
-		c.moveToFirst();
-		if(helper.getSpielSpielerEingabe(c)!=null){
-			if(helper.getSpielSpielerEingabe(c).equals("1")){
+
+/* Daten aus Datenbank laden */
+        
+		if(helper.getSpielSpielerEingabe(spielId)!=null){
+			if(helper.getSpielSpielerEingabe(spielId).equals("1")){
 				chkSpieler.setChecked(true);
 			} else {
 				chkSpieler.setChecked(false);
@@ -45,8 +55,8 @@ public class TickerInfoActivity extends Activity {
 		} else {
 			chkSpieler.setChecked(true);
 		}
-		if(helper.getSpielSpielerWurfecke(c)!=null){
-			if(helper.getSpielSpielerWurfecke(c).equals("1")){
+		if(helper.getSpielSpielerWurfecke(spielId)!=null){
+			if(helper.getSpielSpielerWurfecke(spielId).equals("1")){
 				chkWurfecke.setChecked(true);
 			} else {
 				chkWurfecke.setChecked(false);
@@ -54,9 +64,10 @@ public class TickerInfoActivity extends Activity {
 		} else {
 			chkWurfecke.setChecked(true);
 		}
-		notiz.setText(helper.getSpielNotiz(c));
-		c.close();
-
+		notiz.setText(helper.getSpielNotiz(spielId));
+        
+/* Button beschriften */
+        
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -71,18 +82,14 @@ public class TickerInfoActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-	    helper.close();
+
 	}
-	
-	/*
-	@Override
-	public void onStop() {
-		super.onStop();
-		Log.v("TickerInfoActivity", "onStop Start");
-	    helper.close();
-	    Log.v("TickerInfoActivity", "onStop Ende");
-	}
-	*/
+
+/*
+ * 
+ * Checkbos für Statistikeingabe definieren 
+ *
+ */
 	
 	public void onCheckboxClicked(View view) {
 		boolean checked = ((CheckBox) view).isChecked();

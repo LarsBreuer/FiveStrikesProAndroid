@@ -23,19 +23,25 @@ public class TickerEditWurfpositionActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.ticker_edit_position);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerAktionWurfecke);
         
-        /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
-        wurfposition=getIntent().getStringExtra(TickerEditActivity.ID_TICKEREDITPOSITION_EXTRA);
+
+/* Daten aus Activity laden */ 
+        
+        wurfposition=getIntent().getStringExtra("Position");
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button feld_1_1_Button = (Button) findViewById(R.id.feld_1_1);
@@ -121,7 +127,7 @@ public class TickerEditWurfpositionActivity extends Activity {
         }
 
     	
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,7 +135,7 @@ public class TickerEditWurfpositionActivity extends Activity {
             }
         });
 
-        /** Button Wurfposition*/
+        /* Button Wurfposition*/
         feld_1_1_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -316,9 +322,14 @@ public class TickerEditWurfpositionActivity extends Activity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
 
+/*
+ * 
+ * Button leeren 
+ *
+ */
+	
 	public void wurf_button_leeren() {
 
         final Button feld_1_1_Button = (Button) findViewById(R.id.feld_1_1);
@@ -364,6 +375,12 @@ public class TickerEditWurfpositionActivity extends Activity {
         
 
 	}
+
+/*
+ * 
+ * Zurück zu Ticker Edit und Ergebnis übertragen
+ *
+ */
 	
 	public void uebertragen() {
 		

@@ -22,15 +22,6 @@ import java.text.DateFormat;
 
 
 public class TabMenuActivity extends Activity {
-	
-	public final static String ID_AKTIONINT_EXTRA="de.fivestrikes.pro.aktionInt_ID";
-	public final static String ID_AKTION_EXTRA="de.fivestrikes.pro.aktion_ID";
-	public final static String ID_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
-	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
-	public final static String ID_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
-	public final static String ID_REALZEIT_EXTRA="de.fivestrikes.pro.realzeit_ID";
-	public final static String ID_TEAM_HEIM_EXTRA="de.fivestrikes.pro.teamHeim_ID";
-	public final static String ID_TEAM_AUSW_EXTRA="de.fivestrikes.pro.teamAusw_ID";
 
 	private static final int GET_CODE = 0;
 	SQLHelper helper=null;
@@ -39,6 +30,8 @@ public class TabMenuActivity extends Activity {
 	String teamId=null;
 	String teamHeimId=null;
 	String teamAuswId=null;
+	String strTeamHeimKurzBySpielID=null;
+	String strTeamAuswKurzBySpielID=null;
 	String aktionTeamHeim=null;
 	String strAktion=null;
 	String strAktionInt=null;
@@ -46,50 +39,61 @@ public class TabMenuActivity extends Activity {
 	String spielerEingabe=null;
 	String realzeit=null;
 	Integer zeit=null;
+	Integer intSpielBallbesitz=null;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("TabMenuActivity", "onCreate");
+        
+/* Grundlayout setzen */
+        
         setContentView(R.layout.tab_menu);
         
-        helper=new SQLHelper(this);
+/* Datenbank laden */
         
-        spielId=getIntent().getStringExtra(TickerAktionActivity.ID_SPIEL_EXTRA);
+        helper=new SQLHelper(this);
 
-		Cursor c=helper.getSpielById(spielId);
-		c.moveToFirst();    
-		teamHeimId = helper.getSpielHeim(c);
-		teamAuswId = helper.getSpielAusw(c);
-		c.close();
+/* Daten aus Activity laden */ 
+        
+        spielId=getIntent().getStringExtra("GameID");  
+
+/* Daten aus Datenbank laden */
+        
+		teamHeimId = helper.getSpielHeim(spielId);
+		teamAuswId = helper.getSpielAusw(spielId);
+		strTeamHeimKurzBySpielID=helper.getTeamHeimKurzBySpielID(spielId);
+		strTeamAuswKurzBySpielID=helper.getTeamAuswKurzBySpielID(spielId);
+
+/* GridView laden */
         
 		gridview();
-        
-        
-		
+
     }
     
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
 	  
-	  helper.close();
 	}
+
+/*
+ * 
+ * Auswahl einer Aktion 
+ *
+ */
 	
     public void startAktion() {
     	
-    	Cursor c=helper.getSpielCursor(spielId);
-		c.moveToFirst(); 
-		if (helper.getSpielBallbesitz (c)!=null){
-			strBallbesitz = helper.getSpielBallbesitz(c);
+    	if (helper.getSpielBallbesitz(spielId)!=null){
+			strBallbesitz = String.valueOf(helper.getSpielBallbesitz(spielId));
 		} else {
 			strBallbesitz = "1";
 		}
-		if(helper.getSpielSpielerEingabe(c)!=null){
-			spielerEingabe=helper.getSpielSpielerEingabe(c);
+	
+		if(helper.getSpielSpielerEingabe(spielId)!=null){
+			spielerEingabe=helper.getSpielSpielerEingabe(spielId);
 		} else {
 			spielerEingabe="1";
 		}
-		c.close();
 		if(strAktionInt.equals("2") || strAktionInt.equals("14") || strAktionInt.equals("20") || strAktionInt.equals("3") ||
 				strAktionInt.equals("15") || strAktionInt.equals("21") || strAktionInt.equals("24") || strAktionInt.equals("4")){
 			aktionTeamHeim=strBallbesitz;
@@ -108,43 +112,48 @@ public class TabMenuActivity extends Activity {
 			} 
 		}else {
 			if (strAktionInt.equals("12")){
-				Intent newIntent = new Intent(getApplicationContext(),TickerSpielerStartaufstellungActivity.class);
-				newIntent.putExtra(ID_AKTIONINT_EXTRA, strAktionInt);
-				newIntent.putExtra(ID_AKTION_EXTRA, strAktion);
-				newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
-				newIntent.putExtra(ID_REALZEIT_EXTRA, String.valueOf(realzeit));
-				newIntent.putExtra(ID_TEAM_HEIM_EXTRA, teamHeimId);
-				newIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
-				startActivityForResult(newIntent, GET_CODE);
+				Intent i = new Intent(getApplicationContext(),TickerSpielerStartaufstellungActivity.class);
+				i.putExtra("StrAktionInt", strAktionInt);
+				i.putExtra("StrAktion", strAktion);
+				i.putExtra("AktionTeamHome", aktionTeamHeim);
+				i.putExtra("GameID", spielId);
+				i.putExtra("Time", String.valueOf(TickerActivity.elapsedTime));
+				i.putExtra("RealTime", String.valueOf(realzeit));
+				i.putExtra("TeamHomeID", teamHeimId);
+				i.putExtra("TeamAwayID", teamAuswId);
+				startActivityForResult(i, GET_CODE);
 			} else {
-				Intent newIntent = new Intent(getApplicationContext(), TickerSpielerActivity.class);
-				newIntent.putExtra(ID_AKTIONINT_EXTRA, strAktionInt);
-				newIntent.putExtra(ID_AKTION_EXTRA, strAktion);
-				newIntent.putExtra(ID_AKTIONTEAMHEIM_EXTRA, aktionTeamHeim);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_ZEIT_EXTRA, String.valueOf(TickerActivity.elapsedTime));
-				newIntent.putExtra(ID_REALZEIT_EXTRA, String.valueOf(realzeit));
-				newIntent.putExtra(ID_TEAM_HEIM_EXTRA, teamHeimId);
-				newIntent.putExtra(ID_TEAM_AUSW_EXTRA, teamAuswId);
-				startActivityForResult(newIntent, GET_CODE);
+				Intent i = new Intent(getApplicationContext(), TickerSpielerActivity.class);
+				i.putExtra("StrAktionInt", strAktionInt);
+				i.putExtra("StrAktion", strAktion);
+				i.putExtra("AktionTeamHome", aktionTeamHeim);
+				i.putExtra("GameID", spielId);
+				i.putExtra("Time", String.valueOf(TickerActivity.elapsedTime));
+				i.putExtra("RealTime", String.valueOf(realzeit));
+				i.putExtra("TeamHomeID", teamHeimId);
+				i.putExtra("TeamAwayID", teamAuswId);
+				startActivityForResult(i, GET_CODE);
 			}
     	}
-    	
-		/** Hinweis: Alles einheitlich newIntent oder i */
 		
     }
-    
+
+/*
+ * 
+ * Direkte Eingabe einer Aktion 
+ *
+ */
+	
     public void aktionDirekt() {
     	
-    	Cursor c=helper.getSpielCursor(spielId);
-		c.moveToFirst(); 
-		if (helper.getSpielBallbesitz (c)!=null){
-			strBallbesitz = helper.getSpielBallbesitz(c);
+    	intSpielBallbesitz = Integer.parseInt(helper.getSpielBallbesitz(spielId));
+    	
+    	if (helper.getSpielBallbesitz (spielId)!=null){
+			strBallbesitz = String.valueOf(intSpielBallbesitz);
 		} else {
 			strBallbesitz = "1";
 		}
+		
     	if(strAktionInt.equals("2") || strAktionInt.equals("14") || strAktionInt.equals("20") || strAktionInt.equals("3") ||
 				strAktionInt.equals("15") || strAktionInt.equals("21") || strAktionInt.equals("24")){
 			aktionTeamHeim=strBallbesitz;
@@ -160,8 +169,7 @@ public class TabMenuActivity extends Activity {
 		
 		zeit=(int) (long) TickerActivity.elapsedTime;
 		int zeitZurueck=zeit;
-		int halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(c))*60*2000;
-		c.close();
+		int halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(spielId))*60*2000;
 		
     	helper.insertTicker(Integer.parseInt(strAktionInt), strAktion, Integer.parseInt(aktionTeamHeim), "", 
 				0, Integer.parseInt(spielId), zeit, realzeit);
@@ -212,21 +220,8 @@ public class TabMenuActivity extends Activity {
 			}
 			cTicker.close();
 			/* Änderung des Ballbesitzes */
-			c=helper.getSpielCursor(spielId);
-			c.moveToFirst(); 
-			if(Integer.parseInt(aktionTeamHeim)==1 && 
-					Integer.parseInt(helper.getSpielBallbesitz(c))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
-				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(c);
-				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), zeit + 1, realzeit);
-				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
-			}
-			if(Integer.parseInt(aktionTeamHeim)==0 && 
-					Integer.parseInt(helper.getSpielBallbesitz(c))==0){
-				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(c);
-				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), zeit + 1, realzeit);
-				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
-			}
-			c.close();
+			helper.changeBallbesitz(aktionTeamHeim, intSpielBallbesitz, strTeamHeimKurzBySpielID, strTeamAuswKurzBySpielID, 
+	    				spielId, String.valueOf(zeit), realzeit); 
     	}
     	
     	// Bei Fehlwurf nach Ballbesitzwechsel fragen
@@ -241,23 +236,10 @@ public class TabMenuActivity extends Activity {
    			.setIcon(android.R.drawable.ic_dialog_alert)
    			.setPositiveButton(R.string.tickerMSGBoxJa, new DialogInterface.OnClickListener() {
    				public void onClick(DialogInterface dialog, int which) {
-   	    			Cursor cSpiel=helper.getSpielCursor(spielId);
-   	    	    	cSpiel.moveToFirst();
-   	    			if(Integer.parseInt(aktionTeamHeim)==1 && 
-   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==1){  // ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
-   	    				String strBallbesitz="Ballbesitz " + helper.getTeamAuswKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), zeit + 1, realzeit);
-   	    				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
-   	    			}
-   	    			if(Integer.parseInt(aktionTeamHeim)==0 && 
-   	    					Integer.parseInt(helper.getSpielBallbesitz(cSpiel))==0){
-   	    				String strBallbesitz="Ballbesitz " + helper.getTeamHeimKurzBySpielID(cSpiel);
-   	    				helper.insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), zeit + 1, realzeit);
-   	    				helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
-   	    			}
-   	    			cSpiel.close();
+   					/* Änderung des Ballbesitzes */
+   					helper.changeBallbesitz(aktionTeamHeim, intSpielBallbesitz, strTeamHeimKurzBySpielID, strTeamAuswKurzBySpielID, 
+   		    				spielId, String.valueOf(zeit), realzeit); 
    	    			((TickerActivity)getParent()).onResume();
-   	    			/** Hinweis: Ballbesitzwechsel vielleicht in eigene Funktion schreiben */
    				}
    			})
    			.setNegativeButton(R.string.tickerMSGBoxNein, new DialogInterface.OnClickListener() {
@@ -291,7 +273,13 @@ public class TabMenuActivity extends Activity {
     	helper.updateSpielErgebnis(Integer.parseInt(spielId));
     	((TickerActivity)getParent()).onResume();
     }
-    
+
+/*
+ * 
+ * Eingabe der Auszeit
+ *
+ */
+	 
     public void aktionAuszeit() {
 		
     	helper.insertTicker(Integer.parseInt(strAktionInt), strAktion, Integer.parseInt(aktionTeamHeim), "", 
@@ -299,14 +287,17 @@ public class TabMenuActivity extends Activity {
   	 	
     	((TickerActivity)getParent()).uhrStartStopp();
     }
-    
+
+/*
+ * 
+ * Menüpunkte definieren 
+ *
+ */
+	
     public void gridview() {
         GridView gridview = (GridView) findViewById(R.id.aktionen_gridview);
         gridview.setAdapter(new AktionenImageAdapter(this));
-        
-        /**
-		 * On Click event for Single Gridview Item
-		 * */
+
 		gridview.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View v,

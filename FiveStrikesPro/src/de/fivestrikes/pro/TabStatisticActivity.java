@@ -1,5 +1,6 @@
 package de.fivestrikes.pro;
 
+import de.fivestrikes.pro.TabListActivity.TickerAdapter;
 import android.app.ListActivity;
 import android.app.Activity;
 import android.content.Context;
@@ -25,30 +26,71 @@ public class TabStatisticActivity extends ListActivity {
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("TabStatisticActivity", "onCreate");
+        
+/* Grundlayout setzen */
+        
         setContentView(R.layout.tab_list);
- 
-        spielId=getIntent().getStringExtra(TickerActivity.ID_SPIEL_EXTRA);
-        helper=new SQLHelper(this);  
-        Cursor c=helper.getSpielById(spielId);
-		c.moveToFirst();    
-		teamHeimId = helper.getSpielHeim(c);
-		teamAuswId = helper.getSpielAusw(c);
-		c.close();     
+
+/* Daten aus Activity laden */ 
+        
+        spielId=getIntent().getStringExtra("GameID");
+        
+/* Helper laden */
+        
+        helper=new SQLHelper(this);
+        
+/* Daten aus Datenbank laden */
+        
+		teamHeimId = helper.getSpielHeim(spielId);
+		teamAuswId = helper.getSpielAusw(spielId);
+        
+/* Statistik errechnen */
+        
         helper.createStatTickerTore(spielId, teamHeimId, teamAuswId, this);
+        
+/* Staistik einrichten */
         
         model=helper.getAllStatTickerTore();
         startManagingCursor(model);
         adapter=new StatTickerToreAdapter(model);
         setListAdapter(adapter);
+
     }
     
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
 	  
-	  helper.close();
 	}
+
+/*
+ * 
+ * Inhalt neu laden, wenn Activity ernuet aufgerufen wird 
+ *
+ */
+	
+    @Override
+	public void onResume() {
+    	super.onResume();  // Always call the superclass method first
+
+    	refreshContent();
+    }
+    
+    public void refreshContent() {
+
+    	helper.createStatTickerTore(spielId, teamHeimId, teamAuswId, this);
+    	helper=new SQLHelper(this);
+        model=helper.getAllStatTickerTore();
+        startManagingCursor(model);
+        adapter=new StatTickerToreAdapter(model);
+        setListAdapter(adapter);  
+    }
+
+/*
+ * 
+ * Liste Torstatistik definieren 
+ *
+ */
 	
 	class StatTickerToreAdapter extends CursorAdapter {
 		StatTickerToreAdapter(Cursor c) {

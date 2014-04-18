@@ -21,15 +21,19 @@ public class TickerEditAktionActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.mannschaft);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerAktionTitel);
         
-        /** Hinweis: Ballbesitz Heim und Auswärts hinzufügen in strings.xml schreiben */
+/* Aktionen anlegen */
+        
+        /** TODO: Ballbesitz Heim und Auswärts hinzufügen in strings.xml schreiben */
         
         String[] values = new String[] { getResources().getString(R.string.tickerAktionTor), 
 				 						 getResources().getString(R.string.tickerAktionFehlwurf), 
@@ -53,7 +57,9 @@ public class TickerEditAktionActivity extends ListActivity {
 				 						 getResources().getString(R.string.tickerAktionAuszeit)};
 		AktionenArrayAdapter adapter = new AktionenArrayAdapter(this, values);
 		setListAdapter(adapter);
-		
+        
+/* Button beschriften */
+        
         Button backButton = (Button) findViewById(R.id.back_button);
         
         /* Button zurück */
@@ -65,6 +71,12 @@ public class TickerEditAktionActivity extends ListActivity {
         });
 		
 	}
+
+/*
+ * 
+ * Auswahl der Aktion => dann zurück zu Ticker Edit
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,

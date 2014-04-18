@@ -1,6 +1,5 @@
 package de.fivestrikes.pro;
 
-// import de.fivestrikes.lite.R;
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
@@ -24,25 +23,31 @@ public class StatSpielActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.mannschaft);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.statSpielTitel);
-		
-		spielId=getIntent().getStringExtra(StatMenuActivity.ID_SPIEL_EXTRA);
-		
-        Button backButton = (Button) findViewById(R.id.back_button);
+
+/* Daten aus Activity laden */ 
         
+		spielId=getIntent().getStringExtra("GameID");
+        
+/* Datenbank laden */
+       
         helper=new SQLHelper(this);
-        
         helper.createStatSpiel(spielId, this);
-        
         model=helper.getAllStatSpiel();
         startManagingCursor(model);
         adapter=new StatSpielAdapter(model);
         setListAdapter(adapter);
+        
+/* Button beschriften */
+        
+        Button backButton = (Button) findViewById(R.id.back_button);
         
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -51,15 +56,19 @@ public class StatSpielActivity extends ListActivity {
             	finish();
             }
         });
-		
 	}
 	
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Spielstatistik einrichten 
+ *
+ */
 	
 	class StatSpielAdapter extends CursorAdapter {
 		StatSpielAdapter(Cursor c) {

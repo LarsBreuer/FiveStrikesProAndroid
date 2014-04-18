@@ -22,7 +22,6 @@ import android.util.Log;
 public class MannschaftAuswahlActivity extends ListActivity {
     /** Called when the activity is first created. */
     
-	public final static String ID_EXTRA="de.fivestrikes.pro._ID";
 	Cursor model=null;
 	MannschaftAdapter adapter=null;
 	SQLHelper helper=null;
@@ -32,12 +31,16 @@ public class MannschaftAuswahlActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.mannschaft);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.mannschaftAuswahl);
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
         model=helper.getAllTeam();
@@ -45,9 +48,11 @@ public class MannschaftAuswahlActivity extends ListActivity {
         adapter=new MannschaftAdapter(model);
         setListAdapter(adapter);
         
+/* Button beschriften */
+        
         Button backButton = (Button) findViewById(R.id.back_button);
-        haTeam=getIntent().getStringExtra(SpielEditActivity.ID_HATEAM_EXTRA);
-        gegnerID=getIntent().getStringExtra(SpielEditActivity.ID_GEGNER_EXTRA);
+        haTeam=getIntent().getStringExtra("HomeAway");
+        gegnerID=getIntent().getStringExtra("OpponentID");
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,14 +65,20 @@ public class MannschaftAuswahlActivity extends ListActivity {
 	
 	@Override
 	public void onDestroy() {
-	  super.onDestroy();
-	    
-	  helper.close();
+	  super.onDestroy(); 
+
 	}
+
+/*
+ * 
+ * Mannschaftauswahl => zurück zu Spiel Edit
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
+		
 		if(String.valueOf(id).equals(gegnerID)){
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MannschaftAuswahlActivity.this);
 			alertDialogBuilder
@@ -82,14 +93,19 @@ public class MannschaftAuswahlActivity extends ListActivity {
 			alertDialog.show();
 		}else{
 			Intent i=new Intent();
-			i.putExtra("Mannschaft", String.valueOf(id));
-			i.putExtra("haTeam", haTeam);
+			i.putExtra("TeamID", String.valueOf(id));
+			i.putExtra("HomeAway", haTeam);
 			setResult(RESULT_OK, i);
 			finish();
 		}
 		
-		
 	}
+
+/*
+ * 
+ * Mannschaftsliste definieren 
+ *
+ */
 	
 	class MannschaftAdapter extends CursorAdapter {
 		MannschaftAdapter(Cursor c) {
@@ -125,8 +141,8 @@ public class MannschaftAuswahlActivity extends ListActivity {
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getTeamName(c));
-	  
+	    	String teamId = helper.getTeamId(c);
+	    	name.setText(helper.getTeamName(teamId));
 	    }
 	}
 }

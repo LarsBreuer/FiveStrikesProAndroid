@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.fivestrikes.pro"
-    android:versionCode="4"
-    android:versionName="1.3" >
+    android:versionCode="5"
+    android:versionName="1.4" >
 
     <uses-sdk android:minSdkVersion="7" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -45,7 +45,6 @@
         
 		<activity 
 		    android:name=".SpielerEditActivity"
-		    android:windowSoftInputMode="stateHidden"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme">  
@@ -243,6 +242,7 @@
         
 		<activity 
             android:name=".TickerInfoActivity"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/app_name" 
             android:screenOrientation="portrait"
             android:theme="@style/noShadow">          

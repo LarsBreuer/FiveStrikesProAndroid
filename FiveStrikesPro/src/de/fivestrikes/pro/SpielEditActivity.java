@@ -24,9 +24,6 @@ import android.content.Context;
 
 
 public class SpielEditActivity extends Activity {
-	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
-	public final static String ID_HATEAM_EXTRA="de.fivestrikes.pro.hateam_ID";
-	public final static String ID_GEGNER_EXTRA="de.fivestrikes.pro.gegener_ID";
 	private static final int GET_CODE = 0;
 	int spiel_ID=0;
 	EditText spiel_halbzeitlaenge=null;
@@ -47,14 +44,22 @@ public class SpielEditActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.spiel_edit);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-	    
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.spielEditTitel);
 		helper=new SQLHelper(this);
-		
+
+/* Daten aus Activity laden */ 
+        
+	    spielId=getIntent().getStringExtra("GameID");
+
+/* Button und Textfelder definieren */
+        
 		spiel_halbzeitlaenge=(EditText)findViewById(R.id.spielHalbzeitlaenge);
 	    
 	    Button save=(Button)findViewById(R.id.save);
@@ -67,14 +72,13 @@ public class SpielEditActivity extends Activity {
 	    
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);
-	    
-	    spielId=getIntent().getStringExtra(SpielActivity.ID_EXTRA);
-	    
+
+/* Spieldaten aus Datenbank laden oder Spiel neu einrichten*/
+        
 	    if (spielId!=null) {   // Wurde ein bestehendes Spiel ausgewählt...
 	    	load();
 	    }
-	    else {				  // ... falls kein bestehendes Spiel ausgewhält wurde
-	    	
+	    else {				  // ... falls kein bestehendes Spiel ausgewhält wurde    	
 	    	// Halbzeitlänge-Textfeld füllen
 	    	spiel_halbzeitlaenge.setText("30");
 	    	
@@ -83,12 +87,16 @@ public class SpielEditActivity extends Activity {
 			year = c.get(Calendar.YEAR);
 			month = c.get(Calendar.MONTH);
 			day = c.get(Calendar.DAY_OF_MONTH);
-			btnDatum.setText(new StringBuilder()
+			
+			spielDatum=new Date(year-1900, month, day);
+	    }
+        
+/* Button und Textfelder beschriften */
+        	    
+	    btnDatum.setText(new StringBuilder()
 				// Month is 0 based, just add 1
 				.append(day).append(".").append(month + 1).append(".")
 				.append(year).append(" "));
-			spielDatum=new Date(year-1900, month, day);
-	    }
 	    
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -133,9 +141,9 @@ public class SpielEditActivity extends Activity {
             							   heimID,
             							   auswID);
         				helper.updateTickerSpieler(spielId);	// Spielernamen in Tickermeldungen schreiben
-            			Intent newIntent = new Intent(getApplicationContext(), TickerActivity.class);
-        				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-        				startActivity(newIntent);
+            			Intent i = new Intent(getApplicationContext(), TickerActivity.class);
+        				i.putExtra("GameID", spielId);
+        				startActivity(i);
             		}
             		else {				  // ... falls kein bestehendes Spiel ausgewählt wurde
             			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -145,15 +153,11 @@ public class SpielEditActivity extends Activity {
         	    					   	   heimID,
         	    					   	   auswID);
 
-        				Intent newIntent = new Intent(getApplicationContext(), TickerActivity.class);
-        				Cursor c=helper.getLastSpielId();
-        				c.moveToFirst();
-        				spielId = helper.getSpielId(c);
-        				c.close();
-        				/** Hinweis: Nächste Zeile kann wahrscheinlich raus, da eine neues Spiel eingerichtet wurde */ 
-            			helper.updateTickerSpieler(spielId);	// Spielernamen in Tickermeldungen schreiben
-        				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-        				startActivity(newIntent);
+        				Intent i = new Intent(getApplicationContext(), TickerActivity.class);
+        				/** Hinweis: Nächste Zeile kann wahrscheinlich raus, da ein neues Spiel eingerichtet wurde */ 
+            			helper.updateTickerSpieler(helper.getLastSpielId());	// Spielernamen in Tickermeldungen schreiben
+        				i.putExtra("GameID", spielId);
+        				startActivity(i);
             		}
         	    }
             }
@@ -181,17 +185,17 @@ public class SpielEditActivity extends Activity {
             			alertDialog.show();
             		} else {
             			haTeam="Heim";
-            			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
-            			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
-            			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(auswID));
-            			startActivityForResult(newIntent, GET_CODE);
+            			Intent i = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+            			i.putExtra("HomeAway", haTeam);
+            			i.putExtra("OpponentID", String.valueOf(auswID));
+            			startActivityForResult(i, GET_CODE);
             		}
             	} else{
         			haTeam="Heim";
-        			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
-        			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
-        			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(auswID));
-        			startActivityForResult(newIntent, GET_CODE);
+        			Intent i = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+        			i.putExtra("HomeAway", haTeam);
+        			i.putExtra("OpponentID", String.valueOf(auswID));
+        			startActivityForResult(i, GET_CODE);
             	}
             }
         });
@@ -218,53 +222,47 @@ public class SpielEditActivity extends Activity {
             			alertDialog.show();
             		} else {
             			haTeam="Auswaerts";
-            			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
-            			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
-            			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(heimID));
-            			startActivityForResult(newIntent, GET_CODE);
+            			Intent i = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+            			i.putExtra("HomeAway", haTeam);
+            			i.putExtra("OpponentID", String.valueOf(heimID));
+            			startActivityForResult(i, GET_CODE);
             		}
             	} else {
         			haTeam="Auswaerts";
-        			Intent newIntent = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
-        			newIntent.putExtra(ID_HATEAM_EXTRA, haTeam);
-        			newIntent.putExtra(ID_GEGNER_EXTRA, String.valueOf(heimID));
-        			startActivityForResult(newIntent, GET_CODE);
+        			Intent i = new Intent(getApplicationContext(), MannschaftAuswahlActivity.class);
+        			i.putExtra("HomeAway", haTeam);
+        			i.putExtra("OpponentID", String.valueOf(heimID));
+        			startActivityForResult(i, GET_CODE);
             	}
             }
         });
 	}
 
-	/**
-	* This method is called when the sub-activity returns the result back to the
-	* main activity.
-	*/
+/*
+ * 
+ * Ergebnis der Sub-Activity "Mannschaftsauswahl abfragen, welcher Mannschaft ausgewählt wurde 
+ *
+ */
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 				
 		if (requestCode == GET_CODE){
 			if (resultCode == RESULT_OK) {
-				Log.v("SpielEdit", haTeam);
-				haTeam=data.getStringExtra("haTeam");
-				Log.v("SpielEdit", haTeam);
+				haTeam=data.getStringExtra("HomeAway");
 				if (haTeam.equals("Heim")) {
 					
-					heimID=Integer.parseInt(data.getStringExtra("Mannschaft"));
+					heimID=Integer.parseInt(data.getStringExtra("TeamID"));
 					Button btnHeim=(Button)findViewById(R.id.spielHeim);
-					Cursor c=helper.getTeamCursor(data.getStringExtra("Mannschaft"));
-					c.moveToFirst();
-					btnHeim.setText(helper.getTeamName(c));
-					c.close();
+					btnHeim.setText(helper.getTeamName(data.getStringExtra("TeamID")));
 					
 				}
 				else{
 					
-					auswID=Integer.parseInt(data.getStringExtra("Mannschaft"));
+					auswID=Integer.parseInt(data.getStringExtra("TeamID"));
 					Button btnAusw=(Button)findViewById(R.id.spielAusw);
-					Cursor c=helper.getTeamCursor(data.getStringExtra("Mannschaft"));
-					c.moveToFirst();
-					btnAusw.setText(helper.getTeamName(c));
-					c.close();
+					btnAusw.setText(helper.getTeamName(data.getStringExtra("TeamID")));
 					
 				}	
 			}
@@ -274,18 +272,21 @@ public class SpielEditActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-	  
-	    helper.close();
+
 	}
 
+/*
+ * 
+ * Spieldaten aus Datenbank laden
+ *
+ */
+	
 	private void load() {
 	    
-		Cursor c=helper.getSpielById(spielId);
-		c.moveToFirst();    
-		spiel_halbzeitlaenge.setText(helper.getSpielHalbzeitlaenge(c));
-		heimID = Integer.parseInt(helper.getSpielHeim(c));
-		auswID = Integer.parseInt(helper.getSpielAusw(c));	
-		strSpielDatum = helper.getSpielDatum(c);
+		spiel_halbzeitlaenge.setText(helper.getSpielHalbzeitlaenge(spielId));
+		heimID = Integer.parseInt(helper.getSpielHeim(spielId));
+		auswID = Integer.parseInt(helper.getSpielAusw(spielId));	
+		strSpielDatum = helper.getSpielDatum(spielId);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		try
 		{
@@ -302,14 +303,16 @@ public class SpielEditActivity extends Activity {
 		// Month is 0 based, just add 1
 			.append(day).append(".").append(month + 1).append(".")
 			.append(year).append(" "));
-		btnHeim.setText(helper.getTeamHeimNameBySpielID(c));
-		btnAusw.setText(helper.getTeamAuswNameBySpielID(c));
-		c.close();
+		btnHeim.setText(helper.getTeamHeimNameBySpielID(spielId));
+		btnAusw.setText(helper.getTeamAuswNameBySpielID(spielId));
+		
 	}
-	
-	/** 
-	 * Date Picker 
-	 * 				*/
+
+/*
+ * 
+ * Date Picker definieren
+ *
+ */
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -344,6 +347,12 @@ public class SpielEditActivity extends Activity {
 		}
 	};
 
+/*
+ * 
+ * Spiel speichern
+ *
+ */
+	
 	private View.OnClickListener onSave=new View.OnClickListener() {
 		public void onClick(View v) {
     	    if (heimID==0 || auswID==0) {
@@ -383,6 +392,12 @@ public class SpielEditActivity extends Activity {
 
 		}
 	};
+
+/*
+ * 
+ * Spiel löschen
+ *
+ */
 	
 	private View.OnClickListener onDelete=new View.OnClickListener() {
 		public void onClick(View v) {

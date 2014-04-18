@@ -32,15 +32,21 @@ public class SpielerEditActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.spieler_edit);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-	    
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.spielerEditTitel);
-		
+        
+/* Datenbank laden */
+        
 		helper=new SQLHelper(this);
-		
+        
+/* Button, Textfelder und Spinner definieren */
+        
 		spieler_name=(EditText)findViewById(R.id.spielerName);
 		spieler_nummer=(EditText)findViewById(R.id.spielerNummer);
 	    
@@ -53,23 +59,19 @@ public class SpielerEditActivity extends Activity {
 
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);
-	    
-	    spielerId=getIntent().getStringExtra(SpielerActivity.ID_SPIELER_EXTRA);
-        mannschaftId=getIntent().getStringExtra(MannschaftEditActivity.ID_MANNSCHAFT_EXTRA);
-	    
+
+/* Daten aus Activity laden */ 
+        
+	    spielerId=getIntent().getStringExtra("PlayerID");
+        mannschaftId=getIntent().getStringExtra("TeamID");
+
+/* Daten aus Datenbank laden */
+        
 	    if (spielerId!=null) {
 	    	load(spinner);
 	    }
 	    else {
-	    	Cursor c=helper.getTeamCursor(mannschaftId);
-	    	if (c.moveToFirst()!=false) {
-		    	c.moveToFirst();
-		    	lastID = String.valueOf(Integer.parseInt(helper.getSpielerAnzahl(c)) + 1);
-	        }
-	        else {
-	        	lastID = "1";
-	        }
-	    	c.close();
+	    	lastID = String.valueOf(Integer.parseInt(helper.getSpielerAnzahl(mannschaftId)) + 1);
 	    	spieler_position = "";
 	    	helper.insertSpieler("Spieler " + lastID, lastID, mannschaftId, spieler_position);
 	    	spieler_name.setText("Spieler " + lastID);
@@ -80,7 +82,9 @@ public class SpielerEditActivity extends Activity {
 			spielerId = helper.getSpielerId(newC);
 			newC.close();
 		}
-	    
+        
+/* Button beschriften */
+    
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +102,7 @@ public class SpielerEditActivity extends Activity {
             }
         });
         
+        /* Spinner mit Inhalt füllen */
 	    spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 	        @Override
 	        public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -131,7 +136,7 @@ public class SpielerEditActivity extends Activity {
 
 	        @Override
 	        public void onNothingSelected(AdapterView<?> parentView) {
-	            // your code here
+	            // vorübergehend freigelassen
 	        }
 
 	    });
@@ -140,18 +145,20 @@ public class SpielerEditActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-	  
-	    helper.close();
+
 	}
 
-	public void load(Spinner spinner) {
-		Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();    
-		spieler_name.setText(helper.getSpielerName(c));
-		spieler_nummer.setText(helper.getSpielerNummer(c));
-		String position = helper.getSpielerPosition(c);
+/*
+ * 
+ * Spinner einrichten 
+ *
+ */
+	
+	public void load(Spinner spinner) {   
+		spieler_name.setText(helper.getSpielerName(spielerId));
+		spieler_nummer.setText(helper.getSpielerNummer(spielerId));
+		String position = helper.getSpielerPosition(spielerId);
 		Resources res = getResources();
-		System.out.println("Load" + position);
 		
 		spinner.setSelection(0);
 		spieler_position = "";
@@ -183,10 +190,14 @@ public class SpielerEditActivity extends Activity {
 			spinner.setSelection(7);
 			spieler_position = position;
 		}
-		
-		c.close();
 	}
 
+/*
+ * 
+ * Spielerdaten speichern und zurück zur Spielerübersicht
+ *
+ */
+	
 	private View.OnClickListener onSave=new View.OnClickListener() {
 		public void onClick(View v) {
 			
@@ -194,10 +205,15 @@ public class SpielerEditActivity extends Activity {
 		        		  		 spieler_name.getText().toString(),
 		        		  		 spieler_nummer.getText().toString(),
 		        		  		 spieler_position);
-		    System.out.println(spieler_position);
 			finish();
 		}
 	};
+
+/*
+ * 
+ * Spieler löschen und zurück zur Spielerübersicht
+ *
+ */
 	
 	private View.OnClickListener onDelete=new View.OnClickListener() {
 		public void onClick(View v) {

@@ -18,11 +18,19 @@ class SQLHelper extends SQLiteOpenHelper {
   private static final int SCHEMA_VERSION=2;
   private String minutes,seconds;
   private long secs,mins;
+  private Cursor c=null;
+  private String strResult=null;
   
   public SQLHelper(Context context) {
     super(context, DATABASE_NAME, null, SCHEMA_VERSION);
   }
-  
+
+/*
+ * 
+ * Tabellen definieren 
+ *
+ */
+	
   @Override
   public void onCreate(SQLiteDatabase db) {
 	  db.execSQL("CREATE TABLE team (_id INTEGER PRIMARY KEY AUTOINCREMENT, teamName TEXT, teamKuerzel TEXT, spielerAnzahl INTEGER);");
@@ -54,8 +62,14 @@ class SQLHelper extends SQLiteOpenHelper {
 	        		"tickerTorTeam STRING, tickerTorTore STRING, tickerTorFehl STRING, tickerTorProzent STRING);");
 	  }
   }
+
+/*
+ * 
+ * Mannschaften
+ *
+ */
   
-  // Start Mannschaft
+/* Datenbankabfrage */
   
   public Cursor getAllTeam() {
 	  return(getReadableDatabase()
@@ -69,10 +83,15 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT _id, teamName, teamKuerzel FROM team WHERE _ID=?", args));
   }
   
-  public Cursor getLastTeamId() {
+  public String getLastTeamId() {
+	  
+	  SQLiteDatabase db = getReadableDatabase();
+	  Cursor c = db.rawQuery("SELECT * FROM team WHERE _ID=(SELECT MAX(_ID) FROM team)", null);
+	  c.moveToFirst();
+	  strResult = getTeamId(c);
+	  c.close();
+	  return(strResult);
 
-	  return(getReadableDatabase()
-			  .rawQuery("SELECT * FROM team WHERE _ID=(SELECT MAX(_ID) FROM team)", null));
   }
   
   public Cursor getTeamCursor(String mannschaftId) {
@@ -81,20 +100,14 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(getReadableDatabase()
 			  .rawQuery("SELECT * FROM team WHERE _ID=?", args));
   }
-  
-  public String getTeamNameById(String teamId) {
-	  
-	  Cursor newC=getTeamById(teamId);
-	  newC.moveToFirst();
-	  return(getTeamName(newC));
-	  
-  }
-  
+
   public void deleteAllTeam() {
 
 	getWritableDatabase().delete("team", null, null);
 		
   }
+  
+/* Team bearbeiten */
   
   public void insertTeam(String teamName, String teamKuerzel) {
 	  ContentValues cv=new ContentValues();
@@ -133,23 +146,43 @@ class SQLHelper extends SQLiteOpenHelper {
 	  getWritableDatabase().delete("spieler", "teamID=?", args);
   }
   
+/* Teamdaten abfragen */
+  
+  public String getTeamNameById(String teamId) {
+	  return(getTeamName(teamId));
+  }
+  
   public String getTeamId(Cursor c) {
 	  return(c.getString(0));
   }
   
-  public String getTeamName(Cursor c) {
-	  return(c.getString(1));
+  public String getTeamName(String teamId) {
+	  return(getTeamString(teamId, 1));
   }
 	  
-  public String getTeamKuerzel(Cursor c) {
-	  return(c.getString(2));
+  public String getTeamKuerzel(String teamId) {
+	  return(getTeamString(teamId, 2));
   }
   
-  public String getSpielerAnzahl(Cursor c) {
-	  return(c.getString(3));
+  public String getSpielerAnzahl(String teamId) {
+	  return(getTeamString(teamId, 3));
   }
   
-  // Start Spieler
+  public String getTeamString(String teamId, Integer number) {
+	  c=getTeamById(teamId);
+      c.moveToFirst();
+      strResult=c.getString(number);
+      c.close();
+	  return(strResult);
+  }
+
+/*
+ * 
+ * Spieler 
+ *
+ */
+  
+/* Datenbankabfrage */
   
   public Cursor getAllSpieler(String id) {
 	  
@@ -180,19 +213,7 @@ class SQLHelper extends SQLiteOpenHelper {
 		
   }
   
-  public String getSpielerNummerById(String spielerId) {
-	  
-	  String spielerNummer=null;
-	  Cursor newC=getSpielerById(spielerId);
-	  newC.moveToFirst();
-	  if(getSpielerNummer(newC)!=null){
-		  spielerNummer=getSpielerNummer(newC);
-	  } else {
-		  spielerNummer="";
-	  }
-	  return(spielerNummer);
-	  
-  }
+/* Spieler bearbeiten */
   
   public void insertSpieler(String spielerName, String spielerNummer, String teamID, String spielerPosition) {
 	  ContentValues cv=new ContentValues();
@@ -206,8 +227,6 @@ class SQLHelper extends SQLiteOpenHelper {
 	  cv.put("spielerID", spielerID);
 	  cv.put("spielerPosition", spielerPosition);
 	  getWritableDatabase().insert("spieler", "spielerName", cv);
-	  
-	  Log.v("SQLHelper", spielerPosition);
 	  
 	  cvs.put("spielerAnzahl", Integer.parseInt(spielerNummer));
 	  String[] args={teamID};
@@ -251,34 +270,60 @@ class SQLHelper extends SQLiteOpenHelper {
 	  getWritableDatabase().delete("spieler", "_ID=?", args);
   }
   
+/* Spielerdaten abfragen */
+  
+  public String getSpielerNummerById(String spielerId) {
+	  
+	  String spielerNummer=null;
+	  if(getSpielerNummer(spielerId)!=null){
+		  spielerNummer=getSpielerNummer(spielerId);
+	  } else {
+		  spielerNummer="";
+	  }
+	  return(spielerNummer);
+	  
+  }
+  
   public String getSpielerId(Cursor c) {
 	  return(c.getString(0));
   }
   
-  public String getSpielerTeamId(Cursor c) {
-	  return(c.getString(1));
+  public String getSpielerTeamId(String spielerId) {
+	  return(getSpielerString(spielerId, 1));
   }
   
-  public String getSpielerName(Cursor c) {
-	  return(c.getString(2));
+  public String getSpielerName(String spielerId) {
+	  return(getSpielerString(spielerId, 2));
   }
 	  
-  public String getSpielerNummer(Cursor c) {
-	  String strSpielerNummer=null;
-	  if(c.getString(3)!=null){
-		  strSpielerNummer=c.getString(3);
+  public String getSpielerNummer(String spielerId) {
+	  return(getSpielerString(spielerId, 3));
+  }
+  
+  public String getSpielerPosition(String spielerId) {
+	  return(getSpielerString(spielerId, 4));
+  }
+  
+  public String getSpielerString(String spielerId, Integer number) {
+	  c=getSpielerById(spielerId);
+      c.moveToFirst();
+      if(c.getString(number)!=null){
+    	  strResult=c.getString(number);
 	  } else {
-		  strSpielerNummer="";
+		  strResult="";
 	  }
-	  return(strSpielerNummer);
+      c.close();
+	  return(strResult);
   }
+
+/*
+ * 
+ * Spiel 
+ *
+ */
   
-  public String getSpielerPosition(Cursor c) {
-	  return(c.getString(4));
-  }
-  
-  // Start Spiel
-  
+/* Datenbanabfrage */
+
   public Cursor getAllSpiel() {
 	  return(getReadableDatabase()
 			  .rawQuery("SELECT _id, teamHeim, teamAuswaerts, aktuelleHalbzeit, ballbesitz, halbzeitLaenge, spielDatum, toreHeim, toreAuswaerts, zeitAktuell, zeitBisher, " +
@@ -289,14 +334,6 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(getReadableDatabase().rawQuery("SELECT * FROM spiel", null));
   }
   
-  public Cursor getSpielById(String id) {
-	  String[] args={id};
-
-	  return(getReadableDatabase()
-			  .rawQuery("SELECT _id, teamHeim, teamAuswaerts, aktuelleHalbzeit, ballbesitz, halbzeitLaenge, spielDatum, toreHeim, toreAuswaerts, zeitAktuell, zeitBisher, " +
-			  		"zeitStart, zeitTicker FROM spiel WHERE _ID=?", args));
-  }
-  
   public Cursor getSpielCursor(String spielId) {
 	  String[] args={spielId};
 	  
@@ -304,10 +341,13 @@ class SQLHelper extends SQLiteOpenHelper {
 			  .rawQuery("SELECT * FROM spiel WHERE _ID=?", args));
   }
   
-  public Cursor getLastSpielId() {
-
-	  return(getReadableDatabase()
-			  .rawQuery("SELECT * FROM spiel WHERE _ID=(SELECT MAX(_ID) FROM spiel)", null));
+  public String getLastSpielId() {
+	  SQLiteDatabase db = getReadableDatabase();
+	  Cursor c = db.rawQuery("SELECT * FROM spiel WHERE _ID=(SELECT MAX(_ID) FROM spiel)", null);
+	  c.moveToFirst();
+	  strResult = getSpielId(c);
+	  c.close();
+	  return(strResult);
   }
   
   public void deleteAllSpiel() {
@@ -316,6 +356,8 @@ class SQLHelper extends SQLiteOpenHelper {
 		
   }
   
+/* Spiele zählen */
+
   public int countSpielTeamId(String id) {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor mCount= db.rawQuery("SELECT count(*) FROM spiel WHERE teamHeim = ? OR teamAuswaerts = ?", new String[] { id, id });
@@ -324,7 +366,9 @@ class SQLHelper extends SQLiteOpenHelper {
 	  mCount.close();
 	  return(count);
   }
-   
+  
+/* Spiele bearbeiten */
+
   public void insertSpiel(String spielDatum, Integer halbzeitlaenge, Integer teamHeim, Integer teamAuswaerts) {
 	  ContentValues cv=new ContentValues();
 	  
@@ -497,6 +541,8 @@ class SQLHelper extends SQLiteOpenHelper {
 	  getWritableDatabase().delete("ticker", "spielID=?", args);
   }
   
+/* Spiel erstellen */
+
   public void createSchnellesSpiel(Context context) {
 	
 		Date spielDatum=null;
@@ -508,17 +554,11 @@ class SQLHelper extends SQLiteOpenHelper {
 		
 		/* Heimmannschaft erstellen */
 		insertTeam("Heimmannschaft", "HEIM");
-		Cursor heimC=getLastTeamId();
-		heimC.moveToFirst();
-		heimID = Integer.parseInt(getTeamId(heimC));
-		heimC.close();
+		heimID = Integer.parseInt(getLastTeamId());
 		
 		/* Auswärtsmannschaft erstellen */
 		insertTeam("Auswärtsmannschaft", "AUSW");
-		Cursor auswC=getLastTeamId();
-		auswC.moveToFirst();
-		auswID = Integer.parseInt(getTeamId(auswC));
-		auswC.close();
+		auswID = Integer.parseInt(getLastTeamId());
 		
 		/* Spieler erstellen */
 
@@ -566,104 +606,128 @@ class SQLHelper extends SQLiteOpenHelper {
 	  
   }
   
+/* Spieldaten abfragen */
+
   public String getSpielId(Cursor c) {
 	  return(c.getString(0));
   }
   
-  public String getSpielHeim(Cursor c) {
-	  return(c.getString(1));
+  public String getSpielHeim(String spielId) {
+	  return(getSpielString(spielId, 1));
   }
 	  
-  public String getSpielAusw(Cursor c) {
-	  return(c.getString(2));
+  public String getSpielAusw(String spielId) {
+	  return(getSpielString(spielId, 2));
   }
   
-  public String getSpielAktuelleHalbzeit(Cursor c) {
-	  return(c.getString(3));
+  public String getSpielAktuelleHalbzeit(String spielId) {
+	  return(getSpielString(spielId, 3));
   }
   
-  public String getSpielBallbesitz(Cursor c) {
-	  return(c.getString(4));
+  public String getSpielBallbesitz(String spielId) {
+	  return(getSpielString(spielId, 4));
   }
   
-  public String getSpielHalbzeitlaenge(Cursor c) {
-	  return(c.getString(5));
+  public String getSpielHalbzeitlaenge(String spielId) {
+	  return(getSpielString(spielId, 5));
   }
   
-  public String getSpielDatum(Cursor c) {
-	  return(c.getString(6));
+  public String getSpielDatum(String spielId) {
+	  return(getSpielString(spielId, 6));
   }
   
-  public String getSpielToreHeim(Cursor c) {
-	  return(c.getString(7));
+  public String getSpielToreHeim(String spielId) {
+	  return(getSpielString(spielId, 7));
   }
 
-  public String getSpielToreAusw(Cursor c) {
-	  return(c.getString(8));
+  public String getSpielToreAusw(String spielId) {
+	  return(getSpielString(spielId, 8));
   }
   
-  public String getSpielSpielzeit(Cursor c) {
-	  return(c.getString(9));
+  public String getSpielSpielzeit(String spielId) {
+	  return(getSpielString(spielId, 9));
   }
 
-  public String getSpielZeitBisher(Cursor c) {
-	  return(c.getString(10));
+  public String getSpielZeitBisher(String spielId) {
+	  return(getSpielString(spielId, 10));
   }
   
-  public String getSpielZeitStart(Cursor c) {
-	  return(c.getString(11));
+  public String getSpielZeitStart(String spielId) {
+	  return(getSpielString(spielId, 11));
   }
 
-  public String getSpielZeitTicker(Cursor c) {
-	  return(c.getString(12));
+  public String getSpielZeitTicker(String spielId) {
+	  return(getSpielString(spielId, 12));
   }
   
-  public String getSpielTorwartHeim(Cursor c) {
-	  return(c.getString(13));
+  public String getSpielTorwartHeim(String spielId) {
+	  return(getSpielString(spielId, 13));
   }
   
-  public String getSpielTorwartAuswaerts(Cursor c) {
-	  return(c.getString(14));
+  public String getSpielTorwartAuswaerts(String spielId) {
+	  return(getSpielString(spielId, 14));
   }
   
-  public String getSpielSpielerEingabe(Cursor c) {
-	  return(c.getString(15));
+  public String getSpielSpielerEingabe(String spielId) {
+	  return(getSpielString(spielId, 15));
   }
 
-  public String getSpielSpielerWurfecke(Cursor c) {
-	  return(c.getString(16));
+  public String getSpielSpielerWurfecke(String spielId) {
+	  return(getSpielString(spielId, 16));
   }
   
-  public String getSpielNotiz(Cursor c) {
-	  return(c.getString(17));
+  public String getSpielNotiz(String spielId) {
+	  return(getSpielString(spielId, 17));
   }
   
-  public String getTeamHeimNameBySpielID(Cursor c) {
-	  Cursor newC=getTeamCursor(getSpielHeim(c));
-	  newC.moveToFirst();
-	  return(getTeamName(newC));
+  public String getSpielString(String spielId, Integer number) {
+	  c=getSpielCursor(spielId);
+      c.moveToFirst();
+      strResult=c.getString(number);
+      c.close();
+	  return(strResult);
   }
   
-  public String getTeamAuswNameBySpielID(Cursor c) {
-	  Cursor newC=getTeamCursor(getSpielAusw(c));
-	  newC.moveToFirst();
-	  return(getTeamName(newC));
+  public String getTeamHeimNameBySpielID(String spielId) {
+	  c=getSpielCursor(spielId);
+	  c.moveToFirst();
+	  strResult=getTeamName(c.getString(1));
+	  c.close();
+	  return(strResult);
   }
   
-  public String getTeamHeimKurzBySpielID(Cursor c) {
-	  Cursor newC=getTeamCursor(getSpielHeim(c));
-	  newC.moveToFirst();
-	  return(getTeamKuerzel(newC));
+  public String getTeamAuswNameBySpielID(String spielId) {
+	  c=getSpielCursor(spielId);
+	  c.moveToFirst();
+	  strResult=getTeamName(c.getString(2));
+	  c.close();
+	  return(strResult);
   }
   
-  public String getTeamAuswKurzBySpielID(Cursor c) {
-	  Cursor newC=getTeamCursor(getSpielAusw(c));
-	  newC.moveToFirst();
-	  return(getTeamKuerzel(newC));
+  public String getTeamHeimKurzBySpielID(String spielId) {
+	  c=getSpielCursor(spielId);
+	  c.moveToFirst();
+	  strResult=getTeamKuerzel(c.getString(1));
+	  c.close();
+	  return(strResult);
   }
   
-  // Start Ticker
+  public String getTeamAuswKurzBySpielID(String spielId) {
+	  c=getSpielCursor(spielId);
+	  c.moveToFirst();
+	  strResult=getTeamKuerzel(c.getString(2));
+	  c.close();
+	  return(strResult);
+  }
+
+/*
+ * 
+ * Mannschaftauswahl 
+ *
+ */
   
+/* Datenbankabfrage */
+
   public Cursor getAllTicker(String id) {
 	  
 	  return(getReadableDatabase().rawQuery("SELECT * FROM ticker WHERE spielID = ? ORDER BY zeitInteger DESC", new String[] { id }));
@@ -686,6 +750,27 @@ class SQLHelper extends SQLiteOpenHelper {
 		
   }
   
+  public int maxTickerZeit(String spielId) {
+	  String[] args={spielId};
+	  SQLiteDatabase db = getReadableDatabase();
+	  Cursor mZeit= db.rawQuery("SELECT * FROM ticker WHERE zeitInteger=(SELECT MAX(zeitInteger) FROM ticker) AND spielID = ?", args);
+	  mZeit.moveToFirst();
+	  int maxZeit= 0;
+	  if(mZeit.getCount()>0){
+		  maxZeit= mZeit.getInt(11);  
+	  } 
+	  mZeit.close();
+	  return(maxZeit);
+  }
+  
+  public Cursor getLastTickerId() {
+
+	  return(getReadableDatabase()
+			  .rawQuery("SELECT * FROM ticker WHERE _ID=(SELECT MAX(_ID) FROM ticker)", null));
+  }
+ 
+/* Ticker zählen */
+
   public int countTickerAktion(String id, String aktionInteger, String aktionTeamHeim, String spielzeit) {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor mCount= db.rawQuery("SELECT count(*) FROM ticker WHERE spielID = ? AND aktionInteger= ? AND aktionTeamHeim= ? AND zeitInteger<= ?", new String[] { id, aktionInteger, aktionTeamHeim, spielzeit});
@@ -919,25 +1004,8 @@ class SQLHelper extends SQLiteOpenHelper {
 	  return(count);
   }
   
-  public int maxTickerZeit(String spielId) {
-	  String[] args={spielId};
-	  SQLiteDatabase db = getReadableDatabase();
-	  Cursor mZeit= db.rawQuery("SELECT * FROM ticker WHERE zeitInteger=(SELECT MAX(zeitInteger) FROM ticker) AND spielID = ?", args);
-	  mZeit.moveToFirst();
-	  int maxZeit= 0;
-	  if(mZeit.getCount()>0){
-		  maxZeit= mZeit.getInt(11);  
-	  } 
-	  mZeit.close();
-	  return(maxZeit);
-  }
-  
-  public Cursor getLastTickerId() {
+/* Ticker bearbeiten */
 
-	  return(getReadableDatabase()
-			  .rawQuery("SELECT * FROM ticker WHERE _ID=(SELECT MAX(_ID) FROM ticker)", null));
-  }
- 
   public void insertTicker(int aktionInt, String aktionString, int aktionTeamHeim, String spielerString, 
 		  Integer spielerId, Integer spielId, Integer zeit, String realzeit) {
 	  ContentValues cv=new ContentValues();
@@ -1041,7 +1109,6 @@ class SQLHelper extends SQLiteOpenHelper {
 	  /* Aktuelle Spielernamen in Tickermeldungen schreiben */
 	  String[] args={spielId};
 	  SQLiteDatabase db=getWritableDatabase();
-	  Log.v("SQLHelper", "updateTickerSpieler");
 	  Cursor c=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
 	  c.moveToFirst();
 	  int toreHeim=0;
@@ -1053,10 +1120,7 @@ class SQLHelper extends SQLiteOpenHelper {
 			  ContentValues cv=new ContentValues();
 			  String[] argse={getTickerId(c)};
 			  
-			  Cursor cSpieler=getSpielerById(getTickerSpielerId(c));
-			  cSpieler.moveToFirst();
-			  String spieler_name=getSpielerName(cSpieler);
-			  cSpieler.close();
+			  String spieler_name=getSpielerName(getTickerSpielerId(c));
 			  
 			  cv.put("spielerAktion", spieler_name);
 			  getWritableDatabase().update("ticker", cv, "_ID=?", argse);
@@ -1128,48 +1192,19 @@ class SQLHelper extends SQLiteOpenHelper {
 	  
   }
   
-  public String getTickerId(Cursor c) {
-	  return(c.getString(0));
-  }
-  
-  public String getTickerAktionInt(Cursor c) {
-	  return(c.getString(1));
-  }
-  
-  public String getTickerAktion(Cursor c) {
-	  return(c.getString(2));
-  }
-
-  public String getTickerAktionTeamHeim(Cursor c) {
-	  return(c.getString(3));
-  }
-  
-  public String getTickerSpieler(Cursor c) {
-	  return(c.getString(4));
-  }
-  
-  public String getTickerSpielerId(Cursor c) {
-	  return(c.getString(5));
-  }
-
-  public String getTickerErgebnis(Cursor c) {
-	  return(c.getString(8));
-  }
-  
-  public String getTickerWurfecke(Cursor c) {
-	  return(c.getString(10));
-  }
-  
-  public String getTickerZeitInt(Cursor c) {
-	  return(c.getString(11));
-  }
-  
-  public String getTickerZeit(Cursor c) {
-	  return(c.getString(12));
-  }
-  
-  public String getTickerPosition(Cursor c) {
-	  return(c.getString(14));
+  public void changeBallbesitz(String aktionTeamHeim, Integer intSpielBallbesitz, String strTeamHeimKurzBySpielID, 
+		  String strTeamAuswKurzBySpielID, String spielId, String zeit, String realzeit) {
+	  if(Integer.parseInt(aktionTeamHeim)==1 && intSpielBallbesitz==1){  
+			// ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
+		  String strBallbesitz="Ballbesitz " + strTeamAuswKurzBySpielID;
+		  insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+		  updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
+	  }
+	  if(Integer.parseInt(aktionTeamHeim)==0 && intSpielBallbesitz==0){
+		  String strBallbesitz="Ballbesitz " + strTeamHeimKurzBySpielID;
+		  insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+		  updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
+	  }
   }
 
   public String updateTimer (float time){
@@ -1228,10 +1263,62 @@ class SQLHelper extends SQLiteOpenHelper {
     	return(seconds);
 	}
 
-	/* Start Statistik */
+/* Tickerdaten abfragen */
+
+  public String getTickerId(Cursor c) {
+	  return(c.getString(0));
+  }
+  
+  public String getTickerAktionInt(Cursor c) {
+	  return(c.getString(1));
+  }
+  
+  public String getTickerAktion(Cursor c) {
+	  return(c.getString(2));
+  }
+
+  public String getTickerAktionTeamHeim(Cursor c) {
+	  return(c.getString(3));
+  }
+  
+  public String getTickerSpieler(Cursor c) {
+	  return(c.getString(4));
+  }
+  
+  public String getTickerSpielerId(Cursor c) {
+	  return(c.getString(5));
+  }
+
+  public String getTickerErgebnis(Cursor c) {
+	  return(c.getString(8));
+  }
+  
+  public String getTickerWurfecke(Cursor c) {
+	  return(c.getString(10));
+  }
+  
+  public String getTickerZeitInt(Cursor c) {
+	  return(c.getString(11));
+  }
+  
+  public String getTickerZeit(Cursor c) {
+	  return(c.getString(12));
+  }
+  
+  public String getTickerPosition(Cursor c) {
+	  return(c.getString(14));
+  }
+
+/*
+ * 
+ * Mannschaftauswahl 
+ *
+ */
 	
-	/* Start Statistik Spiel */
-	
+/* Start Statistik Spiel */
+  
+/* Datenbankabfrage */
+
 	  public Cursor getAllStatSpiel() {
 		  return(getReadableDatabase()
 				  .rawQuery("SELECT * FROM statSpiel", null));
@@ -1264,7 +1351,9 @@ class SQLHelper extends SQLiteOpenHelper {
 		  return(getReadableDatabase()
 				  .rawQuery("SELECT _id, torName, torTore, torFehl, torProzent FROM statTor WHERE _ID=?", args));
 	  }
-	  
+      
+/* Statistik Spiel bearbeiten */
+    
 	  public void insertStatSpiel(String spielHeim, String spielBezeichnung, String spielAusw) {
 		  ContentValues cv=new ContentValues();
 	      
@@ -1330,7 +1419,9 @@ class SQLHelper extends SQLiteOpenHelper {
 			getWritableDatabase().delete("statSpieler", null, null);
 			
 		}
-	
+        
+/* Statistik Spiel erstellen */
+      
 	public void createStatSpiel(String spielId, Context context) {
 		
 		String strSpielHeim=null;
@@ -1363,16 +1454,15 @@ class SQLHelper extends SQLiteOpenHelper {
     	
 		deleteStatSpiel();
 		
-		Cursor c=getSpielById(spielId);
+		Cursor c=getSpielCursor(spielId);
 		c.moveToFirst();
 		
-		int halbzeitlaenge=Integer.parseInt(getSpielHalbzeitlaenge(c))*60;
+		int halbzeitlaenge=Integer.parseInt(getSpielHalbzeitlaenge(spielId))*60;
 		
 		/* Relative Statistiken ermitteln */
 		
 		String[] args={spielId};
 		SQLiteDatabase db=getWritableDatabase();
-		Log.v("SQLHelper", "createStatSpiel");
 		Cursor cTicker=db.rawQuery("SELECT * FROM ticker WHERE spielID=? ORDER BY zeitInteger ASC", args);
     	cTicker.moveToFirst();
 
@@ -1526,9 +1616,9 @@ class SQLHelper extends SQLiteOpenHelper {
         getWritableDatabase().delete("statSpiel", null, null);
         
         /* Überschrift */
-        strSpielHeim=getTeamHeimKurzBySpielID(c);
+        strSpielHeim=getTeamHeimKurzBySpielID(spielId);
         strSpielBezeichnung="";
-        strSpielAusw=getTeamAuswKurzBySpielID(c);
+        strSpielAusw=getTeamAuswKurzBySpielID(spielId);
         insertStatSpiel(strSpielHeim, strSpielBezeichnung, strSpielAusw);
         
         /* Tore eintragen */
@@ -1704,13 +1794,12 @@ class SQLHelper extends SQLiteOpenHelper {
         c.close();
         
 	}
-	
+    
+/* Statistik Tore erstellen */
+  
 	public void createStatTore(String spielId, String teamId, Context context) {
 		
 		deleteStatTor();
-		
-		Cursor c=getSpielById(spielId);
-		c.moveToFirst();
 		
 		int spielerTore=0;
 		int spielerFehlwurf=0;
@@ -1742,19 +1831,17 @@ class SQLHelper extends SQLiteOpenHelper {
 				} else {
 					spielerProzent=0;
 				}
-				strSpielerName=getSpielerName(cSpieler);
+				strSpielerName=getSpielerName(spielerId);
 				insertStatTor(strSpielerName, String.valueOf(spielerTore), String.valueOf(spielerFehlwurf), 
 						String.valueOf(spielerProzent)+"%");
 			}
 		}
+		cSpieler.close();
 	}
 	
 	public void createStatTickerTore(String spielId, String teamHeimId, String teamAuswId, Context context) {
 		
 		deleteStatTickerTor();
-		
-		Cursor c=getSpielById(spielId);
-		c.moveToFirst();
 		
 		int spielerTore=0;
 		int spielerFehlwurf=0;
@@ -1787,21 +1874,24 @@ class SQLHelper extends SQLiteOpenHelper {
 				} else {
 					spielerProzent=0;
 				}
-				strSpielerName=getSpielerName(cSpieler);
-				strTeamName=getTeamNameById(getSpielerTeamId(cSpieler));
-				Log.v("Spieler: ", strSpielerName);
-				Log.v("Team: ", strTeamName);
-				insertStatTickerTor(strSpielerName, strTeamName, String.valueOf(spielerTore), String.valueOf(spielerFehlwurf), 
-						String.valueOf(spielerProzent)+"%");
+				strSpielerName=getSpielerName(spielerId);
+				strTeamName=getTeamNameById(getSpielerTeamId(spielerId));
+				if (spielerTore>0 || spielerFehlwurf>0){
+					insertStatTickerTor(strSpielerName, strTeamName, String.valueOf(spielerTore), String.valueOf(spielerFehlwurf), 
+							String.valueOf(spielerProzent)+"%");
+				}
 			}
 		}
+		cSpieler.close();
 	}
-
+    
+/* Statistik Spieler erstellen */
+  
 	public void createStatSpieler(String spielId, String teamId) {
 		
 		deleteStatTor();
 		
-		Cursor c=getSpielById(spielId);
+		Cursor c=getSpielCursor(spielId);
 		c.moveToFirst();
 		
 		String spielerId=null;
@@ -1815,8 +1905,8 @@ class SQLHelper extends SQLiteOpenHelper {
 		for (cSpieler.moveToFirst(); !cSpieler.isAfterLast(); cSpieler.moveToNext()) {
 			spielerId=getSpielerId(cSpieler);
 			if(countStatSpielerId(spielerId, spielId)>0){	// Hat der Spieler im Spiel gespielt?
-				strSpielerName=getSpielerName(cSpieler);
-				strSpielerNummer=getSpielerNummer(cSpieler);
+				strSpielerName=getSpielerName(spielerId);
+				strSpielerNummer=getSpielerNummer(spielerId);
 				/** Hinweis: StatTor hier missbraucht um Spielername und Rückennummer einzutragen */ 
 				insertStatTor(strSpielerName, strSpielerNummer, spielerId, "");
 			}
@@ -1838,11 +1928,8 @@ class SQLHelper extends SQLiteOpenHelper {
 		int intSpielerProzent=0;
 		Resources res = context.getResources();
 		
-		Cursor c=getSpielerById(spielerId);
-		c.moveToFirst();
-		String spielerPosition=getSpielerPosition(c);
-		c.close();
-				
+		String spielerPosition=getSpielerPosition(spielerId);
+        
 		deleteStatSpieler();
 		
 		if(spielerPosition.equals(res.getString(R.string.spielerPositionTorwart))){
@@ -1930,7 +2017,9 @@ class SQLHelper extends SQLiteOpenHelper {
 		}
 		
 	}
-	
+    
+/* Statistikdaten abfragen */
+  
 	  public String getStatSpielTeamHeim(Cursor c) {
 		  return(c.getString(1));
 	  }

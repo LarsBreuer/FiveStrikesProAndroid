@@ -35,32 +35,38 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_ok);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackOkText);
         customTitleText.setText(R.string.tickerAktionAuswechselung);
+
+/* Daten aus Activity laden */ 
         
-        /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
+        mannschaftId=getIntent().getStringExtra("TeamHomeID");
+        aktionTeamHeim=getIntent().getStringExtra("AktionTeamHome");
+        spielId=getIntent().getStringExtra("GameID");
+        zeit=getIntent().getStringExtra("Time");
+        realzeit=getIntent().getStringExtra("RealTime");
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_TEAM_EXTRA);
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
         setListAdapter(adapter);
-        spielId=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_SPIEL_EXTRA);
-        aktionTeamHeim=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA);
-        zeit=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_ZEIT_EXTRA);
-        realzeit=getIntent().getStringExtra(TickerSpielerActivity.ID_AUSWECHSEL_REALZEIT_EXTRA);
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button okButton = (Button) findViewById(R.id.ok_button);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,7 +74,7 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
             }
         });
         
-        /** Button ok */
+        /* Button ok */
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,24 +87,32 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Auswahl des Spielers => dann zurück zu Übersicht Spiel
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
 		
-		/** Spielernamen anhand Spieler ID erhalten und neuen Ticker einfügen */
+		/* Spielernamen anhand Spieler ID erhalten und neuen Ticker einfügen */
 		
 		spielerId=String.valueOf(id);
-		Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();    
-		spielerString=helper.getSpielerName(c);
-		c.close();
+		spielerString=helper.getSpielerName(spielerId);
 		helper.insertTicker(8, getString(R.string.tickerAktionAuswechselung), Integer.parseInt(aktionTeamHeim), spielerString, 
 				Integer.parseInt(spielerId), Integer.parseInt(spielId), Integer.parseInt(zeit) + 1, realzeit);
 		finish();
 	}
+
+/*
+ * 
+ * Spielerliste definieren 
+ *
+ */
 	
 	class SpielerAdapter extends CursorAdapter {
 		SpielerAdapter(Cursor c) {
@@ -131,13 +145,14 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
 	    private TextView nummer=null;
 	    
 	    SpielerHolder(View row) {
-	      name=(TextView)row.findViewById(R.id.rowMannschaftName);
-	      nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
+	    	name=(TextView)row.findViewById(R.id.rowMannschaftName);
+	      	nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getSpielerName(c));
-	      nummer.setText(helper.getSpielerNummer(c));
+	    	String spielerId=helper.getSpielerId(c);
+	    	name.setText(helper.getSpielerName(spielerId));
+	      	nummer.setText(helper.getSpielerNummer(spielerId));
 	  
 	    }
 	}

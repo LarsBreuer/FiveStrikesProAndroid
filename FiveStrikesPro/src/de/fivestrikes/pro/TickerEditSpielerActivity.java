@@ -33,20 +33,29 @@ public class TickerEditSpielerActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerSpielerTitel);
         
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(TickerEditActivity.ID_TICKEREDITTEAM_EXTRA);
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
         setListAdapter(adapter);
+
+/* Daten aus Activity laden */ 
+        
+        mannschaftId=getIntent().getStringExtra("TeamID");
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         
@@ -64,20 +73,22 @@ public class TickerEditSpielerActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Auswahl des Spielers => dann zurück zu Ticker Edit
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
 		
-		/** Spielernamen anhand Spieler ID erhalten und neuen Ticker einfügen */
+		/* Spielernamen anhand Spieler ID erhalten und neuen Ticker einfügen */
 		
 		spielerId=String.valueOf(id);
-		Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();    
-		spielerString=helper.getSpielerName(c);
-		c.close();
+		spielerString=helper.getSpielerName(spielerId);
 		Intent i=new Intent();
 		i.putExtra("Activity", "Spieler");
 		i.putExtra("spielerId", spielerId);
@@ -85,6 +96,12 @@ public class TickerEditSpielerActivity extends ListActivity {
 		setResult(RESULT_OK, i);
 		finish();
 	}
+
+/*
+ * 
+ * Spielerliste definieren 
+ *
+ */
 	
 	class SpielerAdapter extends CursorAdapter {
 		SpielerAdapter(Cursor c) {
@@ -117,13 +134,14 @@ public class TickerEditSpielerActivity extends ListActivity {
 	    private TextView nummer=null;
 	    
 	    SpielerHolder(View row) {
-	      name=(TextView)row.findViewById(R.id.rowMannschaftName);
-	      nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
+	    	name=(TextView)row.findViewById(R.id.rowMannschaftName);
+	      	nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getSpielerName(c));
-	      nummer.setText(helper.getSpielerNummer(c));
+	    	String spielerId=helper.getSpielerId(c);
+	    	name.setText(helper.getSpielerName(spielerId));
+	    	nummer.setText(helper.getSpielerNummer(spielerId));
 	  
 	    }
 	}

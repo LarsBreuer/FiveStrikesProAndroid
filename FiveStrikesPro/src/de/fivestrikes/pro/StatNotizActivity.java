@@ -23,23 +23,28 @@ public class StatNotizActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.stat_notiz);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.notiz);
-		
-		spielId=getIntent().getStringExtra(StatMenuActivity.ID_SPIEL_EXTRA);
-		
-        Button backButton = (Button) findViewById(R.id.back_button);
+
+/* Daten aus Activity laden */ 
+        
+		spielId=getIntent().getStringExtra("GameID");
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
-        Cursor c=helper.getSpielCursor(spielId);
-		c.moveToFirst();
+        
+/* Button und Textfelder beschriften */
+        
 		TextView text = (TextView) findViewById(R.id.notiz);
-		text.setText(helper.getSpielNotiz(c));
-		c.close();
+		text.setText(helper.getSpielNotiz(spielId));
+		Button backButton = (Button) findViewById(R.id.back_button);
         
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -55,6 +60,5 @@ public class StatNotizActivity extends Activity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
 }

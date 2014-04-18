@@ -28,22 +28,25 @@ public class StatSpielerWurfeckeActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.stat_spieler_wurfecke);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        getWindow().setWindowAnimations(0);
-        
+        getWindow().setWindowAnimations(0);       
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.statSpielerstatistik); 
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
         spielerId=getIntent().getStringExtra(StatSpielerStatActivity.ID_SPIELER_EXTRA);
         spielId=getIntent().getStringExtra(StatSpielerStatActivity.ID_SPIEL_EXTRA);
-		Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();
-		spielerPosition=helper.getSpielerPosition(c);
-		c.close();
+		spielerPosition=helper.getSpielerPosition(spielerId);
 		statistikAlle();
+        
+/* Button definieren */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button statAlleButton = (Button) findViewById(R.id.statistik_alle);
@@ -88,7 +91,7 @@ public class StatSpielerWurfeckeActivity extends Activity {
         final Button feld_4_4_Button = (Button) findViewById(R.id.feld_4_4);
         final Button feld_5_4_Button = (Button) findViewById(R.id.feld_5_4);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,7 +99,7 @@ public class StatSpielerWurfeckeActivity extends Activity {
             }
         });
 
-        /** Button Statistik gesamt */
+        /* Button Statistik gesamt */
         statAlleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +107,7 @@ public class StatSpielerWurfeckeActivity extends Activity {
             }
         });
         
-        /** Button Wurfecke*/
+        /* Button Wurfecke*/
         fehl_ooll_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -266,7 +269,7 @@ public class StatSpielerWurfeckeActivity extends Activity {
             }
         });
         
-        /** Button Wurfposition*/
+        /* Button Wurfposition*/
         feld_1_1_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -435,9 +438,14 @@ public class StatSpielerWurfeckeActivity extends Activity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
 
+/*
+ * 
+ * Button leeren 
+ *
+ */
+	
 	public void fehl_button_leeren() {
 
 		final Button fehl_ooll_Button = (Button) findViewById(R.id.fehl_ooll);
@@ -527,7 +535,13 @@ public class StatSpielerWurfeckeActivity extends Activity {
         feld_5_4_Button.setText("");
         
 	}
-	
+
+/*
+ * 
+ * Button füllen 
+ *
+ */
+		
 	public void statistikAlle() {
 		
     	fehl_button_leeren();

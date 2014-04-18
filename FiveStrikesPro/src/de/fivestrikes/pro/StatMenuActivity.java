@@ -21,8 +21,7 @@ import android.util.Log;
 
 
 public class StatMenuActivity extends Activity {
-	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
-	public final static String ID_TEAMTORE_EXTRA="de.fivestrikes.pro.teamtore_ID";
+
 	SQLHelper helper=null;
 	String spielId=null;
 	String strIdTeamHeim=null;
@@ -35,15 +34,21 @@ public class StatMenuActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.stat_menu);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-	    
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.statMenuTitel);
-		
+        
+/* Datenbank laden */
+        
 		helper=new SQLHelper(this);
-	    
+        
+/* Button beschriften */
+       
 	    Button backButton = (Button) findViewById(R.id.back_button);
 	    Button btnSpielstatistik = (Button) findViewById(R.id.statSpielstatistik);
 	    Button btnNotiz = (Button) findViewById(R.id.statNotiz);
@@ -52,24 +57,27 @@ public class StatMenuActivity extends Activity {
 	    Button btnSpielerHeim = (Button) findViewById(R.id.statSpielerHeim);
 	    Button btnSpielerAusw = (Button) findViewById(R.id.statSpielerAusw);
 	    Button btnExport = (Button) findViewById(R.id.statExportCSV);
-	    
-	    spielId=getIntent().getStringExtra(StatActivity.ID_EXTRA);
-	    
-		Cursor c=helper.getSpielById(spielId);
-		c.moveToFirst();
-	    btnSpielstatistik.setText(helper.getTeamHeimKurzBySpielID(c)+"-"+helper.getTeamAuswKurzBySpielID(c));
-	    strHeim=helper.getTeamHeimNameBySpielID(c);
-	    strAusw=helper.getTeamAuswNameBySpielID(c);
-	    strHeimKurz=helper.getTeamHeimKurzBySpielID(c);
-	    strAuswKurz=helper.getTeamAuswKurzBySpielID(c);
+
+/* Daten aus Activity laden */ 
+        
+	    spielId=getIntent().getStringExtra("GameID");
+
+/* Daten aus Datenbank laden */
+        
+	    btnSpielstatistik.setText(helper.getTeamHeimKurzBySpielID(spielId)+"-"+helper.getTeamAuswKurzBySpielID(spielId));
+	    strHeim=helper.getTeamHeimNameBySpielID(spielId);
+	    strAusw=helper.getTeamAuswNameBySpielID(spielId);
+	    strHeimKurz=helper.getTeamHeimKurzBySpielID(spielId);
+	    strAuswKurz=helper.getTeamAuswKurzBySpielID(spielId);
 	    btnToreHeim.setText(strHeim);
 	    btnToreAusw.setText(strAusw);
 	    btnSpielerHeim.setText(strHeim);
 	    btnSpielerAusw.setText(strAusw);
-	    strIdTeamHeim=helper.getSpielHeim(c);
-	    strIdTeamAusw=helper.getSpielAusw(c);
-		c.close();
-	    
+	    strIdTeamHeim=helper.getSpielHeim(spielId);
+	    strIdTeamAusw=helper.getSpielAusw(spielId);
+        
+/* Button beschriften */
+       
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +91,7 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatSpielActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+				newIntent.putExtra("GameID", spielId);
 				startActivity(newIntent);
             }
         });
@@ -93,7 +101,7 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatNotizActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
+				newIntent.putExtra("GameID", spielId);
 				startActivity(newIntent);
             }
         });
@@ -103,8 +111,8 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatToreActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_TEAMTORE_EXTRA, strIdTeamHeim);
+				newIntent.putExtra("GameID", spielId);
+				newIntent.putExtra("TeamID", strIdTeamHeim);
 				startActivity(newIntent);
             }
         });
@@ -114,8 +122,8 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatToreActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_TEAMTORE_EXTRA, strIdTeamAusw);
+				newIntent.putExtra("GameID", spielId);
+				newIntent.putExtra("TeamID", strIdTeamAusw);
 				startActivity(newIntent);
             }
         });
@@ -125,8 +133,8 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatSpielerActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_TEAMTORE_EXTRA, strIdTeamHeim);
+				newIntent.putExtra("GameID", spielId);
+				newIntent.putExtra("TeamID", strIdTeamHeim);
 				startActivity(newIntent);
             }
         });
@@ -136,8 +144,8 @@ public class StatMenuActivity extends Activity {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), StatSpielerActivity.class);
-				newIntent.putExtra(ID_SPIEL_EXTRA, spielId);
-				newIntent.putExtra(ID_TEAMTORE_EXTRA, strIdTeamAusw);
+				newIntent.putExtra("GameID", spielId);
+				newIntent.putExtra("TeamID", strIdTeamAusw);
 				startActivity(newIntent);
             }
         });
@@ -252,7 +260,6 @@ public class StatMenuActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 	  
-	    helper.close();
 	}
 	
 }

@@ -21,7 +21,6 @@ import android.os.Environment;
 
 
 public class MannschaftEditActivity extends Activity {
-	public final static String ID_MANNSCHAFT_EXTRA="de.fivestrikes.pro.mannschaft_ID";
 	int mannschaft_ID=0;
 	EditText mannschaft_name=null;
 	EditText mannschaft_kuerzel=null;
@@ -32,15 +31,25 @@ public class MannschaftEditActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.mannschaft_edit);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-	    
-        final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
+	    final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.mannschaftEditTitel);
-		
+        
+/* Datenbank laden */
+        
 		helper=new SQLHelper(this);
-		
+
+/* Daten aus Activity laden */ 
+        
+	    mannschaftId=getIntent().getStringExtra("TeamID");
+
+/* Button definieren */
+        
 	    mannschaft_name=(EditText)findViewById(R.id.mannschaftName);
 	    mannschaft_kuerzel=(EditText)findViewById(R.id.mannschaftKuerzel);
 	    
@@ -55,32 +64,26 @@ public class MannschaftEditActivity extends Activity {
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);
 	    
-	    mannschaftId=getIntent().getStringExtra(MannschaftActivity.ID_EXTRA);
-	    
+/* Mannschftsdaten aus Datenbank laden oder Mannschaft neu einrichten*/
+        
 	    if (mannschaftId!=null) {   // Wurde eine Mannschaft ausgewählt...
 	    	load();
 	    }
 	    else {						// ... oder neue eingefügt?
-	    	Cursor c=helper.getLastTeamId();
-	    	if (c.moveToFirst()!=false) {		// Bereits Mannschaften vorhanden...
-		    	c.moveToFirst();
-		    	lastID = String.valueOf(Integer.parseInt(helper.getTeamId(c)) + 1);
+	    	if (helper.getLastTeamId()!=null) {		// Bereits Mannschaften vorhanden...
+		    	lastID = String.valueOf(Integer.parseInt(helper.getLastTeamId()) + 1);
 	        }
 	        else {								// ... oder erste Mannschaft?
 	        	lastID = "1";
 	        }
-	    	c.close();
-	    	helper.insertTeam("Mannschaft " + lastID,
-      			  		  "M" + lastID);
+	    	helper.insertTeam("Mannschaft " + lastID, "M" + lastID);
 	        mannschaft_name.setText("Mannschaft " + lastID);
 			mannschaft_kuerzel.setText("M" + lastID);
-			
-			Cursor newC=helper.getLastTeamId();
-			newC.moveToFirst();
-			mannschaftId = helper.getTeamId(newC);
-			newC.close();
+			mannschaftId = helper.getLastTeamId();
 		}
-	    
+        
+/* Button definieren */
+
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +92,7 @@ public class MannschaftEditActivity extends Activity {
             }
         });
         
-        /* Okay Button */
+        /* Okay Button (Tastaturfeld schließen) */
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -106,7 +109,7 @@ public class MannschaftEditActivity extends Activity {
 	        			  	  mannschaft_name.getText().toString(),
 	        			  	  mannschaft_kuerzel.getText().toString());
 				Intent newIntent = new Intent(getApplicationContext(), SpielerActivity.class);
-				newIntent.putExtra(ID_MANNSCHAFT_EXTRA, mannschaftId);
+				newIntent.putExtra("TeamID", mannschaftId);
 				startActivity(newIntent);
             }
         });
@@ -203,30 +206,42 @@ public class MannschaftEditActivity extends Activity {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+
 	  
-	    helper.close();
 	}
 
-	private void load() {
-		Cursor c=helper.getTeamById(mannschaftId);
-
-		c.moveToFirst();    
-		mannschaft_name.setText(helper.getTeamName(c));
-		mannschaft_kuerzel.setText(helper.getTeamKuerzel(c));
-		    
-		c.close();
+/*
+ * 
+ * Mannschaftsdaten aus Datenbank laden
+ *
+ */
+	
+	private void load() {   
+		mannschaft_name.setText(helper.getTeamName(mannschaftId));
+		mannschaft_kuerzel.setText(helper.getTeamKuerzel(mannschaftId));		    
 	}
 
+/*
+ * 
+ * Mannschaftsdaten speichern und zurück zur Mannschaftsübersicht
+ *
+ */
+	
 	private View.OnClickListener onSave=new View.OnClickListener() {
 		public void onClick(View v) {
 			
 		    helper.updateTeam(mannschaftId,
-		        		  mannschaft_name.getText().toString(),
-	                      mannschaft_kuerzel.getText().toString());
-
+		        		  	  mannschaft_name.getText().toString(),
+		        		  	  mannschaft_kuerzel.getText().toString());
 			finish();
 		}
 	};
+
+/*
+ * 
+ * Mannschaft löschen und zurück zur Mannschaftsübersicht
+ *
+ */
 	
 	private View.OnClickListener onDelete=new View.OnClickListener() {
 		public void onClick(View v) {

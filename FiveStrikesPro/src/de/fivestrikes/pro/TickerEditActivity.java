@@ -19,9 +19,7 @@ import android.util.Log;
 
 
 public class TickerEditActivity extends Activity {
-	public final static String ID_TICKEREDITTEAM_EXTRA="de.fivestrikes.pro.tickereditteam_ID";
-	public final static String ID_TICKEREDITWURFECKE_EXTRA="de.fivestrikes.pro.tickereditwurfecke_ID";
-	public final static String ID_TICKEREDITPOSITION_EXTRA="de.fivestrikes.pro.tickereditposition_ID";
+	
 	SQLHelper helper=null;
 	String tickerId=null;
 	String spielId=null;
@@ -40,31 +38,27 @@ public class TickerEditActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.ticker_edit);
 	    getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
 	    getWindow().setWindowAnimations(0);
-	    
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerEditTitel);
-		
+        
+/* Datenbank laden */
+        
 		helper=new SQLHelper(this);
 		
-	    Button save=(Button)findViewById(R.id.save);
-	    Button delete=(Button)findViewById(R.id.delete);
-	    Button backButton = (Button) findViewById(R.id.back_button);
-	    Button btnZeit = (Button) findViewById(R.id.btnEditSpielzeit);
-	    Button btnAktion = (Button) findViewById(R.id.btnEditAktion);
-	    Button btnSpieler = (Button) findViewById(R.id.btnEditSpieler);
-	    Button btnWurfecke = (Button) findViewById(R.id.btnEditWurfecke);
-	    Button btnWurfposition = (Button) findViewById(R.id.btnEditWurfposition);
-	    
-	    tickerId=getIntent().getStringExtra(TabListActivity.ID_TICKER_EXTRA);
-	    spielId=getIntent().getStringExtra(TabListActivity.ID_SPIEL_EXTRA);
-	    
-	    save.setOnClickListener(onSave);
-	    delete.setOnClickListener(onDelete);
-	    
+/* Daten aus Activity laden */ 
+        
+	    tickerId=getIntent().getStringExtra("TickerID");
+	    spielId=getIntent().getStringExtra("GameID");
+
+/* Daten aus Datenbank laden */
+        
         Cursor c=helper.getTickerCursor(tickerId);
 		c.moveToFirst();
 		tickerZeitLng=Integer.parseInt(helper.getTickerZeitInt(c));
@@ -79,18 +73,32 @@ public class TickerEditActivity extends Activity {
 		aktionAnfangID=Integer.parseInt(helper.getTickerAktionInt(c));
 		tickerWurfecke=helper.getTickerWurfecke(c);
 		tickerPosition=helper.getTickerPosition(c);
+		if(tickerPosition==null){
+			tickerPosition="";
+		}
+	    c.close();
+        
+/* Button definieren und beschriften */
+	    
+	    Button save=(Button)findViewById(R.id.save);
+	    Button delete=(Button)findViewById(R.id.delete);
+	    Button backButton = (Button) findViewById(R.id.back_button);
+	    Button btnZeit = (Button) findViewById(R.id.btnEditSpielzeit);
+	    Button btnAktion = (Button) findViewById(R.id.btnEditAktion);
+	    Button btnSpieler = (Button) findViewById(R.id.btnEditSpieler);
+	    Button btnWurfecke = (Button) findViewById(R.id.btnEditWurfecke);
+	    Button btnWurfposition = (Button) findViewById(R.id.btnEditWurfposition);
 		if(tickerWurfecke!=null){
 			btnWurfeckeBeschriften();
 			btnWurfposition.setText(R.string.tickerEditWurfpositionWaehlen);
 		} else {
 			tickerWurfecke="";
 		}
-		if(tickerPosition==null){
-			tickerPosition="";
-		}
-	    c.close();
+        
+        save.setOnClickListener(onSave);
+	    delete.setOnClickListener(onDelete);
 	    
-        /* Button zurück */
+	    /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,9 +196,7 @@ public class TickerEditActivity extends Activity {
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), TickerEditSpielerActivity.class);
 				Cursor cTicker=helper.getTickerCursor(tickerId);
-				Cursor cSpiel=helper.getSpielCursor(spielId);
 				cTicker.moveToFirst();
-				cSpiel.moveToFirst();
             	if(Integer.parseInt(helper.getTickerAktionInt(cTicker))==1 || 
             			Integer.parseInt(helper.getTickerAktionInt(cTicker))==0){
         	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
@@ -207,15 +213,14 @@ public class TickerEditActivity extends Activity {
             	}
             	else{
             		if(Integer.parseInt(helper.getTickerAktionTeamHeim(cTicker))==1){
-            			newIntent.putExtra(ID_TICKEREDITTEAM_EXTRA, helper.getSpielHeim(cSpiel));
+            			newIntent.putExtra("TeamID", helper.getSpielHeim(spielId));
             		}
             		else{
-            			newIntent.putExtra(ID_TICKEREDITTEAM_EXTRA, helper.getSpielAusw(cSpiel));
+            			newIntent.putExtra("TeamID", helper.getSpielAusw(spielId));
             		}
     				startActivityForResult(newIntent, GET_CODE);
             	}
 				cTicker.close();
-				cSpiel.close();
             }
         });
         
@@ -249,7 +254,7 @@ public class TickerEditActivity extends Activity {
         	    	alertDialog.show();
             	}
             	else{
-            		newIntent.putExtra(ID_TICKEREDITWURFECKE_EXTRA, tickerWurfecke);
+            		newIntent.putExtra("Wurfecke", tickerWurfecke);
     				startActivityForResult(newIntent, GET_CODE);
             	}
 				cTicker.close();
@@ -286,7 +291,7 @@ public class TickerEditActivity extends Activity {
         	    	alertDialog.show();
             	}
             	else{
-            		newIntent.putExtra(ID_TICKEREDITPOSITION_EXTRA, tickerPosition);
+            		newIntent.putExtra("Position", tickerPosition);
     				startActivityForResult(newIntent, GET_CODE);
             	}
 				cTicker.close();
@@ -298,9 +303,14 @@ public class TickerEditActivity extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 	  
-	    helper.close();
 	}
 
+/*
+ * 
+ * Ergebnis der Sub-Activity abfragen und verarbeiten
+ *
+ */
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -328,6 +338,12 @@ public class TickerEditActivity extends Activity {
 			}
 		}
 	}
+
+/*
+ * 
+ * Tickerdaten speichern und zurück zur Spielübersicht
+ *
+ */
 	
 	private View.OnClickListener onSave=new View.OnClickListener() {
 		public void onClick(View v) {
@@ -371,6 +387,12 @@ public class TickerEditActivity extends Activity {
 			finish();
 		}
 	};
+
+/*
+ * 
+ * Ticker löschen und zurück zur Spielerübersicht
+ *
+ */
 	
 	private View.OnClickListener onDelete=new View.OnClickListener() {
 		public void onClick(View v) {
@@ -426,6 +448,12 @@ public class TickerEditActivity extends Activity {
 			.show();
 		}
 	};
+
+/*
+ * 
+ * Button Wurfecke beschriften
+ *
+ */
 	
 	public void btnWurfeckeBeschriften() {
 

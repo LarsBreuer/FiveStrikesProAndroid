@@ -18,11 +18,7 @@ import android.view.View.OnClickListener;
 
 public class TickerSpielerStartaufstellungActivity extends ListActivity {
     /** Called when the activity is first created. */
-	public final static String ID_AUSWECHSEL_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
-	public final static String ID_AUSWECHSEL_TEAM_EXTRA="de.fivestrikes.pro.team_ID";
-	public final static String ID_AUSWECHSEL_AKTIONTEAMHEIM_EXTRA="de.fivestrikes.pro.aktionTeamHeim_ID";
-	public final static String ID_AUSWECHSEL_ZEIT_EXTRA="de.fivestrikes.pro.zeit_ID";
-	public final static String ID_AUSWECHSEL_TICKER_EXTRA="de.fivestrikes.pro.ticker_ID";
+
 	Cursor model=null;
 	SpielerAdapter adapter=null;
 	SQLHelper helper=null;
@@ -44,23 +40,32 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_ok);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackOkText);
+
+/* Daten aus Activity laden */ 
         
-        /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
+        spielId=getIntent().getStringExtra("GameID");
+        aktionString=getIntent().getStringExtra("StrAktion");
+        aktionInt=getIntent().getStringExtra("StrAktionInt");
+        zeit=getIntent().getStringExtra("Time");
+        realzeit=getIntent().getStringExtra("RealTime");
+        aktionTeamHeim=getIntent().getStringExtra("AktionTeamHome"); 
+        if (aktionTeamHeim.equals("1")){
+        	mannschaftId=getIntent().getStringExtra("TeamHomeID");
+        } else {
+        	mannschaftId=getIntent().getStringExtra("TeamAwayID");
+        }
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
-        aktionTeamHeim=getIntent().getStringExtra(TabMenuActivity.ID_AKTIONTEAMHEIM_EXTRA);
-        if (aktionTeamHeim.equals("1")){
-        	mannschaftId=getIntent().getStringExtra(TabMenuActivity. ID_TEAM_HEIM_EXTRA);
-        } else {
-        	mannschaftId=getIntent().getStringExtra(TabMenuActivity. ID_TEAM_AUSW_EXTRA);
-        }
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
@@ -68,22 +73,19 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
         model.moveToFirst();
         spielerCount = model.getCount();
         checkBoxState=new boolean[spielerCount];
-        spielId=getIntent().getStringExtra(TabMenuActivity .ID_SPIEL_EXTRA);
-        aktionString=getIntent().getStringExtra(TabMenuActivity .ID_AKTION_EXTRA);
-        aktionInt=getIntent().getStringExtra(TabMenuActivity .ID_AKTIONINT_EXTRA);
-        zeit=getIntent().getStringExtra(TabMenuActivity .ID_ZEIT_EXTRA);
-        realzeit=getIntent().getStringExtra(TabMenuActivity .ID_REALZEIT_EXTRA);
-		Cursor cSpiel=helper.getSpielCursor(spielId);
-    	cSpiel.moveToFirst();
-	    halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(cSpiel))*60*1000;
-	    cSpiel.close();
+
+/* Daten aus Datenbank laden */
+        
+	    halbzeitlaenge=Integer.parseInt(helper.getSpielHalbzeitlaenge(spielId))*60*1000;
+        
+/* Button definieren und Text setzen */
         
         customTitleText.setText(aktionString);
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button okButton = (Button) findViewById(R.id.ok_button);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,7 +93,7 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
             }
         });
         
-        /** OK-Button */
+        /* OK-Button */
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,8 +107,13 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Spielerliste definieren 
+ *
+ */
 	
 	class SpielerAdapter extends CursorAdapter {
 		
@@ -160,20 +167,27 @@ public class TickerSpielerStartaufstellungActivity extends ListActivity {
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
 	      int position = c.getPosition();
-	      name.setText(helper.getSpielerName(c));
-	      nummer.setText(helper.getSpielerNummer(c));
+	      String spielerId=helper.getSpielerId(c);
+	      name.setText(helper.getSpielerName(spielerId));
+	      nummer.setText(helper.getSpielerNummer(spielerId));
 	      cbListCheck.setChecked(checkBoxState[position]);
 	    }
 	}
+
+/*
+ * 
+ * Zurück zu Spielübersicht und Ergebnis übertragen
+ *
+ */
 	
 	public void uebertragen(int spielerCount, int halbzeitlaenge) {
     	int zeitAufstellung;
     	model.moveToFirst();
     	for(int i=0;i<spielerCount;i++){
     		if(checkBoxState[i]==true){
-    			spielerString = helper.getSpielerName(model);
-    			spielerId = helper.getSpielerId(model);
-    			spielerPosition = helper.getSpielerPosition(model);
+    			String spielerId=helper.getSpielerId(model);
+    			spielerString = helper.getSpielerName(spielerId);
+    			spielerPosition = helper.getSpielerPosition(spielerId);
     			if(Integer.parseInt(zeit)<halbzeitlaenge){
     				zeitAufstellung = 0;
     			} else {

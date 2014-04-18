@@ -33,40 +33,59 @@ public class TabListActivity extends ListActivity {
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v("TabListActivity", "onCreate");
+        
+/* Grundlayout setzen */
+        
         setContentView(R.layout.tab_list);
- 
-        spielId=getIntent().getStringExtra(SpielEditActivity.ID_SPIEL_EXTRA);
+
+/* Daten aus Activity laden */ 
+        
+        spielId=getIntent().getStringExtra("GameID");
+        
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
         adapter=new TickerAdapter(model);
         setListAdapter(adapter);
     }
-    
+
+/*
+ * 
+ * Inhalt neu laden, wenn Activity ernuet aufgerufen wird 
+ *
+ */
+	
     @Override
 	public void onResume() {
     	super.onResume();  // Always call the superclass method first
-    	Log.v("TabListActivity", "onResume");
+
     	refreshContent();
     }
     
     public void refreshContent() {
-    	Log.v("TabListActivity", "refreshContent");
+
     	helper=new SQLHelper(this);
         model=helper.getAllTicker(spielId);
         startManagingCursor(model);
         adapter=new TickerAdapter(model);
         setListAdapter(adapter);  
     }
-    
+
+/*
+ * 
+ * Tickerauswahl 
+ *
+ */
+	   
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
 		
 		Intent i=new Intent(TabListActivity.this, TickerEditActivity.class);
-		i.putExtra(ID_TICKER_EXTRA, String.valueOf(id));
-		i.putExtra(ID_SPIEL_EXTRA, spielId);
+		i.putExtra("TickerID", String.valueOf(id));
+		i.putExtra("GameID", spielId);
 		startActivityForResult(i, GET_CODE);
 		
 	}
@@ -74,8 +93,14 @@ public class TabListActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();	  
-	  helper.close();
+
 	}
+
+/*
+ * 
+ * Liste Ticker definieren 
+ *
+ */
 	
 	class TickerAdapter extends CursorAdapter {
 		TickerAdapter(Cursor c) {
@@ -121,7 +146,6 @@ public class TabListActivity extends ListActivity {
 	    void populateFrom(Cursor c, SQLHelper helper) {
 	      aktion.setText(helper.getTickerAktion(c));
 	      zeit.setText(helper.getTickerZeit(c) + " Min.");
-	      //if(!(helper.getTickerAktionInt(c)).equals("0") && !(helper.getTickerAktionInt(c)).equals("1") && !(helper.getTickerAktionInt(c)).equals("24")){
 	      if(!helper.getTickerSpielerId(c).equals("0") ){
 	    	  spieler.setText(helper.getSpielerNummerById(helper.getTickerSpielerId(c)) + " - " + helper.getTickerSpieler(c));
 	      } else {

@@ -23,28 +23,33 @@ public class TickerSpielerWurfeckeActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.ticker_wurfecke);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerAktionWurfecke);
         
-        /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
-        
+/* Datenbank laden */
+                
         helper=new SQLHelper(this);
-        tickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TICKERID_EXTRA);
-        torwartTickerId=getIntent().getStringExtra(TabTickerSpielerHeimActivity.ID_TORWARTID_EXTRA);
-        if(tickerId==null){
-            tickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TICKERID_EXTRA);
-            torwartTickerId=getIntent().getStringExtra(TabTickerSpielerAuswActivity.ID_TORWARTID_EXTRA);
-        }
+
+/* Daten aus Activity laden */ 
+        
+        tickerId=getIntent().getStringExtra("TickerID");
+        torwartTickerId=getIntent().getStringExtra("TickerTorwartID");
+
+/* Daten aus Datenbank laden */
+        
         if(torwartTickerId==null){
         	Toast.makeText(getApplicationContext(), getString(R.string.tickerWarnmeldungTorwartEinsatz), Toast.LENGTH_SHORT).show();
         }
-		
+        
+/* Button definieren */
+        
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button tor_ol_Button = (Button) findViewById(R.id.tor_ol);
         final Button tor_om_Button = (Button) findViewById(R.id.tor_om);
@@ -76,7 +81,7 @@ public class TickerSpielerWurfeckeActivity extends Activity {
         final Button feld_4_4_Button = (Button) findViewById(R.id.feld_4_4);
         final Button feld_5_4_Button = (Button) findViewById(R.id.feld_5_4);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,7 +89,7 @@ public class TickerSpielerWurfeckeActivity extends Activity {
             }
         });
 		
-		/** Bei Siebenmeter, den Siebenmeterpunkt einrichten **/
+		/* Bei Siebenmeter, den Siebenmeterpunkt einrichten **/
 		Cursor c=helper.getTickerCursor(tickerId);
 		c.moveToFirst();
 		if(Integer.parseInt(helper.getTickerAktionInt(c))==14){
@@ -94,7 +99,7 @@ public class TickerSpielerWurfeckeActivity extends Activity {
 		}
 		c.close();
 		
-        /** Button Wurfecke*/
+        /* Button Wurfecke*/
         tor_ol_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -177,7 +182,7 @@ public class TickerSpielerWurfeckeActivity extends Activity {
             }
         });
         
-        /** Button Wurfposition*/
+        /* Button Wurfposition*/
         feld_1_1_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -365,9 +370,14 @@ public class TickerSpielerWurfeckeActivity extends Activity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
 
+/*
+ * 
+ * Button leeren 
+ *
+ */
+	
 	public void tor_button_leeren() {
 
         final Button tor_ol_Button = (Button) findViewById(R.id.tor_ol);
@@ -435,6 +445,12 @@ public class TickerSpielerWurfeckeActivity extends Activity {
         feld_5_4_Button.setText("");
         
 	}
+
+/*
+ * 
+ * Zurück zu Spielübersicht und Ergebnis übertragen
+ *
+ */
 	
 	public void uebertragen() {
 

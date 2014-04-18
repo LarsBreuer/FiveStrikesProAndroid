@@ -21,12 +21,7 @@ import android.util.Log;
 
 
 public class StatSpielerActivity extends ListActivity {
-    /** Called when the activity is first created. */
-    
-	/** Hinweis: Nachschauen, ob man gleiche Variablen benutzen kann */
-	public final static String ID_SPIEL_EXTRA="de.fivestrikes.pro.spiel_ID";
-	public final static String ID_STATTEAM_EXTRA="de.fivestrikes.pro.statteam_ID";
-	public final static String ID_SPIELER_EXTRA="de.fivestrikes.pro.spieler_ID";
+
 	Cursor model=null;
 	SpielerAdapter adapter=null;
 	SQLHelper helper=null;
@@ -37,29 +32,30 @@ public class StatSpielerActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
 
-		spielId=getIntent().getStringExtra(StatMenuActivity.ID_SPIEL_EXTRA);
-		mannschaftId=getIntent().getStringExtra(StatMenuActivity.ID_TEAMTORE_EXTRA);
-
+/* Daten aus Activity laden */ 
+        
+		spielId=getIntent().getStringExtra("GameID");
+		mannschaftId=getIntent().getStringExtra("TeamID");
+        
+/* Datenbank laden */
+    
         helper=new SQLHelper(this);
-        
-		Cursor c=helper.getTeamById(mannschaftId);
-		c.moveToFirst();    
-		customTitleText.setText(helper.getTeamKuerzel(c));  
-		c.close();
-        
 		helper.createStatSpieler(spielId, mannschaftId);
-		
+		customTitleText.setText(helper.getTeamKuerzel(mannschaftId));  
         model=helper.getAllStatSpieler();
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
         setListAdapter(adapter);
-        spielId=getIntent().getStringExtra(TickerAktionActivity.ID_SPIEL_EXTRA);
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         
@@ -77,23 +73,35 @@ public class StatSpielerActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Spielerauswahl 
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
-		Intent i=new Intent(StatSpielerActivity.this, StatSpielerStatActivity.class);
 		
+		Intent i=new Intent(StatSpielerActivity.this, StatSpielerStatActivity.class);
 		/** Hinweis: statTor (StatTorChancen) missbraucht für spieler Id */
         Cursor c=helper.getStatTorById(String.valueOf(id));
 		c.moveToFirst();  
-		i.putExtra(ID_SPIELER_EXTRA, helper.getStatTorChancen(c));
+		i.putExtra("PlayerID", helper.getStatTorChancen(c));
         c.close();  
-		i.putExtra(ID_STATTEAM_EXTRA, mannschaftId);
-		i.putExtra(ID_SPIEL_EXTRA, spielId);
+		i.putExtra("TeamID", mannschaftId);
+		i.putExtra("GameID", spielId);
 		startActivity(i);
+		
 	}
+
+/*
+ * 
+ * Spielerliste definieren 
+ *
+ */
 	
 	class SpielerAdapter extends CursorAdapter {
 		SpielerAdapter(Cursor c) {

@@ -1,6 +1,5 @@
 package de.fivestrikes.pro;
 
-//import de.fivestrikes.lite.R;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +18,6 @@ import android.widget.Button;
 public class MannschaftActivity extends ListActivity {
     /** Called when the activity is first created. */
     
-	public final static String ID_EXTRA="de.fivestrikes.pro._ID";
 	Cursor model=null;
 	MannschaftAdapter adapter=null;
 	SQLHelper helper=null;
@@ -27,18 +25,24 @@ public class MannschaftActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.mannschaft);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_plus);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackPlusText);
         customTitleText.setText(R.string.mannschaftTitel);
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
         model=helper.getAllTeam();
         startManagingCursor(model);
         adapter=new MannschaftAdapter(model);
         setListAdapter(adapter);
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button plusButton = (Button) findViewById(R.id.plus_button);
@@ -63,18 +67,30 @@ public class MannschaftActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
-	    
-	  helper.close();
+
 	}
+
+/*
+ * 
+ * Mannschaftauswahl 
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
+	
 		Intent i=new Intent(MannschaftActivity.this, MannschaftEditActivity.class);
-		
-		i.putExtra(ID_EXTRA, String.valueOf(id));
+		i.putExtra("TeamID", String.valueOf(id));
 		startActivity(i);
+		
 	}
+
+/*
+ * 
+ * Mannschaftsliste definieren 
+ *
+ */
 	
 	class MannschaftAdapter extends CursorAdapter {
 		MannschaftAdapter(Cursor c) {
@@ -84,18 +100,19 @@ public class MannschaftActivity extends ListActivity {
 		@Override
 		public void bindView(View row, Context ctxt,
 				Cursor c) {
+			
 			MannschaftHolder holder=(MannschaftHolder)row.getTag();
-			      
 			holder.populateFrom(c, helper);
+			
 		}
 
 		@Override
 		public View newView(Context ctxt, Cursor c,
 				ViewGroup parent) {
+			
 			LayoutInflater inflater=getLayoutInflater();
 			View row=inflater.inflate(R.layout.row, parent, false);
 			MannschaftHolder holder=new MannschaftHolder(row);
-
 			row.setTag(holder);
 
 			return(row);
@@ -106,11 +123,15 @@ public class MannschaftActivity extends ListActivity {
 	    private TextView name=null;
 	    
 	    MannschaftHolder(View row) {
-	      name=(TextView)row.findViewById(R.id.rowMannschaftName);
+	      
+	    	name=(TextView)row.findViewById(R.id.rowMannschaftName);
+	    	
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getTeamName(c));
+	    	
+	    	String teamId = helper.getTeamId(c);
+	    	name.setText(helper.getTeamName(teamId));
 	  
 	    }
 	}

@@ -22,7 +22,6 @@ import android.widget.Button;
 public class StatActivity extends ListActivity {
     /** Called when the activity is first created. */
     
-	public final static String ID_EXTRA="de.fivestrikes.pro._ID";
 	Cursor model=null;
 	SpielAdapter adapter=null;
 	SQLHelper helper=null;
@@ -30,6 +29,9 @@ public class StatActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spiel);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
@@ -37,11 +39,15 @@ public class StatActivity extends ListActivity {
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.statTitel);
         
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
         model=helper.getAllSpiel();
         startManagingCursor(model);
         adapter=new SpielAdapter(model);
         setListAdapter(adapter);
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button plusButton = (Button) findViewById(R.id.plus_button);
@@ -67,17 +73,29 @@ public class StatActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Spielauswahl 
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
-		Intent i=new Intent(StatActivity.this, StatMenuActivity.class);
 		
-		i.putExtra(ID_EXTRA, String.valueOf(id));
+		Intent i=new Intent(StatActivity.this, StatMenuActivity.class);
+		i.putExtra("GameID", String.valueOf(id));
 		startActivity(i);
+		
 	}
+
+/*
+ * 
+ * Liste der Spiele definieren 
+ *
+ */
 	
 	class SpielAdapter extends CursorAdapter {
 		SpielAdapter(Cursor c) {
@@ -87,21 +105,22 @@ public class StatActivity extends ListActivity {
 		@Override
 		public void bindView(View row, Context ctxt,
 				Cursor c) {
-			SpielHolder holder=(SpielHolder)row.getTag();
-			      
+			
+			SpielHolder holder=(SpielHolder)row.getTag();      
 			holder.populateFrom(c, helper);
+			
 		}
 
 		@Override
 		public View newView(Context ctxt, Cursor c,
 				ViewGroup parent) {
+			
 			LayoutInflater inflater=getLayoutInflater();
 			View row=inflater.inflate(R.layout.row_spiel, parent, false);
 			SpielHolder holder=new SpielHolder(row);
-
 			row.setTag(holder);
-
 			return(row);
+			
 		}
 	}
 	
@@ -120,7 +139,8 @@ public class StatActivity extends ListActivity {
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	    	String strSpielDatum = helper.getSpielDatum(c);
+	    	String spielId = helper.getSpielId(c);
+	    	String strSpielDatum = helper.getSpielDatum(spielId);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			try
 			{
@@ -134,8 +154,8 @@ public class StatActivity extends ListActivity {
 			// Month is 0 based, just add 1
 				.append(day).append(".").append(month + 1).append(".")
 				.append(year).append(" "));
-	    	spielHeim.setText(helper.getTeamHeimNameBySpielID(c) + " -");
-	    	spielAusw.setText(helper.getTeamAuswNameBySpielID(c));
+	    	spielHeim.setText(helper.getTeamHeimNameBySpielID(spielId) + " -");
+	    	spielAusw.setText(helper.getTeamAuswNameBySpielID(spielId));
 	    }
 	}
 }

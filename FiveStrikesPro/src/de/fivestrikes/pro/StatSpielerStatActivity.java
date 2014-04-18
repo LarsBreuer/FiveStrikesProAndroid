@@ -17,6 +17,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.util.Log;
 
 
 public class StatSpielerStatActivity extends ListActivity {
@@ -36,39 +37,48 @@ public class StatSpielerStatActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler_stat);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
-        /** Hinweis: String "Spieler" als allgemeinen String definieren */ 
         customTitleText.setText(R.string.spielerTitel);
 
-		spielId=getIntent().getStringExtra(StatSpielerActivity.ID_SPIEL_EXTRA);
-		mannschaftId=getIntent().getStringExtra(StatSpielerActivity.ID_STATTEAM_EXTRA);
-		spielerId=getIntent().getStringExtra(StatSpielerActivity.ID_SPIELER_EXTRA);
-
+/* Daten aus Activity laden */ 
+        
+		spielId=getIntent().getStringExtra("GameID");
+		mannschaftId=getIntent().getStringExtra("TeamID");
+		spielerId=getIntent().getStringExtra("PlayerID");
+        
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
         
-        Cursor c=helper.getSpielerById(spielerId);
-		c.moveToFirst();  
-        final TextView spielerNummer = (TextView) findViewById(R.id.spielerStatNummer);
-        final TextView spielerName = (TextView) findViewById(R.id.spielerStatName);
-        spielerNummer.setText(helper.getSpielerNummer(c));
-        spielerName.setText(helper.getSpielerName(c));
-        c.close();        
+/* Spielerstatistik laden */
         
 		helper.createStatSpielerStat(spielId, spielerId, this);
-		
+        
+        
+/* Statistik einrichten */
+        
         model=helper.getAllStatSpielerStat();
         startManagingCursor(model);
         adapter=new SpielerStatAdapter(model);
-        setListAdapter(adapter);
+        setListAdapter(adapter); 
+        
+/* Textfelder und Button beschriften */
+        
+        final TextView spielerNummer = (TextView) findViewById(R.id.spielerStatNummer);
+        final TextView spielerName = (TextView) findViewById(R.id.spielerStatName);
+        spielerNummer.setText(helper.getSpielerNummer(spielerId));
+        spielerName.setText(helper.getSpielerName(spielerId));       
         
         Button backButton = (Button) findViewById(R.id.back_button);
 		Button wurfecke_Button = (Button) findViewById(R.id.spieler_wurfecke);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -76,7 +86,7 @@ public class StatSpielerStatActivity extends ListActivity {
             }
         });
         
-        /** Button Wurfecke */
+        /* Button Wurfecke */
         wurfecke_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -93,10 +103,14 @@ public class StatSpielerStatActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
-	
 
+/*
+ * 
+ * Liste Spielerstatistik definieren 
+ *
+ */
+	
 	class SpielerStatAdapter extends CursorAdapter {
 		SpielerStatAdapter(Cursor c) {
 			super(StatSpielerStatActivity.this, c);

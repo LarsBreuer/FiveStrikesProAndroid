@@ -18,8 +18,6 @@ import android.widget.Button;
 public class SpielerActivity extends ListActivity {
     /** Called when the activity is first created. */
     
-	public final static String ID_SPIELER_EXTRA="de.fivestrikes.pro.spieler_ID";
-	public final static String ID_MANNSCHAFT_EXTRA="de.fivestrikes.pro.mannschaft_ID";
 	int mannschaft_ID=0;
 	Cursor model=null;
 	SpielerAdapter adapter=null;
@@ -29,24 +27,30 @@ public class SpielerActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spieler);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_plus);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackPlusText);
         customTitleText.setText(R.string.spielerTitel);
         
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
-        mannschaftId=getIntent().getStringExtra(MannschaftEditActivity.ID_MANNSCHAFT_EXTRA);
+        mannschaftId=getIntent().getStringExtra("TeamID");
         model=helper.getAllSpieler(mannschaftId);
         startManagingCursor(model);
         adapter=new SpielerAdapter(model);
         setListAdapter(adapter);
         
+/* Button beschriften */
+        
         Button backButton = (Button) findViewById(R.id.back_button);
         Button plusButton = (Button) findViewById(R.id.plus_button);
         
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,13 +58,13 @@ public class SpielerActivity extends ListActivity {
             }
         });
  
-        /** Button Spieler hinzufügen */
+        /* Button Spieler hinzufügen */
         plusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            	Intent newIntent = new Intent(SpielerActivity.this, SpielerEditActivity.class);
-            	newIntent.putExtra(ID_MANNSCHAFT_EXTRA, mannschaftId);
-            	startActivity(newIntent);
+            	Intent i = new Intent(SpielerActivity.this, SpielerEditActivity.class);
+            	i.putExtra("TeamID", mannschaftId);
+            	startActivity(i);
             }
         });
     }
@@ -68,19 +72,30 @@ public class SpielerActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
-	    
-	  helper.close();
+
 	}
+
+/*
+ * 
+ * Spielerauswahl 
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
 		Intent i=new Intent(SpielerActivity.this, SpielerEditActivity.class);
 		
-		i.putExtra(ID_SPIELER_EXTRA, String.valueOf(id));
-		i.putExtra(ID_MANNSCHAFT_EXTRA, mannschaftId);
+		i.putExtra("PlayerID", String.valueOf(id));
+		i.putExtra("TeamID", mannschaftId);
 		startActivity(i);
 	}
+
+/*
+ * 
+ * Spielerliste definieren 
+ *
+ */
 	
 	class SpielerAdapter extends CursorAdapter {
 		SpielerAdapter(Cursor c) {
@@ -113,13 +128,14 @@ public class SpielerActivity extends ListActivity {
 	    private TextView nummer=null;
 	    
 	    SpielerHolder(View row) {
-	      name=(TextView)row.findViewById(R.id.rowMannschaftName);
-	      nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
+	    	name=(TextView)row.findViewById(R.id.rowMannschaftName);
+	    	nummer=(TextView)row.findViewById(R.id.rowMannschaftNummer);
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	      name.setText(helper.getSpielerName(c));
-	      nummer.setText(helper.getSpielerNummer(c));
+	    	String spielerId=helper.getSpielerId(c);
+	    	name.setText(helper.getSpielerName(spielerId));
+	      	nummer.setText(helper.getSpielerNummer(spielerId));
 	  
 	    }
 	}

@@ -132,13 +132,8 @@ public class ImportExportActivity extends Activity {
 																				 Integer.parseInt(cSpiel.getString(3)), Integer.parseInt(cSpiel.getString(4)), 
 																				 Integer.parseInt(cSpiel.getString(5)), cSpiel.getString(6));
         									}
-        									String spielIdAlt=cSpiel.getString(0);
-        									Cursor lastSpielC=helper.getLastSpielId();
-            								lastSpielC.moveToFirst();
-            								String spielIdNeu = helper.getTeamId(lastSpielC);
-            								lastSpielC.close();
-            								System.out.println("SpielID alt"+ spielIdAlt);
-            								System.out.println("SpielID neu"+ spielIdNeu);
+        									String spielIdAlt = cSpiel.getString(0);
+            								String spielIdNeu = helper.getLastSpielId();
             								if(!spielIdAlt.equals(spielIdNeu)){
             									Cursor cTickerAlle=helper.getAllTickerAlle();
             									while(cTickerAlle.moveToNext())
@@ -188,10 +183,7 @@ public class ImportExportActivity extends Activity {
         								{
         									helper.insertTeamImport(cTeam.getString(1), cTeam.getString(2), Integer.parseInt(cTeam.getString(3)));
             								String teamIdAlt=cTeam.getString(0);
-        									Cursor lastTeamC=helper.getLastTeamId();
-        									lastTeamC.moveToFirst();
-            								String teamIdNeu = helper.getTeamId(lastTeamC);
-            								lastTeamC.close();
+            								String teamIdNeu = helper.getLastTeamId();
             								System.out.println("SpielerID alt"+ teamIdAlt);
             								System.out.println("SpielerID neu"+ teamIdNeu);
             								if(!teamIdAlt.equals(teamIdNeu)){

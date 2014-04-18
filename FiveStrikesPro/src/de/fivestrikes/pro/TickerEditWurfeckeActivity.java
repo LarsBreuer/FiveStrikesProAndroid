@@ -13,7 +13,6 @@ import android.widget.RadioButton;
 
 
 public class TickerEditWurfeckeActivity extends Activity {
-    /** Called when the activity is first created. */
 
 	Cursor model=null;
 	SQLHelper helper=null;
@@ -33,19 +32,25 @@ public class TickerEditWurfeckeActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.ticker_edit_wurfecke);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         getWindow().setWindowAnimations(0);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerAktionWurfecke);
         
-        /** Hinweis: ID_TEAM_EXTRA bei Ticker Aktion löschen, wenn Übertragung von TickerActivity funktioniert. 
-         *           Genauso bei andren Activitys verfahren*/
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
-        wurfecke=getIntent().getStringExtra(TickerEditActivity.ID_TICKEREDITWURFECKE_EXTRA);
+
+/* Daten aus Activity laden */ 
+        
+        wurfecke=getIntent().getStringExtra("Wurfecke");
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         final Button fehl_ooll_Button = (Button) findViewById(R.id.fehl_ooll);
@@ -130,7 +135,7 @@ public class TickerEditWurfeckeActivity extends Activity {
         	fehl_urr_Button.setText("X");
         }
 
-        /** Button zurück */
+        /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,7 +143,7 @@ public class TickerEditWurfeckeActivity extends Activity {
             }
         });
 
-        /** Button Wurfecke*/
+        /* Button Wurfecke*/
         fehl_ooll_Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -325,9 +330,14 @@ public class TickerEditWurfeckeActivity extends Activity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
 
+/*
+ * 
+ * Button leeren 
+ *
+ */
+	
 	public void fehl_button_leeren() {
 
         final Button fehl_ooll_Button = (Button) findViewById(R.id.fehl_ooll);
@@ -372,6 +382,12 @@ public class TickerEditWurfeckeActivity extends Activity {
         fehl_urr_Button.setText("");
 
 	}
+
+/*
+ * 
+ * Zurück zu Ticker Edit und Ergebnis übertragen
+ *
+ */
 	
 	public void uebertragen() {
 

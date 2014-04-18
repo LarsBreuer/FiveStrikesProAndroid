@@ -22,7 +22,6 @@ import android.util.Log;
 public class SpielActivity extends ListActivity {
     /** Called when the activity is first created. */
     
-	public final static String ID_EXTRA="de.fivestrikes.pro._ID";
 	Cursor model=null;
 	SpielAdapter adapter=null;
 	SQLHelper helper=null;
@@ -30,18 +29,24 @@ public class SpielActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.spiel);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back_plus);
-        
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackPlusText);
         customTitleText.setText(R.string.spielTitel);
+        
+/* Datenbank laden */
         
         helper=new SQLHelper(this);
         model=helper.getAllSpiel();
         startManagingCursor(model);
         adapter=new SpielAdapter(model);
         setListAdapter(adapter);
+        
+/* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);
         Button plusButton = (Button) findViewById(R.id.plus_button);
@@ -66,19 +71,30 @@ public class SpielActivity extends ListActivity {
 	@Override
 	public void onDestroy() {
 	  super.onDestroy();
-	    
-	  helper.close();
-	  model.close();
+
 	}
+
+/*
+ * 
+ * Spielauswahl 
+ *
+ */
 	
 	@Override
 	public void onListItemClick(ListView list, View view,
             int position, long id) {
-		Intent i=new Intent(SpielActivity.this, SpielEditActivity.class);
 		
-		i.putExtra(ID_EXTRA, String.valueOf(id));
+		Intent i=new Intent(SpielActivity.this, SpielEditActivity.class);
+		i.putExtra("GameID", String.valueOf(id));
 		startActivity(i);
+		
 	}
+
+/*
+ * 
+ * Liste der Spiele definieren 
+ *
+ */
 	
 	class SpielAdapter extends CursorAdapter {
 		SpielAdapter(Cursor c) {
@@ -121,7 +137,8 @@ public class SpielActivity extends ListActivity {
 	    }
 	    
 	    void populateFrom(Cursor c, SQLHelper helper) {
-	    	String strSpielDatum = helper.getSpielDatum(c);
+	    	String spielId=helper.getSpielId(c);
+	    	String strSpielDatum = helper.getSpielDatum(spielId);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			try
 			{
@@ -135,8 +152,8 @@ public class SpielActivity extends ListActivity {
 			// Month is 0 based, just add 1
 				.append(day).append(".").append(month + 1).append(".")
 				.append(year).append(" "));
-	    	spielHeim.setText(helper.getTeamHeimNameBySpielID(c) + " -");
-	    	spielAusw.setText(helper.getTeamAuswNameBySpielID(c));
+	    	spielHeim.setText(helper.getTeamHeimNameBySpielID(spielId) + " -");
+	    	spielAusw.setText(helper.getTeamAuswNameBySpielID(spielId));
 	    }
 	}
 }

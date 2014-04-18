@@ -1,6 +1,5 @@
 package de.fivestrikes.pro;
 
-//import de.fivestrikes.lite.R;
 import android.app.ListActivity;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,30 +24,39 @@ public class StatToreActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+/* Grundlayout setzen */
+        
         requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
         setContentView(R.layout.mannschaft);
         getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.title_bar_back);
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
-        
-		spielId=getIntent().getStringExtra(StatMenuActivity.ID_SPIEL_EXTRA);
-		idteamtore=getIntent().getStringExtra(StatMenuActivity.ID_TEAMTORE_EXTRA);
 
+/* Datenbank laden */
+        
         helper=new SQLHelper(this);
         
-		Cursor c=helper.getTeamById(idteamtore);
-		c.moveToFirst();    
-		customTitleText.setText(helper.getTeamKuerzel(c));  
-		c.close();
+/* Daten aus Activity laden */ 
         
-        Button backButton = (Button) findViewById(R.id.back_button);
+		spielId=getIntent().getStringExtra("GameID");
+		idteamtore=getIntent().getStringExtra("TeamID");
         
-        helper.createStatTore(spielId, idteamtore, this);
+/* Statistik errechnen */
         
+        helper.createStatTore(spielId, idteamtore, this);        
+        
+/* Statistik einrichten */
+
         model=helper.getAllStatTore();
         startManagingCursor(model);
         adapter=new StatToreAdapter(model);
-        setListAdapter(adapter);
+        setListAdapter(adapter);   
         
+/* Titel beschriften und Button definieren */
+        
+        customTitleText.setText(helper.getTeamKuerzel(idteamtore)); 
+        Button backButton = (Button) findViewById(R.id.back_button);
+
         /* Button zurück */
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,8 +71,13 @@ public class StatToreActivity extends ListActivity {
 	public void onDestroy() {
 	  super.onDestroy();
 	    
-	  helper.close();
 	}
+
+/*
+ * 
+ * Liste Torstatistik definieren 
+ *
+ */
 	
 	class StatToreAdapter extends CursorAdapter {
 		StatToreAdapter(Cursor c) {
