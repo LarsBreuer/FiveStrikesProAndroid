@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.ImageView;
@@ -110,8 +111,7 @@ public class TabListActivity extends ListActivity {
 		@Override
 		public void bindView(View row, Context ctxt,
 				Cursor c) {
-			TickerHolder holder=(TickerHolder)row.getTag();
-			      
+			TickerHolder holder=(TickerHolder)row.getTag();      
 			holder.populateFrom(c, helper);
 		}
 
@@ -132,14 +132,16 @@ public class TabListActivity extends ListActivity {
 	    private TextView aktion=null;
 	    private TextView zeit=null;
 	    private TextView spieler=null;
-	    private TextView icon=null;
+	    private TextView iconText=null;
+	    private ImageView icon=null;
 	    private View teamColor=null;
 	    
 	    TickerHolder(View row) {
 	      aktion=(TextView)row.findViewById(R.id.rowTickerAktion);
 	      zeit=(TextView)row.findViewById(R.id.rowTickerZeit);
 	      spieler=(TextView)row.findViewById(R.id.rowTickerSpieler);
-	      icon=(TextView)row.findViewById(R.id.rowTickerIcon);
+	      iconText=(TextView)row.findViewById(R.id.rowTickerText);
+	      icon=(ImageView)row.findViewById(R.id.rowTickerIcon);
 	      teamColor=(View)row.findViewById(R.id.rowTickerTeamColor);
 	    }
 	    
@@ -159,82 +161,123 @@ public class TabListActivity extends ListActivity {
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==2 || Integer.parseInt(helper.getTickerAktionInt(c))==14 || 
 	    		  Integer.parseInt(helper.getTickerAktionInt(c))==20){
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_none);
-	    	  icon.setText(helper.getTickerErgebnis(c));   	  
+	    	  icon.setImageResource(R.drawable.ticker_symbol_none);
+	    	  iconText.setText(helper.getTickerErgebnis(c));   	  
 	      }   
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==3) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_fehlwurf);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_fehlwurf);
+	    	  iconText.setText("");
 	      } 
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==4) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_techfehl);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_techfehl);
+	    	  iconText.setText("");
 	      } 
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==15) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_7m_fehlwurf);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_7m_fehlwurf);
+	    	  iconText.setText("");
 	      } 
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==21) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_tg_fehlwurf);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_tg_fehlwurf);
+	    	  iconText.setText("");
 	      } 
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==6) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_gelbekarte);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_gelbekarte);
+	    	  iconText.setText("");
 	      }	      
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==9) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_rotekarte);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_rotekarte);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==5 || Integer.parseInt(helper.getTickerAktionInt(c))==11) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_zwei_raus);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_zwei_raus);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==0 || Integer.parseInt(helper.getTickerAktionInt(c))==1) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_ballbesitz);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_ballbesitz);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==8) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_auswechsel);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_auswechsel);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==10) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_zwei_rein);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_zwei_rein);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_einwechsel);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==16 || Integer.parseInt(helper.getTickerAktionInt(c))==22) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_gehalten);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_torwart_gehalten);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==17 || Integer.parseInt(helper.getTickerAktionInt(c))==23) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_tor);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_torwart_tor);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==18) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_7m_gehalten);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_torwart_7m_gehalten);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==19) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_torwart_7m_tor);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_torwart_7m_tor);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_einwechsel);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_einwechsel);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_einwechsel);
+	    	  iconText.setText("");
 	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==24) {
-	    	  icon.setBackgroundResource(R.drawable.ticker_symbol_auszeit);
-	    	  icon.setText("");
+	    	  icon.setImageResource(R.drawable.ticker_symbol_auszeit);
+	    	  iconText.setText("");
 	      }
+	      scaleImage(icon, 45);   	
+	    }
+	    
+	    private void scaleImage(ImageView view, int boundBoxInDp)
+	    {
+	        // Get the ImageView and its bitmap
+	        Drawable drawing = view.getDrawable();
+	        Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+
+	        // Get current dimensions
+	        int width = bitmap.getWidth();
+	        int height = bitmap.getHeight();
+
+	        // Determine how much to scale: the dimension requiring less scaling is
+	        // closer to the its side. This way the image always stays inside your
+	        // bounding box AND either x/y axis touches it.
+	        float xScale = ((float) boundBoxInDp) / width;
+	        float yScale = ((float) boundBoxInDp) / height;
+	        float scale = (xScale <= yScale) ? xScale : yScale;
+
+	        // Create a matrix for the scaling and add the scaling data
+	        Matrix matrix = new Matrix();
+	        matrix.postScale(scale, scale);
+
+	        // Create a new bitmap and convert it to a format understood by the ImageView
+	        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+	        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+	        width = scaledBitmap.getWidth();
+	        height = scaledBitmap.getHeight();
+
+	        // Apply the scaled bitmap
+	        view.setImageDrawable(result);
+
+	        // Now change ImageView's dimensions to match the scaled image
+	        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+	        params.width = width;
+	        params.height = height;
+	        view.setLayoutParams(params);
 	    }
 	}
+	
+
+	
 }
 

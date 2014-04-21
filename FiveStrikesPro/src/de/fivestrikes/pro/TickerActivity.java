@@ -34,7 +34,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.BitmapDrawable;
 
-
 public class TickerActivity extends TabActivity {    
     /** Called when the activity is first created. */
 

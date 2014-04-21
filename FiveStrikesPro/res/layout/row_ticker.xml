@@ -42,22 +42,33 @@
       		android:textSize="12dip"
     	/>
 	    
-	    <LinearLayout
+	    <RelativeLayout
     		android:layout_width="70dip"
     		android:layout_height="40dip"
     		android:gravity="center"
     	>
     		
-			<TextView android:id="@+id/rowTickerIcon"
+			<ImageView
+    			android:id="@+id/rowTickerIcon"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
-    			android:gravity="center"
+    		/>
+
+			<TextView
+    			android:id="@+id/rowTickerText"
+    			android:layout_width="wrap_content"
+    			android:layout_height="wrap_content"
+    			android:layout_alignLeft="@+id/rowTickerIcon"
+    			android:layout_alignTop="@+id/rowTickerIcon"
+    			android:layout_alignRight="@+id/rowTickerIcon"
+    			android:layout_alignBottom="@+id/rowTickerIcon"
 				android:textStyle="bold"
 				android:textSize="17dip"
-				android:textColor="@color/standardfarbe"
-  			/>
+    			android:gravity="center"
+    			android:textColor="@color/standardfarbe" 
+    		/>	
 			
-		</LinearLayout>
+		</RelativeLayout>
 		
 	    <View 
         	android:layout_width="70dip"
