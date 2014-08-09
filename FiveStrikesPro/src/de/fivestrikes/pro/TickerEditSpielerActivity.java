@@ -42,7 +42,11 @@ public class TickerEditSpielerActivity extends ListActivity {
         getWindow().setWindowAnimations(0);
         final TextView customTitleText = (TextView) findViewById(R.id.titleBackText);
         customTitleText.setText(R.string.tickerSpielerTitel);
+
+/* Daten aus Activity laden */ 
         
+        mannschaftId=getIntent().getStringExtra("TeamID");
+                
 /* Datenbank laden */
         
         helper=new SQLHelper(this);
@@ -51,10 +55,6 @@ public class TickerEditSpielerActivity extends ListActivity {
         adapter=new SpielerAdapter(model);
         setListAdapter(adapter);
 
-/* Daten aus Activity laden */ 
-        
-        mannschaftId=getIntent().getStringExtra("TeamID");
-        
 /* Button beschriften */
         
         Button backButton = (Button) findViewById(R.id.back_button);

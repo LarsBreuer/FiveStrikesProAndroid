@@ -50,7 +50,8 @@ public class TickerActivity extends TabActivity {
 	private long startTime;
 	private final int REFRESH_RATE = 100;
 	private boolean stopped = false;
-	String teamKurz=null;
+	String teamHomeShort=null;
+	String teamAwayShort=null;
 	final Context context = this;
 	View tabview;
 	private TabHost mTabHost;
@@ -108,7 +109,8 @@ public class TickerActivity extends TabActivity {
 
 /* Daten aus Datenbank laden */
         
-		teamKurz=helper.getTeamHeimKurzBySpielID(spielId);
+		teamHomeShort=helper.getTeamHeimKurzBySpielID(spielId);
+		teamAwayShort=helper.getTeamHeimKurzBySpielID(spielId);
 		strBallbesitz=helper.getSpielBallbesitz(spielId);
 		
 /* Zeit stellen */
@@ -183,7 +185,7 @@ public class TickerActivity extends TabActivity {
         		if (Integer.parseInt(strBallbesitz)!=1){
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim_ball);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts);
-        			String strBallbesitzText="Ballbesitz " + teamKurz;
+        			String strBallbesitzText="Ballbesitz " + teamHomeShort;
         			realzeit = DateFormat.getDateTimeInstance().format(new Date());
         			helper.insertTicker(0, strBallbesitzText, 1, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime, realzeit);
         			helper.updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
@@ -212,7 +214,7 @@ public class TickerActivity extends TabActivity {
         		if (Integer.parseInt(strBallbesitz)!=0){
         			btnTeamHeim.setBackgroundResource(R.drawable.mannschaft_heim);
         			btnTeamAusw.setBackgroundResource(R.drawable.mannschaft_auswaerts_ball);
-    				String strBallbesitzText="Ballbesitz " + teamKurz;
+    				String strBallbesitzText="Ballbesitz " + teamAwayShort;
     				realzeit = DateFormat.getDateTimeInstance().format(new Date());
     				helper.insertTicker(1, strBallbesitzText, 0, "", 0, Integer.parseInt(spielId), (int) (long) elapsedTime, realzeit);
     				helper.updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen

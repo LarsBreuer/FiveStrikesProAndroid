@@ -47,7 +47,7 @@ public class TickerSpielerAuswechselungActivity extends ListActivity {
 
 /* Daten aus Activity laden */ 
         
-        mannschaftId=getIntent().getStringExtra("TeamHomeID");
+        mannschaftId=getIntent().getStringExtra("TeamID");
         aktionTeamHeim=getIntent().getStringExtra("AktionTeamHome");
         spielId=getIntent().getStringExtra("GameID");
         zeit=getIntent().getStringExtra("Time");

@@ -104,9 +104,10 @@ public class SpielActivity extends ListActivity {
 		@Override
 		public void bindView(View row, Context ctxt,
 				Cursor c) {
-			SpielHolder holder=(SpielHolder)row.getTag();
-			      
+			
+			SpielHolder holder=(SpielHolder)row.getTag();     
 			holder.populateFrom(c, helper);
+			
 		}
 
 		@Override

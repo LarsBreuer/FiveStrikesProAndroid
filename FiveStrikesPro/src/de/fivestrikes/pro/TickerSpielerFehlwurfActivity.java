@@ -59,6 +59,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 
 /* Daten aus Activity laden */ 
         
+        spielId=getIntent().getStringExtra("GameID");
         tickerId=getIntent().getStringExtra("TickerID");
         aktionInt=getIntent().getStringExtra("StrAktionInt");
         aktionTeamHeim=getIntent().getStringExtra("AktionTeamHome");
@@ -652,7 +653,7 @@ public class TickerSpielerFehlwurfActivity extends Activity {
 						torwartAktionTeamHeim="0";
 					}
 					helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
-							Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)+1, realzeit);
+							Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)-1, realzeit);
 					Cursor lastTickTorwartC=helper.getLastTickerId();
 					lastTickTorwartC.moveToFirst();
 					torwartTickerId = helper.getTickerId(lastTickTorwartC);

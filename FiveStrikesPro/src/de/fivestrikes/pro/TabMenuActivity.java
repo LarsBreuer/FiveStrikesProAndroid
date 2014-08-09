@@ -7,13 +7,20 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import java.util.Date;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -45,7 +52,7 @@ public class TabMenuActivity extends Activity {
         super.onCreate(savedInstanceState);
         
 /* Grundlayout setzen */
-        
+
         setContentView(R.layout.tab_menu);
         
 /* Datenbank laden */
@@ -63,10 +70,223 @@ public class TabMenuActivity extends Activity {
 		strTeamHeimKurzBySpielID=helper.getTeamHeimKurzBySpielID(spielId);
 		strTeamAuswKurzBySpielID=helper.getTeamAuswKurzBySpielID(spielId);
 
-/* GridView laden */
+ /* Button einrichten */
+	    
+        ImageButton btnTor=(ImageButton) findViewById(R.id.menu_tor);
+        btnTor.setImageResource(R.drawable.aktion_torwurf);
+        helper.scaleImageLinear(btnTor, 110);
+        ImageButton btn7mTor = (ImageButton) findViewById(R.id.menu_7mTor);
+        btn7mTor.setImageResource(R.drawable.aktion_7m_tor);
+        helper.scaleImageLinear(btn7mTor, 110);
+        ImageButton btnTGTor=(ImageButton) findViewById(R.id.menu_TGTor);
+        btnTGTor.setImageResource(R.drawable.aktion_tg_tor);
+        helper.scaleImageLinear(btnTGTor, 110);
+        ImageButton btnGelbe=(ImageButton) findViewById(R.id.menu_gelbe);
+        btnGelbe.setImageResource(R.drawable.aktion_gelbekarte);
+        helper.scaleImageLinear(btnGelbe, 110);
+        ImageButton btnFehl=(ImageButton) findViewById(R.id.menu_fehl);
+        btnFehl.setImageResource(R.drawable.aktion_fehlwurf);
+        helper.scaleImageLinear(btnFehl, 110);
+        ImageButton btn7mFehl=(ImageButton) findViewById(R.id.menu_7mFehl);
+        btn7mFehl.setImageResource(R.drawable.aktion_7m_fehlwurf);
+        helper.scaleImageLinear(btn7mFehl, 110);
+        ImageButton btnTGFehl=(ImageButton) findViewById(R.id.menu_TGFehl);
+        btnTGFehl.setImageResource(R.drawable.aktion_tg_fehlwurf);
+        helper.scaleImageLinear(btnTGFehl, 110);
+        ImageButton btnZwei=(ImageButton) findViewById(R.id.menu_zwei);
+        btnZwei.setImageResource(R.drawable.aktion_zweimin);
+        helper.scaleImageLinear(btnZwei, 110);
+        ImageButton btnTechFehl = (ImageButton) findViewById(R.id.menu_techfehl);
+        btnTechFehl.setImageResource(R.drawable.aktion_techfehl);
+        helper.scaleImageLinear(btnTechFehl, 110);
+        ImageButton btnAufstellheim=(ImageButton) findViewById(R.id.menu_aufstellheim);
+        btnAufstellheim.setImageResource(R.drawable.aktion_aufstellung_heim);
+        helper.scaleImageLinear(btnAufstellheim, 110);
+        ImageButton btnAuszeitHeim=(ImageButton) findViewById(R.id.menu_AuszeitHeim);
+        btnAuszeitHeim.setImageResource(R.drawable.aktion_auszeit_heim);
+        helper.scaleImageLinear(btnAuszeitHeim, 110);
+        ImageButton btnZweiPlusZwei=(ImageButton) findViewById(R.id.menu_zweipluszwei);
+        btnZweiPlusZwei.setImageResource(R.drawable.aktion_zweipluszwei);
+        helper.scaleImageLinear(btnZweiPlusZwei, 110);
+        ImageButton btnWechsel=(ImageButton) findViewById(R.id.menu_wechsel);
+        btnWechsel.setImageResource(R.drawable.aktion_wechsel);
+        helper.scaleImageLinear(btnWechsel, 110);
+        ImageButton btnAufstellAusw=(ImageButton) findViewById(R.id.menu_aufstellausw);
+        btnAufstellAusw.setImageResource(R.drawable.aktion_aufstellung_auswaerts);
+        helper.scaleImageLinear(btnAufstellAusw, 110);
+        ImageButton btnAuszeitAuswaerts=(ImageButton) findViewById(R.id.menu_auszeitauswaerts);
+        btnAuszeitAuswaerts.setImageResource(R.drawable.aktion_auszeit_auswaerts);
+        helper.scaleImageLinear(btnAuszeitAuswaerts, 110);
+        ImageButton btnRote = (ImageButton) findViewById(R.id.menu_rote);
+        btnRote.setImageResource(R.drawable.aktion_rotekarte);
+        helper.scaleImageLinear(btnRote, 110);
         
-		gridview();
+        /* Button zurück definieren*/
 
+        btnTor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="2";
+				strAktion=getResources().getString(R.string.tickerAktionTor);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btn7mTor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="14";
+				strAktion=getResources().getString(R.string.tickerAktion7mTor);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnTGTor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="20";
+				strAktion=getResources().getString(R.string.tickerAktionTempogegenstossTor);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnGelbe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="6";
+				strAktion=getResources().getString(R.string.tickerAktionGelbeKarte);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnFehl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="3";
+				strAktion=getResources().getString(R.string.tickerAktionFehlwurf);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btn7mFehl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="15";
+				strAktion=getResources().getString(R.string.tickerAktion7mFehlwurf);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnTGFehl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="21";
+				strAktion=getResources().getString(R.string.tickerAktionTempogegenstossFehlwurf);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnZwei.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="5";
+				strAktion=getResources().getString(R.string.tickerAktionZweiMinuten);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnTechFehl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="4";
+				strAktion=getResources().getString(R.string.tickerAktionTechnischerFehler);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnAufstellheim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="12";
+				aktionTeamHeim = "1";
+				strAktion=getResources().getString(R.string.tickerAktionStartaufstellung);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnAuszeitHeim.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="24";
+				aktionTeamHeim = "1";
+				strAktion=getResources().getString(R.string.tickerAktionAuszeit);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				aktionAuszeit();
+            }
+        });
+        
+        btnZweiPlusZwei.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="11";
+				strAktion=getResources().getString(R.string.tickerAktionZweiMalZwei);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnWechsel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="7";
+				strAktion=getResources().getString(R.string.tickerAktionEinwechselung);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnAufstellAusw.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="12";
+				aktionTeamHeim = "0";
+				strAktion=getResources().getString(R.string.tickerAktionStartaufstellung);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
+        btnAuszeitAuswaerts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="24";
+				aktionTeamHeim = "0";
+				strAktion=getResources().getString(R.string.tickerAktionAuszeit);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				aktionAuszeit();
+            }
+        });
+        
+        btnRote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+				strAktionInt="9";
+				strAktion=getResources().getString(R.string.tickerAktionRoteKarte);
+				realzeit = DateFormat.getDateTimeInstance().format(new Date());
+				startAktion();
+            }
+        });
+        
     }
     
 	@Override
@@ -95,7 +315,7 @@ public class TabMenuActivity extends Activity {
 			spielerEingabe="1";
 		}
 		if(strAktionInt.equals("2") || strAktionInt.equals("14") || strAktionInt.equals("20") || strAktionInt.equals("3") ||
-				strAktionInt.equals("15") || strAktionInt.equals("21") || strAktionInt.equals("24") || strAktionInt.equals("4")){
+				strAktionInt.equals("15") || strAktionInt.equals("21") || strAktionInt.equals("4")){
 			aktionTeamHeim=strBallbesitz;
 		}
 		if(strAktionInt.equals("6") || strAktionInt.equals("5") || strAktionInt.equals("11") || 
@@ -155,7 +375,7 @@ public class TabMenuActivity extends Activity {
 		}
 		
     	if(strAktionInt.equals("2") || strAktionInt.equals("14") || strAktionInt.equals("20") || strAktionInt.equals("3") ||
-				strAktionInt.equals("15") || strAktionInt.equals("21") || strAktionInt.equals("24")){
+				strAktionInt.equals("15") || strAktionInt.equals("21")){
 			aktionTeamHeim=strBallbesitz;
 		}
 		if(strAktionInt.equals("6") || strAktionInt.equals("5") || strAktionInt.equals("11") || 
@@ -290,109 +510,47 @@ public class TabMenuActivity extends Activity {
 
 /*
  * 
- * Menüpunkte definieren 
+ * Bilder verkleinern
  *
  */
-	
-    public void gridview() {
-        GridView gridview = (GridView) findViewById(R.id.aktionen_gridview);
-        gridview.setAdapter(new AktionenImageAdapter(this));
+	 
+    private void scaleImagen(ImageButton view, int boundBoxInDp)
+    {
+        // Get the ImageView and its bitmap
+        Drawable drawing = view.getDrawable();
+        Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
 
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				
-				Resources res = getResources();
-				realzeit = DateFormat.getDateTimeInstance().format(new Date());
-				
-				switch(position) {
-    			case 0:
-    				strAktionInt="2";
-    				strAktion=res.getString(R.string.tickerAktionTor);
-    				startAktion();
-    				break;
-    			case 1:
-    				strAktionInt="14";
-    				strAktion=res.getString(R.string. tickerAktion7mTor);
-    				startAktion();
-    				break;
-    			case 2:
-    				strAktionInt="20";
-    				strAktion=res.getString(R.string. tickerAktionTempogegenstossTor);
-    				startAktion();
-    				break;
-    			case 3:
-    				strAktionInt="6";
-    				strAktion=res.getString(R.string. tickerAktionGelbeKarte);
-    				startAktion();
-    				break;
-    			case 4:
-    				strAktionInt="3";
-    				strAktion=res.getString(R.string. tickerAktionFehlwurf);
-    				startAktion();
-    				break;
-    			case 5:
-    				strAktionInt="15";
-    				strAktion=res.getString(R.string. tickerAktion7mFehlwurf);
-    				startAktion();
-    				break;
-    			case 6:
-    				strAktionInt="21";
-    				strAktion=res.getString(R.string. tickerAktionTempogegenstossFehlwurf);
-    				startAktion();
-    				break;
-    			case 7:
-    				strAktionInt="5";
-    				strAktion=res.getString(R.string. tickerAktionZweiMinuten);
-    				startAktion();
-    				break;
-    			case 8:
-    				strAktionInt="4";
-    				strAktion=res.getString(R.string.tickerAktionTechnischerFehler);
-    				startAktion();
-    				break;
-    			case 9:
-    				strAktionInt="12";
-    				aktionTeamHeim = "1";
-    				strAktion=res.getString(R.string. tickerAktionStartaufstellung);
-    				startAktion();
-    				break;
-    			case 10:
-    				strAktionInt="24";
-    				aktionTeamHeim = "1";
-    				strAktion=res.getString(R.string. tickerAktionAuszeit);
-    				aktionAuszeit();
-    				break;
-    			case 11:
-    				strAktionInt="11";
-    				strAktion=res.getString(R.string. tickerAktionZweiMalZwei);
-    				startAktion();
-    				break;
-    			case 12:
-    				strAktionInt="7";
-    				strAktion=res.getString(R.string.tickerAktionEinwechselung);
-    				startAktion();
-    				break;
-    			case 13:
-    				strAktionInt="12";
-    				aktionTeamHeim = "0";
-    				strAktion=res.getString(R.string.tickerAktionStartaufstellung);
-    				startAktion();
-    				break;
-    			case 14:
-    				strAktionInt="24";
-    				aktionTeamHeim = "0";
-    				strAktion=res.getString(R.string. tickerAktionAuszeit);
-    				aktionAuszeit();
-    				break;
-    			case 15:
-    				strAktionInt="9";
-    				strAktion=res.getString(R.string. tickerAktionRoteKarte);
-    				startAktion();
-    				break;
-				}
-			}
-		});
+        // Get current dimensions
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        // Determine how much to scale: the dimension requiring less scaling is
+        // closer to the its side. This way the image always stays inside your
+        // bounding box AND either x/y axis touches it.
+        float xScale = ((float) boundBoxInDp) / width;
+        float yScale = ((float) boundBoxInDp) / height;
+        float scale = (xScale <= yScale) ? xScale : yScale;
+
+        // Create a matrix for the scaling and add the scaling data
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+
+        // Create a new bitmap and convert it to a format understood by the ImageView
+        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+        width = scaledBitmap.getWidth();
+        height = scaledBitmap.getHeight();
+
+        // Apply the scaled bitmap
+        view.setImageDrawable(result);
+
+        // Now change ImageView's dimensions to match the scaled image
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+        params.width = width;
+        params.height = height;
+        view.setLayoutParams(params);
     }
+
 }
+
+

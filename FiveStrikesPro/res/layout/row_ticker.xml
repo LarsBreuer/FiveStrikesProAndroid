@@ -58,9 +58,9 @@
     			android:id="@+id/rowTickerText"
     			android:layout_width="wrap_content"
     			android:layout_height="wrap_content"
-    			android:layout_alignLeft="@+id/rowTickerIcon"
+
     			android:layout_alignTop="@+id/rowTickerIcon"
-    			android:layout_alignRight="@+id/rowTickerIcon"
+
     			android:layout_alignBottom="@+id/rowTickerIcon"
 				android:textStyle="bold"
 				android:textSize="17dip"

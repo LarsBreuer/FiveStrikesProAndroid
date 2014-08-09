@@ -121,9 +121,7 @@ public class TabListActivity extends ListActivity {
 			LayoutInflater inflater=getLayoutInflater();
 			View row=inflater.inflate(R.layout.row_ticker, parent, false);
 			TickerHolder holder=new TickerHolder(row);
-
 			row.setTag(holder);
-
 			return(row);
 		}
 	}
@@ -224,22 +222,14 @@ public class TabListActivity extends ListActivity {
 	    	  icon.setImageResource(R.drawable.ticker_symbol_torwart_7m_tor);
 	    	  iconText.setText("");
 	      }
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
-	    	  icon.setImageResource(R.drawable.ticker_symbol_einwechsel);
-	    	  iconText.setText("");
-	      }
-	      if (Integer.parseInt(helper.getTickerAktionInt(c))==7) {
-	    	  icon.setImageResource(R.drawable.ticker_symbol_einwechsel);
-	    	  iconText.setText("");
-	      }
 	      if (Integer.parseInt(helper.getTickerAktionInt(c))==24) {
 	    	  icon.setImageResource(R.drawable.ticker_symbol_auszeit);
 	    	  iconText.setText("");
 	      }
-	      scaleImage(icon, 45);   	
+	      helper.scaleImageRelative(icon, 45);   	
 	    }
 	    
-	    private void scaleImage(ImageView view, int boundBoxInDp)
+	    private void scaleImagen(ImageView view, int boundBoxInDp)
 	    {
 	        // Get the ImageView and its bitmap
 	        Drawable drawing = view.getDrawable();

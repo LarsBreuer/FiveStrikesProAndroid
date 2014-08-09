@@ -108,9 +108,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_torwurf"
-			android:src="@drawable/aktion_torwurf"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -136,9 +135,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_fehlwurf"
-			android:src="@drawable/aktion_fehlwurf"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -164,9 +162,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_7m_tor"
-			android:src="@drawable/aktion_7m_tor"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -192,9 +189,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_7m_fehlwurf"
-			android:src="@drawable/aktion_7m_fehlwurf"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -220,9 +216,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_tg_tor"
-			android:src="@drawable/aktion_tg_tor"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -248,9 +243,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_tg_fehlwurf"
-			android:src="@drawable/aktion_tg_fehlwurf"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -276,9 +270,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_techfehl"
-			android:src="@drawable/aktion_techfehl"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -304,9 +297,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_gelbekarte"
-			android:src="@drawable/aktion_gelbekarte"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -332,9 +324,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_zweimin"
-			android:src="@drawable/aktion_zweimin"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -360,9 +351,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_zweipluszwei"
-			android:src="@drawable/aktion_zweipluszwei"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -388,9 +378,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_rotekarte"
-			android:src="@drawable/aktion_rotekarte"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -416,9 +405,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_wechsel"
-			android:src="@drawable/aktion_wechsel"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -444,9 +432,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_aufstellung_heim"
-			android:src="@drawable/aktion_aufstellung_heim"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -472,9 +459,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_aufstellung_auswaerts"
-			android:src="@drawable/aktion_aufstellung_auswaerts"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -500,9 +486,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_auszeit_heim"
-			android:src="@drawable/aktion_auszeit_heim"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>
@@ -528,9 +513,8 @@
 
 		<ImageView
 			android:id="@+id/aktion_auszeit_auswaerts"
-			android:src="@drawable/aktion_auszeit_auswaerts"
 			android:layout_width="wrap_content" 
-			android:layout_height="50dip" 
+			android:layout_height="wrap_content" 
 			android:gravity="center_vertical|center_horizontal"
 			android:layout_margin="10dip"
 		>

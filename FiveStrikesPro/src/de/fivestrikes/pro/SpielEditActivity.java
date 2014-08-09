@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-//import de.fivestrikes.lite.R;
 import android.app.Dialog;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -121,8 +120,8 @@ public class SpielEditActivity extends Activity {
         	    if (heimID==0 || auswID==0 || spielDatum==null) {
         	    	AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         	    	alertDialogBuilder
-        	    		.setTitle(R.string.spielMsgboxTitel)
-        	    		.setMessage(R.string.spielMsgboxText)
+    	    			.setTitle(R.string.tickerMsgboxTitel)
+    	    			.setMessage(R.string.tickerMsgboxText)
         	    		.setPositiveButton("Ok",new DialogInterface.OnClickListener() {
         					public void onClick(DialogInterface dialog,int id) {
 
@@ -152,10 +151,8 @@ public class SpielEditActivity extends Activity {
             							   Integer.parseInt(spiel_halbzeitlaenge.getText().toString()),
         	    					   	   heimID,
         	    					   	   auswID);
-
         				Intent i = new Intent(getApplicationContext(), TickerActivity.class);
-        				/** Hinweis: Nächste Zeile kann wahrscheinlich raus, da ein neues Spiel eingerichtet wurde */ 
-            			helper.updateTickerSpieler(helper.getLastSpielId());	// Spielernamen in Tickermeldungen schreiben
+        				spielId = helper.getLastSpielId();
         				i.putExtra("GameID", spielId);
         				startActivity(i);
             		}
@@ -240,7 +237,7 @@ public class SpielEditActivity extends Activity {
 
 /*
  * 
- * Ergebnis der Sub-Activity "Mannschaftsauswahl abfragen, welcher Mannschaft ausgewählt wurde 
+ * Ergebnis der Sub-Activity "Mannschaftsauswahl" abfragen, welche Mannschaft ausgewählt wurde 
  *
  */
 	

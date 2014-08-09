@@ -157,6 +157,8 @@
 	<string name="mannschaftAuswahl">Mannschaft wählen</string>
 	<string name="spielMsgboxTitel">Speichern nicht möglich</string>
 	<string name="spielMsgboxText">Es sind noch nicht alle Angaben gemacht. Speichern daher nicht möglich.</string>
+	<string name="tickerMsgboxTitel">Spielstart nicht möglich</string>
+	<string name="tickerMsgboxText">Es sind noch nicht alle Angaben gemacht. Der Start des Spiels ist daher nicht möglich.</string>
 	<string name="spielDelMsgboxTitel">Löschen</string>
 	<string name="spielDelMsgboxText">Möchtest Du das Spiel wirklich löschen?</string>
 	<string name="spielTeamauswahlMsgboxTitel">Auswahl nicht möglich</string>
@@ -240,7 +242,14 @@
 	<string name="wurfeckeUL">Unten links</string>
 	<string name="wurfeckeUM">Unten mitte</string>
 	<string name="wurfeckeUR">Unten rechts</string>
-	<string name="wurfeckeURR">Unten rechts daneben</string> 						
+	<string name="wurfeckeURR">Unten rechts daneben</string> 
+	<string name="wurfpositionLA">Links außen</string> 
+	<string name="wurfpositionRHL">Rückraum halb links</string> 
+	<string name="wurfpositionHL">Halb links</string>
+	<string name="wurfpositionRA">Rechts außen</string> 
+	<string name="wurfpositionRHR">Rückraum halb rechts</string> 
+	<string name="wurfpositionHR">Halb rechts</string> 	
+	<string name="wurfpositionM">Mitte</string> 					
 	<!-- Ticker ends --> 
     
 	<!-- Statistik starts -->   
@@ -300,7 +309,7 @@
 	<string name="statistik">Statistik</string>
 	
 	<string name="description">Image</string>
-	<string name="tickerWarnmeldungTorwartEinsatz">Kein Gegnertorwart eingesetzt.</string>
+	<string name="tickerWarnmeldungTorwartEinsatz">Kein Gegnertorwart eingesetzt. Torwartaktionen werden nur erfasst bei eingewechseltem Torwart.</string>
 	
 
 </resources>

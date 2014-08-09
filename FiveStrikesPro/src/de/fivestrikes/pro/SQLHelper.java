@@ -6,9 +6,18 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 import java.util.Calendar;
 import java.util.Date;
 import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -73,14 +82,14 @@ class SQLHelper extends SQLiteOpenHelper {
   
   public Cursor getAllTeam() {
 	  return(getReadableDatabase()
-			  .rawQuery("SELECT _id, teamName, teamKuerzel FROM team ORDER BY teamName ASC", null));
+			  .rawQuery("SELECT _id, teamName, teamKuerzel, spielerAnzahl FROM team ORDER BY teamName ASC", null));
   }
 
   public Cursor getTeamById(String id) {
 	  String[] args={id};
 
 	  return(getReadableDatabase()
-			  .rawQuery("SELECT _id, teamName, teamKuerzel FROM team WHERE _ID=?", args));
+			  .rawQuery("SELECT _id, teamName, teamKuerzel, spielerAnzahl FROM team WHERE _ID=?", args));
   }
   
   public String getLastTeamId() {
@@ -88,7 +97,9 @@ class SQLHelper extends SQLiteOpenHelper {
 	  SQLiteDatabase db = getReadableDatabase();
 	  Cursor c = db.rawQuery("SELECT * FROM team WHERE _ID=(SELECT MAX(_ID) FROM team)", null);
 	  c.moveToFirst();
-	  strResult = getTeamId(c);
+	  if(c.getCount()!=0){
+		  strResult = getTeamId(c);
+	  }
 	  c.close();
 	  return(strResult);
 
@@ -170,8 +181,12 @@ class SQLHelper extends SQLiteOpenHelper {
   
   public String getTeamString(String teamId, Integer number) {
 	  c=getTeamById(teamId);
-      c.moveToFirst();
-      strResult=c.getString(number);
+	  c.moveToFirst();
+	  if(c.getCount()>0){
+    	  strResult=c.getString(number);
+	  } else {
+		  strResult="";
+	  }
       c.close();
 	  return(strResult);
   }
@@ -307,7 +322,7 @@ class SQLHelper extends SQLiteOpenHelper {
   public String getSpielerString(String spielerId, Integer number) {
 	  c=getSpielerById(spielerId);
       c.moveToFirst();
-      if(c.getString(number)!=null){
+      if(c.getCount()>0){
     	  strResult=c.getString(number);
 	  } else {
 		  strResult="";
@@ -327,7 +342,7 @@ class SQLHelper extends SQLiteOpenHelper {
   public Cursor getAllSpiel() {
 	  return(getReadableDatabase()
 			  .rawQuery("SELECT _id, teamHeim, teamAuswaerts, aktuelleHalbzeit, ballbesitz, halbzeitLaenge, spielDatum, toreHeim, toreAuswaerts, zeitAktuell, zeitBisher, " +
-			  		"zeitStart, zeitTicker FROM spiel ORDER BY spielDatum", null));
+			  		"zeitStart, zeitTicker FROM spiel ORDER BY spielDatum DESC", null));
   }
   
   public Cursor getAllSpielAlle() {
@@ -1197,12 +1212,12 @@ class SQLHelper extends SQLiteOpenHelper {
 	  if(Integer.parseInt(aktionTeamHeim)==1 && intSpielBallbesitz==1){  
 			// ... und Heimmannschaft Tor geworfen, dann trage Ballbesitz Auswärtsmannschaft ein
 		  String strBallbesitz="Ballbesitz " + strTeamAuswKurzBySpielID;
-		  insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+		  insertTicker(1, strBallbesitz, 0, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) - 2, realzeit);
 		  updateSpielBallbesitz(spielId, 0);  // aktuellen Ballbesitz in Spiel eintragen
 	  }
 	  if(Integer.parseInt(aktionTeamHeim)==0 && intSpielBallbesitz==0){
 		  String strBallbesitz="Ballbesitz " + strTeamHeimKurzBySpielID;
-		  insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) + 1, realzeit);
+		  insertTicker(0, strBallbesitz, 1, "", 0, Integer.parseInt(spielId), (int) Integer.parseInt(zeit) - 2, realzeit);
 		  updateSpielBallbesitz(spielId, 1);  // aktuellen Ballbesitz in Spiel eintragen
 	  }
   }
@@ -2075,4 +2090,122 @@ class SQLHelper extends SQLiteOpenHelper {
 	  public String getStatSpielerWert(Cursor c) {
 		  return(c.getString(2));
 	  }
+	  
+	    
+/* Bilder skalieren */
+	  
+	  /* Bilder Relative Layout skalieren */
+	  public void scaleImageRelative(ImageView view, int boundBoxInDp)
+	    {
+	        // Get the ImageView and its bitmap
+	        Drawable drawing = view.getDrawable();
+	        Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+
+	        // Get current dimensions
+	        int width = bitmap.getWidth();
+	        int height = bitmap.getHeight();
+
+	        // Determine how much to scale: the dimension requiring less scaling is
+	        // closer to the its side. This way the image always stays inside your
+	        // bounding box AND either x/y axis touches it.
+	        float xScale = ((float) boundBoxInDp) / width;
+	        float yScale = ((float) boundBoxInDp) / height;
+	        float scale = (xScale <= yScale) ? xScale : yScale;
+
+	        // Create a matrix for the scaling and add the scaling data
+	        Matrix matrix = new Matrix();
+	        matrix.postScale(scale, scale);
+
+	        // Create a new bitmap and convert it to a format understood by the ImageView
+	        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+	        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+	        width = scaledBitmap.getWidth();
+	        height = scaledBitmap.getHeight();
+
+	        // Apply the scaled bitmap
+	        view.setImageDrawable(result);
+
+	        // Now change ImageView's dimensions to match the scaled image
+	        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) view.getLayoutParams();
+	        params.width = width;
+	        params.height = height;
+	        view.setLayoutParams(params);
+	    }
+	  	
+	  	/* Bilder Linear Layout skalieren */
+	    public void scaleImageLinear(ImageButton view, int boundBoxInDp)
+	    {
+	        // Get the ImageView and its bitmap
+	        Drawable drawing = view.getDrawable();
+	        Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+
+	        // Get current dimensions
+	        int width = bitmap.getWidth();
+	        int height = bitmap.getHeight();
+
+	        // Determine how much to scale: the dimension requiring less scaling is
+	        // closer to the its side. This way the image always stays inside your
+	        // bounding box AND either x/y axis touches it.
+	        float xScale = ((float) boundBoxInDp) / width;
+	        float yScale = ((float) boundBoxInDp) / height;
+	        float scale = (xScale <= yScale) ? xScale : yScale;
+
+	        // Create a matrix for the scaling and add the scaling data
+	        Matrix matrix = new Matrix();
+	        matrix.postScale(scale, scale);
+
+	        // Create a new bitmap and convert it to a format understood by the ImageView
+	        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+	        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+	        width = scaledBitmap.getWidth();
+	        height = scaledBitmap.getHeight();
+
+	        // Apply the scaled bitmap
+	        view.setImageDrawable(result);
+
+	        // Now change ImageView's dimensions to match the scaled image
+	        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+	        params.width = width;
+	        params.height = height;
+	        view.setLayoutParams(params);
+	    }
+	    
+	    /* Bilder Linear Layout skalieren */
+	    public void scaleImageViewLinear(ImageView view, int boundBoxInDp)
+	    {
+	        // Get the ImageView and its bitmap
+	        Drawable drawing = view.getDrawable();
+	        Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+
+	        // Get current dimensions
+	        int width = bitmap.getWidth();
+	        int height = bitmap.getHeight();
+
+	        // Determine how much to scale: the dimension requiring less scaling is
+	        // closer to the its side. This way the image always stays inside your
+	        // bounding box AND either x/y axis touches it.
+	        float xScale = ((float) boundBoxInDp) / width;
+	        float yScale = ((float) boundBoxInDp) / height;
+	        float scale = (xScale <= yScale) ? xScale : yScale;
+
+	        // Create a matrix for the scaling and add the scaling data
+	        Matrix matrix = new Matrix();
+	        matrix.postScale(scale, scale);
+
+	        // Create a new bitmap and convert it to a format understood by the ImageView
+	        Bitmap scaledBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+	        BitmapDrawable result = new BitmapDrawable(scaledBitmap);
+	        width = scaledBitmap.getWidth();
+	        height = scaledBitmap.getHeight();
+
+	        // Apply the scaled bitmap
+	        view.setImageDrawable(result);
+
+	        // Now change ImageView's dimensions to match the scaled image
+	        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+	        params.width = width;
+	        params.height = height;
+	        view.setLayoutParams(params);
+	    }
+	    
 }

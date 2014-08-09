@@ -16,11 +16,10 @@ import android.widget.Spinner;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.view.inputmethod.InputMethodManager;
+import android.util.Log;
 
 
 public class SpielerEditActivity extends Activity {
-	int spieler_ID=0;
-	Integer mannschaft_ID=0;
 	EditText spieler_name=null;
 	EditText spieler_nummer=null;
 	String spieler_position= null;
@@ -60,17 +59,13 @@ public class SpielerEditActivity extends Activity {
 	    save.setOnClickListener(onSave);
 	    delete.setOnClickListener(onDelete);
 
-/* Daten aus Activity laden */ 
-        
-	    spielerId=getIntent().getStringExtra("PlayerID");
-        mannschaftId=getIntent().getStringExtra("TeamID");
-
 /* Daten aus Datenbank laden */
         
 	    if (spielerId!=null) {
 	    	load(spinner);
 	    }
 	    else {
+	    	Log.v("TemaID", mannschaftId);
 	    	lastID = String.valueOf(Integer.parseInt(helper.getSpielerAnzahl(mannschaftId)) + 1);
 	    	spieler_position = "";
 	    	helper.insertSpieler("Spieler " + lastID, lastID, mannschaftId, spieler_position);
@@ -150,7 +145,7 @@ public class SpielerEditActivity extends Activity {
 
 /*
  * 
- * Spinner einrichten 
+ * Textfelder und Spinner einrichten 
  *
  */
 	

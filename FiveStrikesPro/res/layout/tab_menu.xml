@@ -1,4 +1,311 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:background="@color/hellblau"
+>
+
+<LinearLayout 
+  android:layout_width="fill_parent"
+  android:layout_height="70dip"
+  android:orientation="horizontal"
+>
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+
+	    <ImageButton 
+	    	android:id="@+id/menu_tor"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+	    
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+	    <ImageButton 
+	    	android:id="@+id/menu_7mTor"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+	    
+    	<ImageButton 
+	    	android:id="@+id/menu_TGTor"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    	
+    </LinearLayout>
+    
+	<LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+		<ImageButton 
+	    	android:id="@+id/menu_gelbe"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    </LinearLayout>
+
+</LinearLayout>  
+
+<LinearLayout 
+  android:layout_width="fill_parent"
+  android:layout_height="70dip"
+  android:orientation="horizontal"
+>
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+
+	    <ImageButton 
+	    	android:id="@+id/menu_fehl"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+	    
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+	    <ImageButton 
+	    	android:id="@+id/menu_7mFehl"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+	    
+    	<ImageButton 
+	    	android:id="@+id/menu_TGFehl"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    	
+    </LinearLayout>
+    
+	<LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+		<ImageButton 
+	    	android:id="@+id/menu_zwei"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    </LinearLayout>
+
+</LinearLayout>
+
+<LinearLayout 
+  android:layout_width="fill_parent"
+  android:layout_height="70dip"
+  android:orientation="horizontal"
+>
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+
+	    <ImageButton 
+	    	android:id="@+id/menu_techfehl"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+	    
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+	    <ImageButton 
+	    	android:id="@+id/menu_aufstellheim"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+	    
+    	<ImageButton 
+	    	android:id="@+id/menu_AuszeitHeim"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    	
+    </LinearLayout>
+    
+	<LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+		<ImageButton 
+	    	android:id="@+id/menu_zweipluszwei"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    </LinearLayout>
+
+</LinearLayout>  
+
+<LinearLayout 
+  android:layout_width="fill_parent"
+  android:layout_height="70dip"
+  android:orientation="horizontal"
+>
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+
+	    <ImageButton 
+	    	android:id="@+id/menu_wechsel"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+	    
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+	    <ImageButton 
+	    	android:id="@+id/menu_aufstellausw"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+	    
+    	<ImageButton 
+	    	android:id="@+id/menu_auszeitauswaerts"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    	
+    </LinearLayout>
+    
+	<LinearLayout
+    	android:layout_width="0dip"
+    	android:layout_height="fill_parent"
+    	android:layout_weight="1"
+    	android:orientation="vertical"
+    	android:gravity="center"
+    >
+    
+		<ImageButton 
+	    	android:id="@+id/menu_rote"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:background="@null"
+	    />
+    </LinearLayout>
+
+</LinearLayout>  
+
+</LinearLayout>  
+
+<!-- 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -15,6 +322,7 @@
     />
 	
 </FrameLayout>
+-->
     
     <!-- 
     <TableLayout

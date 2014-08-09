@@ -107,7 +107,6 @@ public class StatSpielActivity extends ListActivity {
 			LayoutInflater inflater=getLayoutInflater();
 			View row=inflater.inflate(R.layout.row_stat_spiel, parent, false);
 			StatSpielHolder holder=new StatSpielHolder(row);
-
 			row.setTag(holder);
 			TextView teamHeim=(TextView)row.findViewById(R.id.txtTeamHeim);
 			TextView bezeichnung=(TextView)row.findViewById(R.id.txtBezeichnung);

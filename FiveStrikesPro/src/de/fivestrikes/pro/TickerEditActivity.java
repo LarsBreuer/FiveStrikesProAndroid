@@ -73,9 +73,6 @@ public class TickerEditActivity extends Activity {
 		aktionAnfangID=Integer.parseInt(helper.getTickerAktionInt(c));
 		tickerWurfecke=helper.getTickerWurfecke(c);
 		tickerPosition=helper.getTickerPosition(c);
-		if(tickerPosition==null){
-			tickerPosition="";
-		}
 	    c.close();
         
 /* Button definieren und beschriften */
@@ -87,12 +84,18 @@ public class TickerEditActivity extends Activity {
 	    Button btnAktion = (Button) findViewById(R.id.btnEditAktion);
 	    Button btnSpieler = (Button) findViewById(R.id.btnEditSpieler);
 	    Button btnWurfecke = (Button) findViewById(R.id.btnEditWurfecke);
-	    Button btnWurfposition = (Button) findViewById(R.id.btnEditWurfposition);
+	    Button btnPosition = (Button) findViewById(R.id.btnEditWurfposition);
 		if(tickerWurfecke!=null){
 			btnWurfeckeBeschriften();
-			btnWurfposition.setText(R.string.tickerEditWurfpositionWaehlen);
 		} else {
 			tickerWurfecke="";
+			btnWurfecke.setText(tickerWurfecke);
+		}
+		if(tickerPosition!=null){
+			btnPositionBeschriften();
+		} else {
+			tickerPosition="";
+			btnPosition.setText(tickerPosition);
 		}
         
         save.setOnClickListener(onSave);
@@ -228,7 +231,6 @@ public class TickerEditActivity extends Activity {
         btnWurfecke.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-				Intent newIntent = new Intent(getApplicationContext(), TickerEditWurfeckeActivity.class);
 				Cursor cTicker=helper.getTickerCursor(tickerId);
 				cTicker.moveToFirst();
             	if(Integer.parseInt(tickerAktionId)==1 || 
@@ -254,15 +256,24 @@ public class TickerEditActivity extends Activity {
         	    	alertDialog.show();
             	}
             	else{
-            		newIntent.putExtra("Wurfecke", tickerWurfecke);
-    				startActivityForResult(newIntent, GET_CODE);
+            		if(Integer.parseInt(tickerAktionId)==3 || 
+                			Integer.parseInt(tickerAktionId)==15 || 
+                			Integer.parseInt(tickerAktionId)==21){
+            			Intent newIntent = new Intent(getApplicationContext(), TickerEditFehlwurfActivity.class);
+            			newIntent.putExtra("Wurfecke", tickerWurfecke);
+            			startActivityForResult(newIntent, GET_CODE);
+            		} else {
+            			Intent newIntent = new Intent(getApplicationContext(), TickerEditWurfeckeActivity.class);
+            			newIntent.putExtra("Wurfecke", tickerWurfecke);
+            			startActivityForResult(newIntent, GET_CODE);
+            		}
             	}
 				cTicker.close();
             }
         });
         
         /* Button Wurfposition */
-        btnWurfposition.setOnClickListener(new View.OnClickListener() {
+        btnPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 				Intent newIntent = new Intent(getApplicationContext(), TickerEditWurfpositionActivity.class);
@@ -322,6 +333,24 @@ public class TickerEditActivity extends Activity {
 					tickerAktionString=data.getStringExtra("AktionName");
 					tickerAktionId=data.getStringExtra("AktionId");
 					((TextView)findViewById(R.id.btnEditAktion)).setText(tickerAktionString);
+					/* Wurfposition und -ecke löschen, falls kein Wurf */
+					if(tickerAktionId.equals("0") || tickerAktionId.equals("1") || 
+							tickerAktionId.equals("4") || tickerAktionId.equals("5") || 
+							tickerAktionId.equals("6") || tickerAktionId.equals("7") ||
+							tickerAktionId.equals("8") || tickerAktionId.equals("9") ||
+							tickerAktionId.equals("10") || tickerAktionId.equals("11") ||
+							tickerAktionId.equals("24")){
+						tickerWurfecke="";
+						tickerPosition="";
+						((TextView)findViewById(R.id.btnEditWurfecke)).setText("");
+						((TextView)findViewById(R.id.btnEditWurfposition)).setText("");
+					}
+					/* Falles 7m, Wurfposition auf 7m setzen */
+					if(tickerAktionId.equals("14") || tickerAktionId.equals("15") || 
+							tickerAktionId.equals("18") || tickerAktionId.equals("19")){
+						tickerPosition="3_3";
+						((TextView)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionM);
+					}
 				}
 				if(strActivity.equals("Spieler")){
 					tickerSpielerString=data.getStringExtra("spielerName");
@@ -334,6 +363,7 @@ public class TickerEditActivity extends Activity {
 				}
 				if(strActivity.equals("Wurfposition")){
 					tickerPosition=data.getStringExtra("Wurfposition");
+					btnPositionBeschriften();
 				}
 			}
 		}
@@ -516,6 +546,39 @@ public class TickerEditActivity extends Activity {
 		}
 		if(tickerWurfecke.equals("URR")){
 			((Button)findViewById(R.id.btnEditWurfecke)).setText(R.string.wurfeckeURR);
+		}
+	}
+
+
+
+/*
+ * 
+ * Button Wurfposition beschriften
+ *
+ */
+	
+	public void btnPositionBeschriften() {
+
+		if(tickerPosition.equals("1_1") || tickerPosition.equals("1_2") || tickerPosition.equals("2_1")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionLA);
+		}
+		if(tickerPosition.equals("2_2") || tickerPosition.equals("2_3")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionHL);
+		}
+		if(tickerPosition.equals("1_3") || tickerPosition.equals("1_4") || tickerPosition.equals("2_4")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionRHL);
+		}
+		if(tickerPosition.equals("3_2") || tickerPosition.equals("3_3") || tickerPosition.equals("3_4")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionM);
+		}
+		if(tickerPosition.equals("4_2") || tickerPosition.equals("4_3")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionHR);
+		}
+		if(tickerPosition.equals("4_4") || tickerPosition.equals("5_3") || tickerPosition.equals("5_4")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionRHR);
+		}
+		if(tickerPosition.equals("4_1") || tickerPosition.equals("5_1") || tickerPosition.equals("5_2")){
+			((Button)findViewById(R.id.btnEditWurfposition)).setText(R.string.wurfpositionRA);
 		}
 	}
 }

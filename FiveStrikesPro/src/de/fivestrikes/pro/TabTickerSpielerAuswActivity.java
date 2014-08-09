@@ -163,7 +163,7 @@ public class TabTickerSpielerAuswActivity extends ListActivity {
 					torwartAktionTeamHeim="0";
 				}
 				helper.insertTicker(Integer.parseInt(torwartAktionInt), torwartAktionString, Integer.parseInt(torwartAktionTeamHeim), torwartString, 
-						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit), realzeit);
+						Integer.parseInt(torwartId), Integer.parseInt(spielId), Integer.parseInt(zeit)-1, realzeit);
 				Cursor lastTickTorwartC=helper.getLastTickerId();
 				lastTickTorwartC.moveToFirst();
 				torwartTickerId = helper.getTickerId(lastTickTorwartC);
