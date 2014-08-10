@@ -337,6 +337,7 @@ public class TabTickerSpielerAuswActivity extends ListActivity {
     		newIntent.putExtra("GameID", spielId);
     		newIntent.putExtra("AktionTeamHome", aktionTeamHeim);
     		newIntent.putExtra("Time", zeit);
+    		newIntent.putExtra("RealTime", realzeit);
     		startActivity(newIntent);
     			
     		/** Hinweis: Bislang geht die Activity direkt zurück auf die Ticker Activity (über TickerAktionActivity).

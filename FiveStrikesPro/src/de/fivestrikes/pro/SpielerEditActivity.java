@@ -43,6 +43,11 @@ public class SpielerEditActivity extends Activity {
 /* Datenbank laden */
         
 		helper=new SQLHelper(this);
+		
+/* Daten aus Activity laden */ 
+        
+	    mannschaftId=getIntent().getStringExtra("TeamID");
+	    spielerId=getIntent().getStringExtra("PlayerID");
         
 /* Button, Textfelder und Spinner definieren */
         
